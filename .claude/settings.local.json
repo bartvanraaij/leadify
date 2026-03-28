@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/bartvanraaij/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/scripts/start-server.sh --project-dir /Users/bartvanraaij/Dev/leadify)",
+      "Bash(/Users/bartvanraaij/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/skills/brainstorming/scripts/start-server.sh --project-dir /Users/bartvanraaij/Dev/leadify)"
+    ]
+  }
+}
