@@ -31,7 +31,7 @@ struct SongEditorSheet: View {
                         Text("Optional. Shown in orange wherever this song appears.")
                     }
                 }
-                .frame(height: 220)
+                .frame(height: 260)
 
                 HStack {
                     Text("Content")
@@ -57,6 +57,7 @@ struct SongEditorSheet: View {
                         SongContentPreview(content: content)
                             .padding()
                     }
+                    .background(PerformanceTheme.background)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     TextEditor(text: $content)

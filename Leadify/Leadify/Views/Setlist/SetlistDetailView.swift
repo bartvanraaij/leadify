@@ -12,25 +12,29 @@ struct SetlistDetailView: View {
 
     var body: some View {
         List {
-            ForEach(setlist.entries) { entry in
-                switch entry.itemType {
-                case .song:
-                    SongEntryRow(entry: entry) {
-                        editingEntry = entry
+            ForEach(setlist.sortedEntries) { entry in
+                Group {
+                    switch entry.itemType {
+                    case .song:
+                        SongEntryRow(entry: entry) {
+                            editingEntry = entry
+                        }
+                    case .tacet:
+                        TacetRow(entry: entry) {
+                            editingEntry = entry
+                        }
+                        .listRowBackground(Color.secondary.opacity(0.07))
                     }
-                case .tacet:
-                    TacetRow(entry: entry) {
-                        editingEntry = entry
+                }
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        deleteEntry(entry)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
                     }
-                    .listRowBackground(
-                        RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4]))
-                            .foregroundStyle(EditTheme.secondaryText.opacity(0.4))
-                    )
                 }
             }
             .onMove(perform: moveEntries)
-            .onDelete(perform: deleteEntries)
 
             AddEntryRow(
                 onAddSong: { showSongLibrary = true },
@@ -73,13 +77,15 @@ struct SetlistDetailView: View {
     }
 
     private func moveEntries(from source: IndexSet, to destination: Int) {
-        setlist.entries.move(fromOffsets: source, toOffset: destination)
+        var sorted = setlist.sortedEntries
+        sorted.move(fromOffsets: source, toOffset: destination)
+        for (index, entry) in sorted.enumerated() {
+            entry.order = index
+        }
     }
 
-    private func deleteEntries(at offsets: IndexSet) {
-        for index in offsets {
-            context.delete(setlist.entries[index])
-        }
-        setlist.entries.remove(atOffsets: offsets)
+    private func deleteEntry(_ entry: SetlistEntry) {
+        setlist.entries.removeAll { $0.persistentModelID == entry.persistentModelID }
+        context.delete(entry)
     }
 }

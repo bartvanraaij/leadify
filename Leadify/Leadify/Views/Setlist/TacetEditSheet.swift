@@ -48,7 +48,7 @@ struct TacetEditSheet: View {
             context.insert(tacet)
             let newEntry = SetlistEntry(tacet: tacet)
             context.insert(newEntry)
-            setlist.entries.append(newEntry)
+            setlist.addEntry(newEntry)
         }
         dismiss()
     }

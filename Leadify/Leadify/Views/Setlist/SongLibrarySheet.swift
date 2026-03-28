@@ -59,7 +59,7 @@ struct SongLibrarySheet: View {
     private func addSong(_ song: Song) {
         let entry = SetlistEntry(song: song)
         context.insert(entry)
-        setlist.entries.append(entry)
+        setlist.addEntry(entry)
     }
 }
 

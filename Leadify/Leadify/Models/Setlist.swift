@@ -21,6 +21,17 @@ final class Setlist {
         return formatter.string(from: date)
     }
 
+    /// Entries sorted by their explicit order index. Always use this for display and iteration.
+    var sortedEntries: [SetlistEntry] {
+        entries.sorted { $0.order < $1.order }
+    }
+
+    /// Appends an entry and assigns its order after the current last entry.
+    func addEntry(_ entry: SetlistEntry) {
+        entry.order = (entries.max(by: { $0.order < $1.order })?.order ?? -1) + 1
+        entries.append(entry)
+    }
+
     /// Creates a copy of this setlist with a new name.
     /// - Songs are shared by reference (editing a song updates all setlists).
     /// - Tacets are deep-copied (they are owned by their entry; sharing would
@@ -28,16 +39,18 @@ final class Setlist {
     func duplicate(in context: ModelContext) -> Setlist {
         let copy = Setlist(name: "\(name) (copy)", date: date)
         context.insert(copy)
-        for entry in entries {
+        for (index, entry) in sortedEntries.enumerated() {
             switch entry.itemType {
             case .song:
                 let entryCopy = SetlistEntry(song: entry.song!)
+                entryCopy.order = index
                 context.insert(entryCopy)
                 copy.entries.append(entryCopy)
             case .tacet:
                 let tacetCopy = Tacet(label: entry.tacet?.label)
                 context.insert(tacetCopy)
                 let entryCopy = SetlistEntry(tacet: tacetCopy)
+                entryCopy.order = index
                 context.insert(entryCopy)
                 copy.entries.append(entryCopy)
             }

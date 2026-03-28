@@ -4,12 +4,12 @@ import SwiftUI
 /// Adjust these after testing on the actual iPad.
 struct PerformanceTheme {
     // MARK: Font sizes
-    static let songTitleSize: CGFloat = 20
-    static let reminderSize: CGFloat = 12
-    static let sectionHeaderSize: CGFloat = 12
-    static let chordTextSize: CGFloat = 14
-    static let tabFontSize: CGFloat = 14
-    static let upNextSize: CGFloat = 12
+    static let songTitleSize: CGFloat = 28
+    static let reminderSize: CGFloat = 18
+    static let sectionHeaderSize: CGFloat = 16
+    static let chordTextSize: CGFloat = 22
+    static let tabFontSize: CGFloat = 18
+    static let upNextSize: CGFloat = 14
 
     // MARK: Colors
     static let background = Color.black

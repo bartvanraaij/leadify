@@ -14,6 +14,7 @@ struct SetlistSidebarView: View {
             }
         }
         .navigationTitle("Setlists")
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {

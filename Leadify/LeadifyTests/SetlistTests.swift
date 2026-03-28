@@ -21,7 +21,7 @@ final class SetlistTests: XCTestCase {
         context.insert(original)
         let entry = SetlistEntry(song: song)
         context.insert(entry)
-        original.entries.append(entry)
+        original.addEntry(entry)
         try context.save()
 
         let copy = original.duplicate(in: context)
@@ -39,14 +39,14 @@ final class SetlistTests: XCTestCase {
         context.insert(original)
         let entry = SetlistEntry(song: song)
         context.insert(entry)
-        original.entries.append(entry)
+        original.addEntry(entry)
         try context.save()
 
         let copy = original.duplicate(in: context)
         try context.save()
 
-        XCTAssertEqual(original.entries[0].song?.persistentModelID,
-                       copy.entries[0].song?.persistentModelID)
+        XCTAssertEqual(original.sortedEntries[0].song?.persistentModelID,
+                       copy.sortedEntries[0].song?.persistentModelID)
     }
 
     func test_duplicate_deepCopiesTacets() throws {
@@ -56,15 +56,15 @@ final class SetlistTests: XCTestCase {
         context.insert(original)
         let entry = SetlistEntry(tacet: tacet)
         context.insert(entry)
-        original.entries.append(entry)
+        original.addEntry(entry)
         try context.save()
 
         let copy = original.duplicate(in: context)
         try context.save()
 
-        XCTAssertNotEqual(original.entries[0].tacet?.persistentModelID,
-                          copy.entries[0].tacet?.persistentModelID)
-        XCTAssertEqual(copy.entries[0].tacet?.label, "15 min")
+        XCTAssertNotEqual(original.sortedEntries[0].tacet?.persistentModelID,
+                          copy.sortedEntries[0].tacet?.persistentModelID)
+        XCTAssertEqual(copy.sortedEntries[0].tacet?.label, "15 min")
     }
 
     func test_duplicate_preservesEntryOrder() throws {
@@ -77,14 +77,14 @@ final class SetlistTests: XCTestCase {
         for song in [s1, s2, s3] {
             let e = SetlistEntry(song: song)
             context.insert(e)
-            original.entries.append(e)
+            original.addEntry(e)
         }
         try context.save()
 
         let copy = original.duplicate(in: context)
         try context.save()
 
-        XCTAssertEqual(copy.entries.compactMap { $0.song?.title }, ["Song 1", "Song 2", "Song 3"])
+        XCTAssertEqual(copy.sortedEntries.compactMap { $0.song?.title }, ["Song 1", "Song 2", "Song 3"])
     }
 
     // MARK: - Ordering
@@ -97,12 +97,12 @@ final class SetlistTests: XCTestCase {
             context.insert(song)
             let entry = SetlistEntry(song: song)
             context.insert(entry)
-            setlist.entries.append(entry)
+            setlist.addEntry(entry)
         }
         try context.save()
 
         let fetched = try context.fetch(FetchDescriptor<Setlist>()).first!
-        XCTAssertEqual(fetched.entries.compactMap { $0.song?.title },
+        XCTAssertEqual(fetched.sortedEntries.compactMap { $0.song?.title },
                        ["Song 1", "Song 2", "Song 3", "Song 4", "Song 5"])
     }
 
