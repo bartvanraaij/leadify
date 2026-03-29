@@ -32,7 +32,7 @@ struct PerformanceView: View {
                             .padding(.horizontal, 32)
                         }
                     }
-                    .padding(.top, 64)
+                    .padding(.top, 40)
                     .padding(.bottom, 80)
                 }
                 .overlay(alignment: .top) {
@@ -63,7 +63,8 @@ struct PerformanceView: View {
                 .allowsHitTesting(false)
             }
         }
-        .ignoresSafeArea()
+        // No .ignoresSafeArea() here — ScrollView overlays must stay above the
+        // system home-gesture zone. The background Color has its own .ignoresSafeArea().
         .overlay(alignment: .topTrailing) {
             closeButton
         }
