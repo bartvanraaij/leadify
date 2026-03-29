@@ -61,7 +61,7 @@ struct SongEditorSheet: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     TextEditor(text: $content)
-                        .font(.system(.body, design: .monospaced))
+                        .font(.system(size: 13, design: .monospaced))
                         .padding(.horizontal, 8)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }

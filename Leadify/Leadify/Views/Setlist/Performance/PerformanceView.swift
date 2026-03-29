@@ -7,7 +7,6 @@ private struct ScrollOffsetKey: PreferenceKey {
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }
 
-@available(iOS 18.0, *)
 struct PerformanceView: View {
     let setlist: Setlist
     @Environment(\.dismiss) private var dismiss
