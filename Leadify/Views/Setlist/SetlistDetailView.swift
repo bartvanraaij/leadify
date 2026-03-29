@@ -35,20 +35,23 @@ struct SetlistDetailView: View {
             
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if !isEditing {
+                    // Primary action: Add Song (direct button)
+                    Button {
+                        showSongLibrary = true
+                    } label: {
+                        Label("Add Song", systemImage: "plus")
+                    }
+                    
+                    // Secondary action: More options menu
                     Menu {
-                        Button {
-                            showSongLibrary = true
-                        } label: {
-                            Label("Add Song", systemImage: "music.note")
-                        }
-                        
                         Button {
                             showTacetEdit = true
                         } label: {
                             Label("Add Tacet", systemImage: "pause.circle")
                         }
                     } label: {
-                        Label("Add", systemImage: "plus")
+                        Label("More", systemImage: "ellipsis.circle")
+                            .labelStyle(.iconOnly)
                     }
                 }
                 
