@@ -3,8 +3,6 @@ import MarkdownUI
 
 struct SongBlock: View {
     let song: Song
-    let entryID: String
-    let viewModel: PerformanceViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -24,7 +22,5 @@ struct SongBlock: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 12)
-        .onAppear { viewModel.markVisible(entryID) }
-        .onDisappear { viewModel.markHidden(entryID) }
     }
 }

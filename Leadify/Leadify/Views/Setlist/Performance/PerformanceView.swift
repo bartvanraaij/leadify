@@ -1,83 +1,78 @@
 import SwiftUI
 
+@available(iOS 18.0, *)
 struct PerformanceView: View {
     let setlist: Setlist
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel: PerformanceViewModel
 
-    init(setlist: Setlist) {
-        self.setlist = setlist
-        self._viewModel = State(initialValue: PerformanceViewModel(entries: setlist.sortedEntries))
-    }
+    @State private var scrollPosition = ScrollPosition(edge: .top)
+    @State private var scrollOffset: CGFloat = 0
+    @State private var viewportHeight: CGFloat = 0
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            PerformanceTheme.background
-                .ignoresSafeArea()
+        ZStack {
+            PerformanceTheme.background.ignoresSafeArea()
 
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(setlist.sortedEntries) { entry in
-                            let id = viewModel.entryID(entry)
-                            Group {
-                                switch entry.itemType {
-                                case .song:
-                                    SongBlock(song: entry.song!, entryID: id, viewModel: viewModel)
-                                case .tacet:
-                                    TacetBlock(tacet: entry.tacet!, entryID: id, viewModel: viewModel)
-                                }
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(setlist.sortedEntries) { entry in
+                        Group {
+                            switch entry.itemType {
+                            case .song:
+                                SongBlock(song: entry.song!)
+                            case .tacet:
+                                TacetBlock(tacet: entry.tacet!)
                             }
-                            .id(id)
-                            .padding(.horizontal, 32)
                         }
+                        .padding(.horizontal, 32)
                     }
-                    .padding(.top, 40)
-                    .padding(.bottom, 80)
                 }
-                .overlay(alignment: .top) {
-                    tapZone(direction: .up) {
-                        if let target = viewModel.snapUpTargetID {
-                            withAnimation { proxy.scrollTo(target, anchor: .top) }
-                        }
-                    }
-                    .opacity(viewModel.snapUpTargetID != nil ? 1 : 0)
-                    .allowsHitTesting(viewModel.snapUpTargetID != nil)
-                    .animation(.easeInOut(duration: 0.2), value: viewModel.snapUpTargetID != nil)
-                }
-                .overlay(alignment: .bottom) {
-                    tapZone(direction: .down) {
-                        if let target = viewModel.snapDownTargetID {
-                            withAnimation { proxy.scrollTo(target, anchor: .top) }
-                        }
-                    }
-                    // 20 pt lifts the zone clear of the iOS home-indicator gesture area.
-                    .padding(.bottom, 20)
-                    .opacity(viewModel.snapDownTargetID != nil ? 1 : 0)
-                    .allowsHitTesting(viewModel.snapDownTargetID != nil)
-                    .animation(.easeInOut(duration: 0.2), value: viewModel.snapDownTargetID != nil)
-                }
+                .padding(.top, 40)
+                .padding(.bottom, 80)
             }
-
-            if let upNext = viewModel.upNextSong {
-                HStack {
-                    Spacer()
-                    Text("next: \(upNext.title)")
-                        .font(.system(size: PerformanceTheme.upNextSize))
-                        .foregroundStyle(PerformanceTheme.upNextColor)
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 16)
-                }
-                .allowsHitTesting(false)
+            .scrollPosition($scrollPosition)
+            .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
+                scrollOffset = y
+            }
+            .onScrollGeometryChange(for: CGFloat.self, of: { $0.containerSize.height }) { _, h in
+                viewportHeight = h
+            }
+            .overlay(alignment: .top) {
+                Color.clear
+                    .frame(maxWidth: .infinity)
+                    .frame(height: viewportHeight * 0.2)
+                    .contentShape(Rectangle())
+                    .onTapGesture { scrollUp() }
+            }
+            .overlay(alignment: .bottom) {
+                Color.clear
+                    .frame(maxWidth: .infinity)
+                    .frame(height: viewportHeight * 0.2)
+                    .contentShape(Rectangle())
+                    // Lift above iOS home-indicator gesture zone
+                    .padding(.bottom, 20)
+                    .onTapGesture { scrollDown() }
             }
         }
-        // No .ignoresSafeArea() here — ScrollView overlays must stay above the
-        // system home-gesture zone. The background Color has its own .ignoresSafeArea().
         .overlay(alignment: .topTrailing) {
             closeButton
         }
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
+    }
+
+    // MARK: - Scroll
+
+    private func scrollUp() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            scrollPosition.scrollTo(y: max(0, scrollOffset - viewportHeight))
+        }
+    }
+
+    private func scrollDown() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            scrollPosition.scrollTo(y: scrollOffset + viewportHeight)
+        }
     }
 
     // MARK: - Close button
@@ -93,25 +88,5 @@ struct PerformanceView: View {
         }
         .padding(.top, 20)
         .padding(.trailing, 20)
-    }
-
-    // MARK: - Tap Zones
-
-    enum TapDirection { case up, down }
-
-    @ViewBuilder
-    private func tapZone(direction: TapDirection, action: @escaping () -> Void) -> some View {
-        Rectangle()
-            .foregroundStyle(Color.clear)
-            .frame(maxWidth: .infinity)
-            .frame(height: 60)
-            .contentShape(Rectangle())
-            .overlay(alignment: direction == .up ? .top : .bottom) {
-                Image(systemName: direction == .up ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 12, weight: .light))
-                    .foregroundStyle(PerformanceTheme.tapZoneIndicatorColor)
-                    .padding(8)
-            }
-            .onTapGesture { action() }
     }
 }

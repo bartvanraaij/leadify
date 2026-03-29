@@ -72,7 +72,9 @@ struct SetlistDetailView: View {
             }
         }
         .fullScreenCover(isPresented: $showPerformance) {
-            PerformanceView(setlist: setlist)
+            if #available(iOS 18.0, *) {
+                PerformanceView(setlist: setlist)
+            }
         }
     }
 

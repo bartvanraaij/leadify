@@ -2,8 +2,6 @@ import SwiftUI
 
 struct TacetBlock: View {
     let tacet: Tacet
-    let entryID: String
-    let viewModel: PerformanceViewModel
 
     private var displayLabel: String {
         if let label = tacet.label, !label.isEmpty {
@@ -31,7 +29,5 @@ struct TacetBlock: View {
                 .foregroundStyle(PerformanceTheme.tacetDividerColor)
         }
         .frame(maxWidth: .infinity)
-        .onAppear { viewModel.markVisible(entryID) }
-        .onDisappear { viewModel.markHidden(entryID) }
     }
 }
