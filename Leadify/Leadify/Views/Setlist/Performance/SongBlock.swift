@@ -21,6 +21,11 @@ struct SongBlock: View {
                 .padding(.top, 4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 12)
+        .padding(.vertical, 20)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .frame(height: 1)
+                .foregroundStyle(PerformanceTheme.separatorColor)
+        }
     }
 }

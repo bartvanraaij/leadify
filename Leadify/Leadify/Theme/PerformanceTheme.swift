@@ -19,7 +19,7 @@ struct PerformanceTheme {
     static let reminderColor = Color(red: 1.0, green: 0.58, blue: 0.0)
     static let tabColor = Color.primary          // was hard-coded green
     static let tacetTextColor = Color.secondary
-    static let tacetDividerColor = Color.primary.opacity(0.12)
+    static let separatorColor = Color.primary.opacity(0.12)
     static let upNextColor = Color.secondary
     static let tapZoneIndicatorColor = Color.primary.opacity(0.3)
     static let closeButtonColor = Color.primary.opacity(0.5)

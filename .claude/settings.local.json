@@ -7,7 +7,14 @@
       "Bash(git commit:*)",
       "Bash(xcrun simctl:*)",
       "Bash(xcodebuild test:*)",
-      "Bash(xcodebuild build:*)"
+      "Bash(xcodebuild build:*)",
+      "Bash(git -C /Users/bartvanraaij/Dev/leadify status)",
+      "Bash(git -C /Users/bartvanraaij/Dev/leadify diff --stat)",
+      "Bash(git -C /Users/bartvanraaij/Dev/leadify add README.md CLAUDE.md)",
+      "Bash(git -C:*)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(git rm:*)"
     ]
   }
 }

@@ -12,10 +12,6 @@ struct TacetBlock: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Rectangle()
-                .frame(height: 1)
-                .foregroundStyle(PerformanceTheme.tacetDividerColor)
-
             Text(displayLabel)
                 .font(.system(size: PerformanceTheme.sectionHeaderSize))
                 .italic()
@@ -26,7 +22,7 @@ struct TacetBlock: View {
 
             Rectangle()
                 .frame(height: 1)
-                .foregroundStyle(PerformanceTheme.tacetDividerColor)
+                .foregroundStyle(PerformanceTheme.separatorColor)
         }
         .frame(maxWidth: .infinity)
     }
