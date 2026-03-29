@@ -48,6 +48,9 @@ struct PerformanceView: View {
                             withAnimation { proxy.scrollTo(target, anchor: .top) }
                         }
                     }
+                    // Lift the tap zone 60 pt above the safe-area bottom so it clears
+                    // the iOS home-indicator gesture zone.
+                    .padding(.bottom, 60)
                 }
             }
 
