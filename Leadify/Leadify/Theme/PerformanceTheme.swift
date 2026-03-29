@@ -12,7 +12,7 @@ struct PerformanceTheme {
     static let upNextSize: CGFloat = 14
 
     // MARK: Colors
-    static let background = Color(UIColor.systemBackground)
+    static let background = Color(.systemBackground)
     static let songTitleColor = Color.primary
     static let chordTextColor = Color.primary
     static let sectionHeaderColor = Color.secondary
