@@ -56,6 +56,7 @@ final class PerformanceViewModel {
         let firstVisibleIndex = entries.indices.first(where: {
             visibleEntryIDs.contains(entryID(entries[$0]))
         }) ?? 0
+        guard firstVisibleIndex > 0 else { return nil }  // already at top
         let visibleCount = visibleEntryIDs.count
         let targetIndex = max(0, firstVisibleIndex - visibleCount)
         return entryID(entries[targetIndex])

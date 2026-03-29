@@ -41,6 +41,9 @@ struct PerformanceView: View {
                             withAnimation { proxy.scrollTo(target, anchor: .top) }
                         }
                     }
+                    .opacity(viewModel.snapUpTargetID != nil ? 1 : 0)
+                    .allowsHitTesting(viewModel.snapUpTargetID != nil)
+                    .animation(.easeInOut(duration: 0.2), value: viewModel.snapUpTargetID != nil)
                 }
                 .overlay(alignment: .bottom) {
                     tapZone(direction: .down) {
@@ -48,9 +51,11 @@ struct PerformanceView: View {
                             withAnimation { proxy.scrollTo(target, anchor: .top) }
                         }
                     }
-                    // Lift the tap zone 60 pt above the safe-area bottom so it clears
-                    // the iOS home-indicator gesture zone.
-                    .padding(.bottom, 60)
+                    // 20 pt lifts the zone clear of the iOS home-indicator gesture area.
+                    .padding(.bottom, 20)
+                    .opacity(viewModel.snapDownTargetID != nil ? 1 : 0)
+                    .allowsHitTesting(viewModel.snapDownTargetID != nil)
+                    .animation(.easeInOut(duration: 0.2), value: viewModel.snapDownTargetID != nil)
                 }
             }
 
