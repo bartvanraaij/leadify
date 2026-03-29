@@ -3,10 +3,9 @@
 ## Project layout
 
 ```
-/Users/bartvanraaij/Dev/leadify/          ← git root (also Claude's working dir)
-├── Leadify/                              ← Xcode project folder
-│   ├── Leadify.xcodeproj/
-│   └── Leadify/                         ← Swift source root
+/Users/bartvanraaij/Dev/leadify/          ← git root (also Claude's working dir, also Xcode project folder)
+├── Leadify.xcodeproj/
+├── Leadify/                         ← Swift source root
 │       ├── LeadifyApp.swift
 │       ├── ContentView.swift
 │       ├── Models/                      Song, Tacet, SetlistEntry, Setlist

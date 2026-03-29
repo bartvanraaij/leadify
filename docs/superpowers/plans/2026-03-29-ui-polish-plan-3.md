@@ -29,7 +29,7 @@
 **Issues addressed:** performance mode white-on-black in light mode (1), tab color (10), chord font size (11)
 
 **Files:**
-- Modify: `Leadify/Leadify/Theme/PerformanceTheme.swift`
+- Modify: `Leadify/Theme/PerformanceTheme.swift`
 
 - [ ] **Step 1: Replace PerformanceTheme with adaptive version**
 
@@ -75,7 +75,7 @@ Expected: `** BUILD SUCCEEDED **`
 - [ ] **Step 3: Commit**
 
 ```bash
-git add Leadify/Leadify/Theme/PerformanceTheme.swift
+git add Leadify/Theme/PerformanceTheme.swift
 git commit -m "feat: adaptive PerformanceTheme colors; larger chord font; tab = primary"
 ```
 
@@ -86,7 +86,7 @@ git commit -m "feat: adaptive PerformanceTheme colors; larger chord font; tab = 
 **Issue addressed:** hardcoded near-black dividers in TacetBlock are invisible in light mode.
 
 **Files:**
-- Modify: `Leadify/Leadify/Views/Setlist/Performance/TacetBlock.swift`
+- Modify: `Leadify/Views/Setlist/Performance/TacetBlock.swift`
 
 - [ ] **Step 1: Replace both hardcoded divider colors**
 
@@ -153,7 +153,7 @@ xcodebuild build -scheme Leadify \
 - [ ] **Step 3: Commit**
 
 ```bash
-git add Leadify/Leadify/Views/Setlist/Performance/TacetBlock.swift
+git add Leadify/Views/Setlist/Performance/TacetBlock.swift
 git commit -m "fix: TacetBlock dividers use adaptive theme color"
 ```
 
@@ -168,7 +168,7 @@ git commit -m "fix: TacetBlock dividers use adaptive theme color"
 **Fix:** Add `.allowsHitTesting(false)` to the upNext overlay so taps fall through to the tap zone.
 
 **Files:**
-- Modify: `Leadify/Leadify/Views/Setlist/Performance/PerformanceView.swift`
+- Modify: `Leadify/Views/Setlist/Performance/PerformanceView.swift`
 
 - [ ] **Step 1: Rewrite PerformanceView.swift**
 
@@ -295,7 +295,7 @@ xcodebuild build -scheme Leadify \
 - [ ] **Step 3: Commit**
 
 ```bash
-git add Leadify/Leadify/Views/Setlist/Performance/PerformanceView.swift
+git add Leadify/Views/Setlist/Performance/PerformanceView.swift
 git commit -m "feat: performance mode close button; fix scroll-down tap zone blocked by upNext"
 ```
 
@@ -308,9 +308,9 @@ git commit -m "feat: performance mode close button; fix scroll-down tap zone blo
 **Notes on issue 4 (scroll):** `.presentationSizing(.page)` gives the sheet a fixed large size, which properly constrains the TextEditor height so it can scroll. On macOS Simulator, also note that TextEditor scrolling requires clicking inside first, then using the scroll wheel or arrow keys.
 
 **Files:**
-- Modify: `Leadify/Leadify/Views/Setlist/SongEditorSheet.swift` (font size)
-- Modify: `Leadify/Leadify/Views/Setlist/SongLibrarySheet.swift` (sheet sizing)
-- Modify: `Leadify/Leadify/Views/Setlist/SetlistDetailView.swift` (sheet sizing for edit)
+- Modify: `Leadify/Views/Setlist/SongEditorSheet.swift` (font size)
+- Modify: `Leadify/Views/Setlist/SongLibrarySheet.swift` (sheet sizing)
+- Modify: `Leadify/Views/Setlist/SetlistDetailView.swift` (sheet sizing for edit)
 
 - [ ] **Step 1: Reduce TextEditor font size in SongEditorSheet.swift**
 
@@ -370,9 +370,9 @@ xcodebuild build -scheme Leadify \
 - [ ] **Step 5: Commit**
 
 ```bash
-git add Leadify/Leadify/Views/Setlist/SongEditorSheet.swift \
-        Leadify/Leadify/Views/Setlist/SongLibrarySheet.swift \
-        Leadify/Leadify/Views/Setlist/SetlistDetailView.swift
+git add Leadify/Views/Setlist/SongEditorSheet.swift \
+        Leadify/Views/Setlist/SongLibrarySheet.swift \
+        Leadify/Views/Setlist/SetlistDetailView.swift
 git commit -m "fix: song editor sheet wider (.page sizing); smaller TextEditor font"
 ```
 
@@ -385,7 +385,7 @@ git commit -m "fix: song editor sheet wider (.page sizing); smaller TextEditor f
 **Root cause:** `Color.secondary.opacity(0.07)` on a `.plain` list style produces an inconsistent tint that doesn't match the list's own row background system. Removing it and relying on tacet rows' italic/secondary text style for visual differentiation is cleaner.
 
 **Files:**
-- Modify: `Leadify/Leadify/Views/Setlist/SetlistDetailView.swift`
+- Modify: `Leadify/Views/Setlist/SetlistDetailView.swift`
 
 - [ ] **Step 1: Remove the listRowBackground from the tacet case**
 
@@ -417,7 +417,7 @@ xcodebuild build -scheme Leadify \
 - [ ] **Step 3: Commit**
 
 ```bash
-git add Leadify/Leadify/Views/Setlist/SetlistDetailView.swift
+git add Leadify/Views/Setlist/SetlistDetailView.swift
 git commit -m "fix: remove tacet row custom background — relies on italic/secondary text for visual distinction"
 ```
 
@@ -430,7 +430,7 @@ git commit -m "fix: remove tacet row custom background — relies on italic/seco
 **Root cause:** `NavigationSplitView` in `.automatic` style can animate column widths when selection changes. Pinning the sidebar column width prevents this.
 
 **Files:**
-- Modify: `Leadify/Leadify/ContentView.swift`
+- Modify: `Leadify/ContentView.swift`
 
 - [ ] **Step 1: Pin the sidebar column width**
 
@@ -469,7 +469,7 @@ xcodebuild build -scheme Leadify \
 - [ ] **Step 3: Commit**
 
 ```bash
-git add Leadify/Leadify/ContentView.swift
+git add Leadify/ContentView.swift
 git commit -m "fix: pin sidebar column width to prevent expansion on row selection"
 ```
 

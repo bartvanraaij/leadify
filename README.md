@@ -28,7 +28,7 @@ A native iPadOS app for guitarists performing live. Replaces the Google Docs + F
 ## Project structure
 
 ```
-Leadify/Leadify/
+Leadify/
 ├── Models/
 │   ├── Song.swift           shared across setlists by reference
 │   ├── Tacet.swift          break entries (owned, cascade-deleted)
