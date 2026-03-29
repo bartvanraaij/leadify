@@ -13,6 +13,7 @@ struct SetlistSidebarView: View {
                     .tag(setlist)
             }
         }
+        .listStyle(.sidebar)
         .navigationTitle("Setlists")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {

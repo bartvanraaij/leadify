@@ -17,28 +17,58 @@ struct SongEditorSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Form {
-                    Section("Title") {
+                // MARK: - Header Fields
+                VStack(spacing: 0) {
+                    // Title Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Title")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                            .textCase(.none)
+                        
                         TextField("Song title", text: $title)
-                            .font(.system(size: EditTheme.editorTitleSize, weight: .bold))
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .textFieldStyle(.plain)
                     }
-                    Section {
-                        TextField("e.g. Capo 4, Fuzz, Tsw +1", text: $reminder)
-                            .foregroundStyle(EditTheme.reminderColor)
-                    } header: {
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
+                    .background(Color(.systemBackground))
+                    
+                    Divider()
+                    
+                    // Reminder Section
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("Reminder")
-                    } footer: {
-                        Text("Optional. Shown in orange wherever this song appears.")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                            .textCase(.none)
+                        
+                        TextField("e.g. Capo 4, Fuzz, Tsw +1", text: $reminder)
+                            .font(.body)
+                            .foregroundStyle(EditTheme.reminderColor)
+                            .textFieldStyle(.plain)
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
+                    .background(Color(.systemBackground))
+                    
+                    Divider()
+                        .padding(.bottom, 12)
                 }
-                .frame(height: 260)
 
+                // MARK: - Content Section Header
                 HStack {
                     Text("Content")
-                        .font(.caption)
-                        .foregroundStyle(EditTheme.secondaryText)
-                        .textCase(.uppercase)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                        .textCase(.none)
+                    
                     Spacer()
+                    
                     Picker("", selection: $showPreview) {
                         Text("Edit").tag(false)
                         Text("Preview").tag(true)
@@ -46,12 +76,12 @@ struct SongEditorSheet: View {
                     .pickerStyle(.segmented)
                     .frame(width: 150)
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
 
                 Divider()
 
+                // MARK: - Content Editor/Preview
                 if showPreview {
                     ScrollView {
                         SongContentPreview(content: content)
@@ -61,11 +91,15 @@ struct SongEditorSheet: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     TextEditor(text: $content)
-                        .font(.system(size: 13, design: .monospaced))
-                        .padding(.horizontal, 8)
+                        .font(.system(size: 15, design: .monospaced))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .scrollContentBackground(.hidden)
+                        .background(Color(.systemBackground))
                 }
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle(song == nil ? "New Song" : "Edit Song")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -73,8 +107,12 @@ struct SongEditorSheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
-                        .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button("Save") { 
+                        save() 
+                    }
+                    .fontWeight(.semibold)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
             .onAppear { loadExistingValues() }

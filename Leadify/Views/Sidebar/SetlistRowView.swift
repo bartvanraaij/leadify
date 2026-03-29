@@ -9,42 +9,66 @@ struct SetlistRowView: View {
     @State private var showDeleteAlert = false
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(setlist.name)
-                    .font(.system(size: EditTheme.setlistNameSize, weight: .semibold))
-                    .foregroundStyle(EditTheme.primaryText)
-                if let formattedDate = setlist.formattedDate {
-                    Text(formattedDate)
-                        .font(.system(size: EditTheme.setlistDateSize))
-                        .foregroundStyle(EditTheme.secondaryText)
-                } else {
-                    Text("no date")
-                        .font(.system(size: EditTheme.setlistDateSize))
-                        .foregroundStyle(EditTheme.secondaryText.opacity(0.5))
-                        .italic()
-                }
-            }
-            Spacer()
-            Menu {
-                Button { showEditSheet = true } label: {
-                    Label("Edit", systemImage: "pencil")
-                }
-                Button { duplicateSetlist() } label: {
-                    Label("Duplicate", systemImage: "doc.on.doc")
-                }
-                Divider()
-                Button(role: .destructive) { showDeleteAlert = true } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            } label: {
-                Text("···")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(EditTheme.secondaryText)
-                    .padding(.horizontal, 4)
+        VStack(alignment: .leading, spacing: 6) {
+            Text(setlist.name)
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundStyle(.primary)
+            
+            if let formattedDate = setlist.formattedDate {
+                Text(formattedDate)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("No date")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
+                    .italic()
             }
         }
-        .contentShape(Rectangle())
+        .padding(.vertical, 4)
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                showDeleteAlert = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            
+            Button {
+                duplicateSetlist()
+            } label: {
+                Label("Duplicate", systemImage: "doc.on.doc")
+            }
+            .tint(.blue)
+            
+            Button {
+                showEditSheet = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(.orange)
+        }
+        .contextMenu {
+            Button {
+                showEditSheet = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            
+            Button {
+                duplicateSetlist()
+            } label: {
+                Label("Duplicate", systemImage: "doc.on.doc")
+            }
+            
+            Divider()
+            
+            Button(role: .destructive) {
+                showDeleteAlert = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
         .sheet(isPresented: $showEditSheet) {
             SetlistEditSheet(setlist: setlist)
         }

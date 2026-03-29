@@ -4,6 +4,7 @@ import SwiftData
 struct ContentView: View {
     @Query private var allSetlists: [Setlist]
     @State private var selectedSetlist: Setlist?
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     /// Setlists sorted by date descending; undated setlists at the bottom.
     var sortedSetlists: [Setlist] {
@@ -17,11 +18,12 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             SetlistSidebarView(
                 setlists: sortedSetlists,
                 selectedSetlist: $selectedSetlist
             )
+            .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 400)
         } detail: {
             if let setlist = selectedSetlist {
                 SetlistDetailView(setlist: setlist)
@@ -33,6 +35,7 @@ struct ContentView: View {
                 )
             }
         }
+        .navigationSplitViewStyle(.balanced)
     }
 }
 

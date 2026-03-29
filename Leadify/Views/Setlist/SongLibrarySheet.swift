@@ -73,11 +73,6 @@ private struct LibrarySongRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(song.title)
                     .font(.system(size: EditTheme.songTitleSize, weight: .semibold))
-                if let reminder = song.reminder {
-                    Text(reminder)
-                        .font(.system(size: EditTheme.reminderSize))
-                        .foregroundStyle(EditTheme.reminderColor)
-                }
             }
             Spacer()
             if isInSetlist {

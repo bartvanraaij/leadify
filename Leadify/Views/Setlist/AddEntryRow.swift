@@ -1,43 +1,25 @@
 import SwiftUI
 
-struct AddEntryRow: View {
+/// A Section containing "Add Song" and "Add Tacet" rows.
+/// Drop this directly inside a `List` – it renders as its own section.
+struct AddEntrySection: View {
     let onAddSong: () -> Void
     let onAddTacet: () -> Void
 
     var body: some View {
-        HStack(spacing: 0) {
+        Section {
             Button(action: onAddSong) {
-                HStack(spacing: 6) {
-                    Image(systemName: "plus")
-                    Text("Add Song")
-                }
-                .font(.system(size: EditTheme.songTitleSize))
-                .foregroundStyle(EditTheme.accentColor)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
+                Label("Add Song", systemImage: "music.note")
+                    .font(.system(size: EditTheme.songTitleSize, weight: .medium))
             }
-            .buttonStyle(.plain)
-
-            Divider()
-                .frame(height: 36)
-
+            
             Button(action: onAddTacet) {
-                HStack(spacing: 6) {
-                    Image(systemName: "plus")
-                    Text("Add Tacet")
-                }
-                .font(.system(size: EditTheme.songTitleSize))
-                .foregroundStyle(EditTheme.accentColor)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                Label("Add Tacet", systemImage: "pause.circle")
+                    .font(.system(size: EditTheme.songTitleSize, weight: .medium))
             }
-            .buttonStyle(.plain)
+        } header: {
+            Text("Add Items")
+                .textCase(.uppercase)
         }
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4]))
-                .foregroundStyle(EditTheme.secondaryText.opacity(0.5))
-        )
     }
 }

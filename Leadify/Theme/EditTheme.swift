@@ -4,12 +4,14 @@ import SwiftUI
 /// Adjust these after testing on the actual iPad.
 struct EditTheme {
     // MARK: Font sizes
-    static let setlistNameSize: CGFloat = 13
-    static let setlistDateSize: CGFloat = 11
-    static let songTitleSize: CGFloat = 14
+    static let setlistNameSize: CGFloat = 17  // Standard body text size
+    static let setlistDateSize: CGFloat = 15  // Standard subheadline size
+    static let songTitleSize: CGFloat = 17    // Increased for better readability
     static let songPreviewSize: CGFloat = 12
     static let reminderSize: CGFloat = 11
     static let editorTitleSize: CGFloat = 16
+    static let rowNumberSize: CGFloat = 13
+    static let rowChevronSize: CGFloat = 11
 
     // MARK: Colors
     static let primaryText = Color.primary
