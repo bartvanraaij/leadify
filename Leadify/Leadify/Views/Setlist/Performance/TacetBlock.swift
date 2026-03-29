@@ -16,7 +16,7 @@ struct TacetBlock: View {
         VStack(spacing: 0) {
             Rectangle()
                 .frame(height: 1)
-                .foregroundStyle(Color(white: 0.15))
+                .foregroundStyle(PerformanceTheme.tacetDividerColor)
 
             Text(displayLabel)
                 .font(.system(size: PerformanceTheme.sectionHeaderSize))
@@ -28,7 +28,7 @@ struct TacetBlock: View {
 
             Rectangle()
                 .frame(height: 1)
-                .foregroundStyle(Color(white: 0.15))
+                .foregroundStyle(PerformanceTheme.tacetDividerColor)
         }
         .frame(maxWidth: .infinity)
         .onAppear { viewModel.markVisible(entryID) }
