@@ -58,6 +58,7 @@ struct SongLibrarySidebarView: View {
                         Text("A → Z").tag(SongSortOrder.alphabetical)
                         Text("Date Added").tag(SongSortOrder.dateAdded)
                     }
+                    .pickerStyle(.inline)
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }

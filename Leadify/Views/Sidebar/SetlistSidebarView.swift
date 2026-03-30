@@ -34,7 +34,6 @@ struct SetlistSidebarView: View {
             ForEach(sortedSetlists) { setlist in
                 SetlistRowView(setlist: setlist, selectedSetlist: $selectedSetlist)
                     .tag(setlist)
-                    .listRowBackground(rowBackground(for: setlist))
             }
         }
         .listStyle(.sidebar)
@@ -52,6 +51,7 @@ struct SetlistSidebarView: View {
                         Text("A → Z").tag(SetlistSortOrder.name)
                         Text("Performance Date").tag(SetlistSortOrder.performanceDate)
                     }
+                    .pickerStyle(.inline)
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }
@@ -62,9 +62,4 @@ struct SetlistSidebarView: View {
         }
     }
 
-    private func rowBackground(for setlist: Setlist) -> some View {
-        let isSelected = selectedSetlist?.persistentModelID == setlist.persistentModelID
-        return RoundedRectangle(cornerRadius: 8)
-            .fill(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
-    }
 }
