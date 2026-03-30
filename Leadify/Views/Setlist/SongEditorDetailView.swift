@@ -35,58 +35,44 @@ struct SongEditorDetailView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
 
-            HStack(spacing: 16) {
-                // MARK: - Left card: Form editor
-                ScrollView {
-                    VStack(spacing: 12) {
-                        VStack(spacing: 0) {
-                            TextField("Title", text: $title)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
+            ScrollView {
+                VStack(spacing: 12) {
+                    VStack(spacing: 0) {
+                        TextField("Title", text: $title)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
 
-                            Divider().padding(.leading, 16)
+                        Divider().padding(.leading, 16)
 
-                            TextField("Reminder", text: $reminder)
-                                .foregroundStyle(reminder.isEmpty ? .primary : EditTheme.reminderColor)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                        }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Content")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .textCase(.uppercase)
-                                .padding(.horizontal, 16)
-                                .padding(.top, 8)
-
-                            TextEditor(text: $content)
-                                .font(.system(size: 15, design: .monospaced))
-                                .frame(minHeight: 200, maxHeight: .infinity)
-                                .scrollContentBackground(.hidden)
-                                .padding(.horizontal, 12)
-                                .padding(.bottom, 8)
-                        }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        TextField("Reminder", text: $reminder)
+                            .foregroundStyle(reminder.isEmpty ? .primary : EditTheme.reminderColor)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
                     }
-                    .padding(.trailing, 16)
-                    .padding(.bottom, 16)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
-                // MARK: - Right card: Live preview
-                ScrollView {
-                    SongEditorPreview(title: title, reminder: reminder, content: content)
-                        .padding(24)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Content")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 8)
+
+                        TextEditor(text: $content)
+                            .font(.system(size: 15, design: .monospaced))
+                            .frame(minHeight: 300, maxHeight: .infinity)
+                            .scrollContentBackground(.hidden)
+                            .padding(.horizontal, 12)
+                            .padding(.bottom, 8)
+                    }
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
             }
-            .padding(20)
         }
         .navigationTitle(isNewSong ? "New Song" : "Edit Song")
         .navigationBarTitleDisplayMode(.inline)
@@ -95,6 +81,12 @@ struct SongEditorDetailView: View {
                 Button("Cancel") { cancel() }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    showPreview = true
+                } label: {
+                    Image(systemName: "eye")
+                }
+
                 Button(role: .destructive) {
                     showDeleteConfirmation = true
                 } label: {
@@ -106,6 +98,23 @@ struct SongEditorDetailView: View {
                     .disabled(!hasChanges)
                     .buttonStyle(.borderedProminent)
             }
+        }
+        .sheet(isPresented: $showPreview) {
+            NavigationStack {
+                ScrollView {
+                    SongEditorPreview(title: title, reminder: reminder, content: content)
+                        .padding(24)
+                }
+                .background(Color(.systemBackground))
+                .navigationTitle("Preview")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { showPreview = false }
+                    }
+                }
+            }
+            .presentationSizing(.page)
         }
         .alert("Delete Song", isPresented: $showDeleteConfirmation) {
             Button("Delete \"\(song.title.isEmpty ? "New Song" : song.title)\"", role: .destructive) {
