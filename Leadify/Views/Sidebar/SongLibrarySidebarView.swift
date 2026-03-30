@@ -43,7 +43,6 @@ struct SongLibrarySidebarView: View {
             }
         }
         .listStyle(.sidebar)
-        .navigationTitle("Songs")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

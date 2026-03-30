@@ -36,13 +36,23 @@ struct ContentView: View {
                 }
             }
             .safeAreaInset(edge: .top, spacing: 0) {
-                Picker("", selection: $sidebarMode) {
-                    Text("Setlists").tag(SidebarMode.setlists)
-                    Text("Songs").tag(SidebarMode.songs)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(sidebarMode == .setlists ? "Setlists" : "Songs")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                        .padding(.bottom, 12)
+
+                    Picker("", selection: $sidebarMode) {
+                        Text("Setlists").tag(SidebarMode.setlists)
+                        Text("Songs").tag(SidebarMode.songs)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(.bar)
             }
             .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 400)
