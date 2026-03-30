@@ -98,6 +98,14 @@ struct ContentView: View {
             Button("Keep Both") {
                 songImporter.resolveConflict(.keepBoth, context: modelContext)
             }
+            if songImporter.hasRemainingConflicts {
+                Button("Overwrite All") {
+                    songImporter.resolveConflict(.overwriteAll, context: modelContext)
+                }
+                Button("Skip All") {
+                    songImporter.resolveConflict(.skipAll, context: modelContext)
+                }
+            }
             Button("Skip", role: .cancel) {
                 songImporter.resolveConflict(.skip, context: modelContext)
             }
@@ -110,6 +118,11 @@ struct ContentView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(songImporter.errorMessage)
+        }
+        .alert("Import Complete", isPresented: Bindable(songImporter).showImportSummary) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(songImporter.importSummaryMessage)
         }
     }
 }

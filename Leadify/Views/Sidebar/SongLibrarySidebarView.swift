@@ -66,13 +66,11 @@ struct SongLibrarySidebarView: View {
         .fileImporter(
             isPresented: $showFileImporter,
             allowedContentTypes: [.plainText],
-            allowsMultipleSelection: false
+            allowsMultipleSelection: true
         ) { result in
             switch result {
             case .success(let urls):
-                if let url = urls.first {
-                    songImporter.importFile(url: url, context: context)
-                }
+                songImporter.importFiles(urls: urls, context: context)
             case .failure(let error):
                 songImporter.errorMessage = error.localizedDescription
                 songImporter.showErrorAlert = true
