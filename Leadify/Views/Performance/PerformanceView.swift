@@ -56,20 +56,20 @@ struct PerformanceView: View {
                 // Top 20% — scroll up one viewport
                 .overlay(alignment: .top) {
                     Color.clear
-                        .frame(maxWidth: .infinity)
-                        .frame(height: geo.size.height * 0.2)
-                        .contentShape(Rectangle())
-                        .simultaneousGesture(TapGesture().onEnded { scrollUp() })
+                    .frame(maxWidth: .infinity)
+                    .frame(height: geo.size.height * 0.2)
+                    .contentShape(Rectangle())
+                    .simultaneousGesture(TapGesture().onEnded { scrollUp() })
                 }
                 // Bottom 20% — scroll down one viewport
                 // Lifted 20 pt to clear the iOS home-indicator gesture area.
                 .overlay(alignment: .bottom) {
                     Color.clear
-                        .frame(maxWidth: .infinity)
-                        .frame(height: geo.size.height * 0.2)
-                        .contentShape(Rectangle())
-                        .padding(.bottom, 20)
-                        .simultaneousGesture(TapGesture().onEnded { scrollDown() })
+                    .frame(maxWidth: .infinity)
+                    .frame(height: geo.size.height * 0.2)
+                    .contentShape(Rectangle())
+                    .padding(.bottom, 20)
+                    .simultaneousGesture(TapGesture().onEnded { scrollDown() })
                 }
             }
             .onAppear { viewportHeight = geo.size.height }
@@ -87,7 +87,7 @@ struct PerformanceView: View {
     private func scrollUp() {
         let target = max(0, scrollOffset - viewportHeight)
         scrollOffset = target   // update immediately so rapid taps use the correct offset
-        withAnimation(.easeOut(duration: 0.2)) {
+        withAnimation(.easeInOut(duration: 0.15)) {
             scrollPosition.scrollTo(y: target)
         }
     }
@@ -95,7 +95,7 @@ struct PerformanceView: View {
     private func scrollDown() {
         let target = scrollOffset + viewportHeight
         scrollOffset = target   // update immediately so rapid taps use the correct offset
-        withAnimation(.easeOut(duration: 0.2)) {
+        withAnimation(.easeInOut(duration: 0.15)) {
             scrollPosition.scrollTo(y: target)
         }
     }
@@ -103,15 +103,15 @@ struct PerformanceView: View {
     // MARK: - Close button
 
     private var closeButton: some View {
-        Button(action: { dismiss() }) {
-            Image(systemName: "xmark")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(PerformanceTheme.closeButtonColor)
-                .frame(width: 28, height: 28)
-                .background(PerformanceTheme.closeButtonBackground)
-                .clipShape(Circle())
+        Button {
+            dismiss()
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+            .font(.system(size: 30))
+            .foregroundStyle(.secondary)
+            .symbolRenderingMode(.hierarchical)
         }
-        .padding(.top, 20)
-        .padding(.trailing, 20)
+        .buttonStyle(.plain)
+        .padding(16)
     }
 }

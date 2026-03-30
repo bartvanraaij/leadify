@@ -10,6 +10,7 @@ struct SongLibrarySheet: View {
     @Query(sort: \Song.title) private var allSongs: [Song]
     @State private var searchText = ""
     @State private var showNewSongEditor = false
+    @State private var showTacetEdit = false
 
     private var filteredSongs: [Song] {
         guard !searchText.isEmpty else { return allSongs }
@@ -25,22 +26,46 @@ struct SongLibrarySheet: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(filteredSongs) { song in
-                    LibrarySongRow(
-                        song: song,
-                        isInSetlist: songsInSetlist.contains(song.persistentModelID),
-                        onAdd: { addSong(song) }
-                    )
+                // Add Tacet Section
+                Section {
+                    Button {
+                        showTacetEdit = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "pause.circle.fill")
+                                .font(.system(size: 22))
+                            Text("Add Tacet")
+                                .font(.body)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.primary)
+                            Spacer()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+                
+                // Songs Section
+                Section {
+                    ForEach(filteredSongs) { song in
+                        LibrarySongRow(
+                            song: song,
+                            isInSetlist: songsInSetlist.contains(song.persistentModelID),
+                            onAdd: { addSong(song) }
+                        )
+                    }
+                } header: {
+                    Text("Songs")
+                        .textCase(.uppercase)
                 }
             }
             .searchable(text: $searchText, prompt: "Search songs")
-            .navigationTitle("Song Library")
+            .navigationTitle("Add to Setlist")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button {
                         showNewSongEditor = true
                     } label: {
@@ -52,6 +77,9 @@ struct SongLibrarySheet: View {
                 SongEditorSheet(song: nil, onSave: { newSong in
                     addSong(newSong)
                 })
+            }
+            .sheet(isPresented: $showTacetEdit) {
+                TacetEditSheet(entry: nil, setlist: setlist)
             }
         }
     }
@@ -72,17 +100,18 @@ private struct LibrarySongRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(song.title)
-                    .font(.system(size: EditTheme.songTitleSize, weight: .semibold))
+                    .font(.body)
+                    .fontWeight(.regular)
             }
             Spacer()
             if isInSetlist {
                 Image(systemName: "checkmark")
-                    .foregroundStyle(EditTheme.secondaryText)
+                    .foregroundStyle(.secondary)
             } else {
                 Button(action: onAdd) {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 22))
-                        .foregroundStyle(EditTheme.accentColor)
+                        .foregroundStyle(.blue)
                 }
                 .buttonStyle(.plain)
             }

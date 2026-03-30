@@ -35,23 +35,11 @@ struct SetlistDetailView: View {
             
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if !isEditing {
-                    // Primary action: Add Song (direct button)
+                    // Primary action: Add Song (opens library with option to add tacet too)
                     Button {
                         showSongLibrary = true
                     } label: {
                         Label("Add Song", systemImage: "plus")
-                    }
-                    
-                    // Secondary action: More options menu
-                    Menu {
-                        Button {
-                            showTacetEdit = true
-                        } label: {
-                            Label("Add Tacet", systemImage: "pause.circle")
-                        }
-                    } label: {
-                        Label("More", systemImage: "ellipsis.circle")
-                            .labelStyle(.iconOnly)
                     }
                 }
                 
@@ -73,9 +61,7 @@ struct SetlistDetailView: View {
             }
         }
         .fullScreenCover(isPresented: $showPerformance) {
-            if #available(iOS 18.0, *) {
-                PerformanceView(setlist: setlist)
-            }
+            PerformanceView(setlist: setlist)
         }
     }
 

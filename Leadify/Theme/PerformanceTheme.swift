@@ -1,27 +1,49 @@
 import SwiftUI
 
 /// All visual constants for Performance Mode.
-/// Colors are adaptive — they respond to light / dark mode automatically.
+/// Modern, professional design optimized for stage performance.
+/// Supports both light and dark mode.
 struct PerformanceTheme {
     // MARK: Font sizes
-    static let songTitleSize: CGFloat = 28
-    static let reminderSize: CGFloat = 18
-    static let sectionHeaderSize: CGFloat = 16
-    static let chordTextSize: CGFloat = 26       // bumped from 22
+    static let songTitleSize: CGFloat = 34
+    static let reminderSize: CGFloat = 17
+    static let sectionHeaderSize: CGFloat = 20
+    static let chordTextSize: CGFloat = 28
     static let tabFontSize: CGFloat = 18
-    static let upNextSize: CGFloat = 14
 
-    // MARK: Colors
-    static let background = Color(.systemBackground)
-    static let songTitleColor = Color.primary
-    static let chordTextColor = Color.primary
-    static let sectionHeaderColor = Color.secondary
-    static let reminderColor = Color(red: 1.0, green: 0.58, blue: 0.0)
-    static let tabColor = Color.primary          // was hard-coded green
-    static let tacetTextColor = Color.secondary
-    static let separatorColor = Color.primary.opacity(0.12)
-    static let upNextColor = Color.secondary
-    static let tapZoneIndicatorColor = Color.primary.opacity(0.3)
-    static let closeButtonColor = Color.primary.opacity(0.5)
-    static let closeButtonBackground = Color.primary.opacity(0.08)
+    // MARK: Colors - Modern, professional palette
+    static let background = Color(light: Color(white: 0.98), dark: Color(white: 0.05))
+    
+    // Monochrome with high contrast - professional and timeless
+    static let songTitleColor = Color(light: Color(white: 0.1), dark: Color(white: 0.95))
+    static let chordTextColor = Color(light: Color(white: 0.15), dark: Color(white: 0.9))
+    static let sectionHeaderColor = Color(light: Color(white: 0.35), dark: Color(white: 0.6))
+    
+    // Accent - warm orange for reminders
+    static let reminderColor = Color(red: 1.0, green: 0.6, blue: 0.0)
+    
+    // Subtle color for tabs
+    static let tabColor = Color(light: Color(red: 0.3, green: 0.5, blue: 0.4), dark: Color(red: 0.5, green: 0.8, blue: 0.6))
+    
+    // Neutral elements
+    static let tacetTextColor = Color(light: Color(white: 0.45), dark: Color(white: 0.55))
+    static let dividerColor = Color(light: Color(white: 0.88), dark: Color(white: 0.15))
+    static let closeButtonColor = Color(light: Color.black.opacity(0.5), dark: Color.white.opacity(0.7))
 }
+
+// Helper extension for adaptive colors
+extension Color {
+    init(light: Color, dark: Color) {
+        self.init(uiColor: UIColor(dynamicProvider: { traits in
+            switch traits.userInterfaceStyle {
+            case .light, .unspecified:
+                return UIColor(light)
+            case .dark:
+                return UIColor(dark)
+            @unknown default:
+                return UIColor(light)
+            }
+        }))
+    }
+}
+

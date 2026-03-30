@@ -144,6 +144,7 @@ extension MarkdownUI.Theme {
             configuration.label
                 .markdownTextStyle {
                     FontSize(PerformanceTheme.chordTextSize)
+                    FontWeight(.semibold)
                     ForegroundColor(PerformanceTheme.chordTextColor)
                 }
         }

@@ -12,8 +12,8 @@
 │       ├── Theme/                       EditTheme, PerformanceTheme
 │       └── Views/
 │           ├── Sidebar/                 SetlistSidebarView, SetlistRowView, SetlistEditSheet
+│           ├── Performance/             PerformanceView, PerformanceViewModel, SongBlock, TacetBlock
 │           └── Setlist/
-│               ├── Performance/         PerformanceView, PerformanceViewModel, SongBlock, TacetBlock
 │               └── (ordering views)     SetlistDetailView, SongEntryRow, TacetRow, etc.
 ├── LeadifyTests/                        SetlistTests, SongTests, TestHelpers
 ├── docs/superpowers/

@@ -38,9 +38,9 @@ Leadify/
 │   ├── EditTheme.swift      all sizes + colors for edit/ordering mode
 │   └── PerformanceTheme.swift  all sizes + colors for performance mode
 └── Views/
+    ├── Performance/         PerformanceView, PerformanceViewModel, SongBlock, TacetBlock
     ├── Sidebar/             setlist list, row, create/edit sheet
     └── Setlist/
-        ├── Performance/     PerformanceView, PerformanceViewModel, SongBlock, TacetBlock
         └── (ordering)       SetlistDetailView, SongEntryRow, TacetRow, AddEntryRow,
                              SongLibrarySheet, SongEditorSheet, TacetEditSheet
 ```
