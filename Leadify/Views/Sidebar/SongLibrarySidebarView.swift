@@ -42,6 +42,7 @@ struct SongLibrarySidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        .animation(.none, value: sortOrder)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -54,24 +55,8 @@ struct SongLibrarySidebarView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button {
-                        withAnimation(.none) { sortOrder = .alphabetical }
-                    } label: {
-                        if sortOrder == .alphabetical {
-                            Label("A → Z", systemImage: "checkmark")
-                        } else {
-                            Text("A → Z")
-                        }
-                    }
-                    Button {
-                        withAnimation(.none) { sortOrder = .dateAdded }
-                    } label: {
-                        if sortOrder == .dateAdded {
-                            Label("Date Added", systemImage: "checkmark")
-                        } else {
-                            Text("Date Added")
-                        }
-                    }
+                    Button("A → Z") { sortOrder = .alphabetical }
+                    Button("Date Added") { sortOrder = .dateAdded }
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }

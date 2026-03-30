@@ -37,6 +37,7 @@ struct SetlistSidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        .animation(.none, value: sortOrder)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -47,24 +48,8 @@ struct SetlistSidebarView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button {
-                        withAnimation(.none) { sortOrder = .name }
-                    } label: {
-                        if sortOrder == .name {
-                            Label("A → Z", systemImage: "checkmark")
-                        } else {
-                            Text("A → Z")
-                        }
-                    }
-                    Button {
-                        withAnimation(.none) { sortOrder = .performanceDate }
-                    } label: {
-                        if sortOrder == .performanceDate {
-                            Label("Performance Date", systemImage: "checkmark")
-                        } else {
-                            Text("Performance Date")
-                        }
-                    }
+                    Button("A → Z") { sortOrder = .name }
+                    Button("Performance Date") { sortOrder = .performanceDate }
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }
