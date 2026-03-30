@@ -17,20 +17,23 @@ struct SetlistRowView: View {
             Text(setlist.name)
                 .font(.body)
                 .fontWeight(.medium)
-                .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
+                .foregroundStyle(isSelected ? Color.white : Color.primary)
 
             if let formattedDate = setlist.formattedDate {
                 Text(formattedDate)
                     .font(.subheadline)
-                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary)
             } else {
                 Text("No date")
                     .font(.subheadline)
-                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.6))
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary.opacity(0.6))
                     .italic()
             }
         }
         .padding(.vertical, 4)
+        .listRowBackground(
+            isSelected ? RoundedRectangle(cornerRadius: 10).fill(EditTheme.accentColor) : nil
+        )
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button(role: .destructive) {
                 showDeleteAlert = true

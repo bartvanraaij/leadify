@@ -32,7 +32,7 @@ struct SongLibrarySidebarView: View {
     var body: some View {
         List(selection: $selectedSong) {
             ForEach(sortedSongs) { song in
-                SongLibraryRow(song: song)
+                SongLibraryRow(song: song, isSelected: selectedSong?.persistentModelID == song.persistentModelID)
                     .tag(song)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
@@ -90,12 +90,16 @@ struct SongLibrarySidebarView: View {
 
 private struct SongLibraryRow: View {
     let song: Song
+    let isSelected: Bool
 
     var body: some View {
         Text(song.title.isEmpty ? "New Song" : song.title)
             .font(.body)
             .fontWeight(.medium)
-            .foregroundStyle(song.title.isEmpty ? .secondary : .primary)
+            .foregroundStyle(isSelected ? .white : (song.title.isEmpty ? .secondary : .primary))
             .padding(.vertical, 4)
+            .listRowBackground(
+                isSelected ? RoundedRectangle(cornerRadius: 10).fill(EditTheme.accentColor) : nil
+            )
     }
 }
