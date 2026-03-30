@@ -22,11 +22,11 @@ struct SetlistRowView: View {
             if let formattedDate = setlist.formattedDate {
                 Text(formattedDate)
                     .font(.subheadline)
-                    .foregroundStyle(isSelected ? Color.accentColor.opacity(0.8) : Color.secondary)
+                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
             } else {
                 Text("No date")
                     .font(.subheadline)
-                    .foregroundStyle(isSelected ? Color.accentColor.opacity(0.6) : Color.secondary.opacity(0.6))
+                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.6))
                     .italic()
             }
         }

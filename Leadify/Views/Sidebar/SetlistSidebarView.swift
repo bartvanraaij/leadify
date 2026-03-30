@@ -47,11 +47,24 @@ struct SetlistSidebarView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Picker("Sort", selection: $sortOrder) {
-                        Text("A → Z").tag(SetlistSortOrder.name)
-                        Text("Performance Date").tag(SetlistSortOrder.performanceDate)
+                    Button {
+                        withAnimation(.none) { sortOrder = .name }
+                    } label: {
+                        if sortOrder == .name {
+                            Label("A → Z", systemImage: "checkmark")
+                        } else {
+                            Text("A → Z")
+                        }
                     }
-                    .pickerStyle(.inline)
+                    Button {
+                        withAnimation(.none) { sortOrder = .performanceDate }
+                    } label: {
+                        if sortOrder == .performanceDate {
+                            Label("Performance Date", systemImage: "checkmark")
+                        } else {
+                            Text("Performance Date")
+                        }
+                    }
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }

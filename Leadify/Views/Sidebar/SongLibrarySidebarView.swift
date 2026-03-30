@@ -54,11 +54,24 @@ struct SongLibrarySidebarView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Picker("Sort", selection: $sortOrder) {
-                        Text("A → Z").tag(SongSortOrder.alphabetical)
-                        Text("Date Added").tag(SongSortOrder.dateAdded)
+                    Button {
+                        withAnimation(.none) { sortOrder = .alphabetical }
+                    } label: {
+                        if sortOrder == .alphabetical {
+                            Label("A → Z", systemImage: "checkmark")
+                        } else {
+                            Text("A → Z")
+                        }
                     }
-                    .pickerStyle(.inline)
+                    Button {
+                        withAnimation(.none) { sortOrder = .dateAdded }
+                    } label: {
+                        if sortOrder == .dateAdded {
+                            Label("Date Added", systemImage: "checkmark")
+                        } else {
+                            Text("Date Added")
+                        }
+                    }
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }

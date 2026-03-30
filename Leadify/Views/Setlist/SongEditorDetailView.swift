@@ -106,14 +106,9 @@ struct SongEditorDetailView: View {
 
     private func cancel() {
         if isNewSong {
-            // Newly created via + button, never saved — discard it
-            selectedSong = nil
             context.delete(song)
-        } else {
-            title = song.title
-            reminder = song.reminder ?? ""
-            content = song.content
         }
+        selectedSong = nil
     }
 }
 
