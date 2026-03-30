@@ -11,6 +11,7 @@ final class SetlistEntry {
     var song: Song?
     @Relationship(deleteRule: .cascade) var tacet: Tacet?
     var order: Int = 0
+    var createdAt: Date = Date()
 
     /// Derived from which optional is non-nil. Extend this enum to add new item types.
     var itemType: SetlistItemType {
