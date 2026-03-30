@@ -14,6 +14,7 @@ struct SongLibrarySidebarView: View {
     @State private var sortOrder: SongSortOrder = .alphabetical
     @State private var songToDelete: Song?
     @State private var showDeleteConfirmation = false
+    @State private var showNewSongSheet = false
 
     var sortedSongs: [Song] {
         switch sortOrder {
@@ -43,8 +44,14 @@ struct SongLibrarySidebarView: View {
         }
         .listStyle(.sidebar)
         .navigationTitle("Songs")
-        .navigationBarTitleDisplayMode(.large)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showNewSongSheet = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Picker("Sort", selection: $sortOrder) {
@@ -55,6 +62,11 @@ struct SongLibrarySidebarView: View {
                     Image(systemName: "arrow.up.arrow.down")
                 }
             }
+        }
+        .sheet(isPresented: $showNewSongSheet) {
+            SongEditorSheet(song: nil, onSave: { newSong in
+                selectedSong = newSong
+            })
         }
         .alert("Delete Song", isPresented: $showDeleteConfirmation, presenting: songToDelete) { song in
             Button("Delete \"\(song.title)\"", role: .destructive) {
@@ -74,12 +86,13 @@ private struct SongLibraryRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(song.title)
-                .font(.system(size: EditTheme.songTitleSize))
-                .foregroundStyle(EditTheme.primaryText)
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundStyle(.primary)
             Text(song.createdAt, style: .date)
-                .font(.system(size: EditTheme.songPreviewSize))
-                .foregroundStyle(EditTheme.secondaryText)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 4)
     }
 }

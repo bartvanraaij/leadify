@@ -35,15 +35,15 @@ struct ContentView: View {
                     SongLibrarySidebarView(selectedSong: $selectedSong)
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Picker("", selection: $sidebarMode) {
-                        Text("Setlists").tag(SidebarMode.setlists)
-                        Text("Songs").tag(SidebarMode.songs)
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 190)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                Picker("", selection: $sidebarMode) {
+                    Text("Setlists").tag(SidebarMode.setlists)
+                    Text("Songs").tag(SidebarMode.songs)
                 }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(.bar)
             }
             .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 400)
         } detail: {
