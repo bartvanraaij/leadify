@@ -37,7 +37,6 @@ struct SetlistSidebarView: View {
             }
         }
         .listStyle(.sidebar)
-        .animation(.none, value: sortOrder)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -45,15 +44,6 @@ struct SetlistSidebarView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button("A → Z") { sortOrder = .name }
-                    Button("Performance Date") { sortOrder = .performanceDate }
-                } label: {
-                    Image(systemName: "arrow.up.arrow.down")
-                }
-                .menuIndicator(.hidden)
             }
         }
         .sheet(isPresented: $showNewSetlistSheet) {

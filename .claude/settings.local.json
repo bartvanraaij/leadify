@@ -14,7 +14,10 @@
       "Bash(git -C:*)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Skill(design)",
+      "Bash(qlmanage:*)",
+      "WebSearch"
     ]
   }
 }

@@ -31,14 +31,14 @@ xcrun simctl list devices available | grep -i ipad
 
 # Build (use a 26.2 simulator — the project targets iOS 26.2)
 xcodebuild build -scheme Leadify \
-  -destination 'platform=iOS Simulator,id=2EB88329-DA02-4D84-ABFD-8E49B53AF6B8'
+  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
 
 # Run all tests
 xcodebuild test -scheme Leadify \
-  -destination 'platform=iOS Simulator,id=2EB88329-DA02-4D84-ABFD-8E49B53AF6B8'
+  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
 ```
 
-The simulator ID `2EB88329-...` is "iPad Pro 13-inch (M5)" running iOS 26.2. If it disappears, find a replacement with `xcrun simctl list devices available | grep iPad`.
+The simulator ID `B05E0EF4-...` is "iPad (A16)" running iOS 26.3. If it disappears, find a replacement with `xcrun simctl list devices available | grep iPad`.
 
 ## Critical: adding new Swift files
 
