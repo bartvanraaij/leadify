@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 enum SongSortOrder {
     case alphabetical
@@ -10,10 +11,12 @@ struct SongLibrarySidebarView: View {
     @Query private var allSongs: [Song]
     @Binding var selectedSong: Song?
     @Environment(\.modelContext) private var context
+    @Environment(SongImporter.self) private var songImporter
 
     @State private var sortOrder: SongSortOrder = .alphabetical
     @State private var songToDelete: Song?
     @State private var showDeleteConfirmation = false
+    @State private var showFileImporter = false
 
     var sortedSongs: [Song] {
         switch sortOrder {
@@ -36,14 +39,20 @@ struct SongLibrarySidebarView: View {
                             songToDelete = song
                             showDeleteConfirmation = true
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Label("", systemImage: "trash")
                         }
                     }
             }
         }
         .listStyle(.sidebar)
-        .animation(.none, value: sortOrder)
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showFileImporter = true
+                } label: {
+                    Image(systemName: "square.and.arrow.down")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     let newSong = Song(title: "", content: "")
@@ -53,14 +62,20 @@ struct SongLibrarySidebarView: View {
                     Image(systemName: "plus")
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button("A → Z") { sortOrder = .alphabetical }
-                    Button("Date Added") { sortOrder = .dateAdded }
-                } label: {
-                    Image(systemName: "arrow.up.arrow.down")
+        }
+        .fileImporter(
+            isPresented: $showFileImporter,
+            allowedContentTypes: [.plainText],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    songImporter.importFile(url: url, context: context)
                 }
-                .menuIndicator(.hidden)
+            case .failure(let error):
+                songImporter.errorMessage = error.localizedDescription
+                songImporter.showErrorAlert = true
             }
         }
         .alert("Delete Song", isPresented: $showDeleteConfirmation, presenting: songToDelete) { song in
@@ -79,15 +94,10 @@ private struct SongLibraryRow: View {
     let song: Song
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(song.title.isEmpty ? "New Song" : song.title)
-                .font(.body)
-                .fontWeight(.medium)
-                .foregroundStyle(song.title.isEmpty ? .secondary : .primary)
-            Text(song.createdAt, style: .date)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.vertical, 4)
+        Text(song.title.isEmpty ? "New Song" : song.title)
+            .font(.body)
+            .fontWeight(.medium)
+            .foregroundStyle(song.title.isEmpty ? .secondary : .primary)
+            .padding(.vertical, 4)
     }
 }

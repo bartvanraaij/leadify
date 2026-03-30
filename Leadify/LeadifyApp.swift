@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct LeadifyApp: App {
     let container: ModelContainer
+    @State private var songImporter = SongImporter()
 
     init() {
         do {
@@ -19,6 +20,10 @@ struct LeadifyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(songImporter)
+                .onOpenURL { url in
+                    songImporter.importFile(url: url, context: container.mainContext)
+                }
         }
         .modelContainer(container)
     }

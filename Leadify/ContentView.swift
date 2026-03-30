@@ -7,6 +7,8 @@ enum SidebarMode {
 
 struct ContentView: View {
     @Query private var allSetlists: [Setlist]
+    @Environment(\.modelContext) private var modelContext
+    @Environment(SongImporter.self) private var songImporter
     @State private var sidebarMode: SidebarMode = .setlists
     @State private var selectedSetlist: Setlist?
     @State private var selectedSong: Song?
@@ -85,6 +87,30 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .confirmationDialog(
+            "Song Already Exists",
+            isPresented: Bindable(songImporter).showConflictDialog,
+            titleVisibility: .visible
+        ) {
+            Button("Overwrite") {
+                songImporter.resolveConflict(.overwrite, context: modelContext)
+            }
+            Button("Keep Both") {
+                songImporter.resolveConflict(.keepBoth, context: modelContext)
+            }
+            Button("Skip", role: .cancel) {
+                songImporter.resolveConflict(.skip, context: modelContext)
+            }
+        } message: {
+            if let title = songImporter.conflictParsedSong?.title {
+                Text("A song titled \"\(title)\" already exists.")
+            }
+        }
+        .alert("Import Error", isPresented: Bindable(songImporter).showErrorAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(songImporter.errorMessage)
+        }
     }
 }
 
@@ -92,4 +118,5 @@ struct ContentView: View {
     ContentView()
         .modelContainer(for: [Song.self, Tacet.self, SetlistEntry.self, Setlist.self],
                         inMemory: true)
+        .environment(SongImporter())
 }
