@@ -17,50 +17,64 @@ struct SongEditorSheet: View {
     var body: some View {
         NavigationStack {
 
-            Form {
-                Section("Title") {
-                    TextField("Song title", text: $title)
-                }
-                Section("Reminder") {
-                    TextField("Song reminder", text: $reminder)
-                }
-                Section {
+            ScrollView {
+                VStack(spacing: 12) {
+                    // MARK: - Title & Reminder fields
+                    VStack(spacing: 0) {
+                        TextField("Title", text: $title)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+
+                        Divider().padding(.leading, 16)
+
+                        TextField("Reminder", text: $reminder)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                    }
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                     // MARK: - Content Editor/Preview
-                    if showPreview {
-                        ScrollView {
-                            SongContentPreview(content: content)
-                        }
-                        .background(PerformanceTheme.background)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        TextEditor(text: $content)
-                            .font(.system(size: 15, design: .monospaced))
-                            .frame(
-                                maxWidth: .infinity,
-                                minHeight: 150,
-                                maxHeight: .infinity,
-                                
-                            )
-                            .scrollContentBackground(.hidden)
-                            .background(Color(.systemBackground))
-                    }
-                } header: {
-                    // MARK: - Content Section Header
-                    HStack {
-                        Text("Content")
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Content")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .textCase(.uppercase)
 
-                        Spacer()
+                            Spacer()
 
-                        Picker("", selection: $showPreview) {
-                            Text("Edit").tag(false)
-                            Text("Preview").tag(true)
+                            Picker("", selection: $showPreview) {
+                                Text("Edit").tag(false)
+                                Text("Preview").tag(true)
+                            }
+                            .pickerStyle(.segmented)
+                            .frame(width: 150)
                         }
-                        .pickerStyle(.segmented)
-                        .frame(width: 150)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
+
+                        if showPreview {
+                            ScrollView {
+                                SongContentPreview(content: content)
+                                    .padding(16)
+                            }
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .frame(maxWidth: .infinity, minHeight: 200)
+                        } else {
+                            TextEditor(text: $content)
+                                .font(.system(size: 15, design: .monospaced))
+                                .frame(minHeight: 200)
+                                .scrollContentBackground(.hidden)
+                                .padding(.horizontal, 12)
+                                .padding(.bottom, 8)
+                        }
                     }
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
-
+                .padding(16)
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle(song == nil ? "New Song" : "Edit Song")

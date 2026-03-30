@@ -99,7 +99,7 @@ private struct SongLibraryRow: View {
             .foregroundStyle(isSelected ? .white : (song.title.isEmpty ? .secondary : .primary))
             .padding(.vertical, 4)
             .listRowBackground(
-                isSelected ? RoundedRectangle(cornerRadius: 10).fill(EditTheme.accentColor) : nil
+                isSelected ? RoundedRectangle(cornerRadius: 22, style: .continuous).fill(EditTheme.accentColor) : nil
             )
     }
 }

@@ -11,6 +11,7 @@ struct SongEditorDetailView: View {
     @State private var reminder: String
     @State private var content: String
     @State private var showDeleteConfirmation = false
+    @State private var showPreview = false
 
     init(song: Song, selectedSong: Binding<Song?>) {
         self.song = song
@@ -36,25 +37,45 @@ struct SongEditorDetailView: View {
 
             HStack(spacing: 16) {
                 // MARK: - Left card: Form editor
-                Form {
-                    Section("Title") {
-                        TextField("Song title", text: $title)
+                ScrollView {
+                    VStack(spacing: 12) {
+                        VStack(spacing: 0) {
+                            TextField("Title", text: $title)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+
+                            Divider().padding(.leading, 16)
+
+                            TextField("Reminder", text: $reminder)
+                                .foregroundStyle(reminder.isEmpty ? .primary : EditTheme.reminderColor)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                        }
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Content")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .textCase(.uppercase)
+                                .padding(.horizontal, 16)
+                                .padding(.top, 8)
+
+                            TextEditor(text: $content)
+                                .font(.system(size: 15, design: .monospaced))
+                                .frame(minHeight: 200, maxHeight: .infinity)
+                                .scrollContentBackground(.hidden)
+                                .padding(.horizontal, 12)
+                                .padding(.bottom, 8)
+                        }
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     }
-                    Section("Reminder") {
-                        TextField("Reminder (optional)", text: $reminder)
-                            .foregroundStyle(reminder.isEmpty ? .primary : EditTheme.reminderColor)
-                    }
-                    Section("Content") {
-                        TextEditor(text: $content)
-                            .font(.system(size: 15, design: .monospaced))
-                            .frame(minHeight: 200, maxHeight: .infinity)
-                            .scrollContentBackground(.hidden)
-                    }
+                    .padding(.trailing, 16)
+                    .padding(.bottom, 16)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .black.opacity(0.07), radius: 8, x: 0, y: 3)
 
                 // MARK: - Right card: Live preview
                 ScrollView {
@@ -62,9 +83,8 @@ struct SongEditorDetailView: View {
                         .padding(24)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .black.opacity(0.07), radius: 8, x: 0, y: 3)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             .padding(20)
         }
