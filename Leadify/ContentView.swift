@@ -9,7 +9,7 @@ struct ContentView: View {
     @Query private var allSetlists: [Setlist]
     @Environment(\.modelContext) private var modelContext
     @Environment(SongImporter.self) private var songImporter
-    @State private var sidebarMode: SidebarMode = .setlists
+    @Binding var sidebarMode: SidebarMode
     @State private var selectedSetlist: Setlist?
     @State private var selectedSong: Song?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
@@ -115,7 +115,7 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(sidebarMode: .constant(.setlists))
         .modelContainer(for: [Song.self, Tacet.self, SetlistEntry.self, Setlist.self],
                         inMemory: true)
         .environment(SongImporter())
