@@ -10,7 +10,6 @@ struct SongLibrarySheet: View {
     @Query(sort: \Song.title) private var allSongs: [Song]
     @State private var searchText = ""
     @State private var showNewSongEditor = false
-    @State private var showTacetEdit = false
 
     private var filteredSongs: [Song] {
         guard !searchText.isEmpty else { return allSongs }
@@ -23,28 +22,13 @@ struct SongLibrarySheet: View {
         Set(setlist.entries.compactMap { $0.song?.persistentModelID })
     }
 
+    private var songsNotInSetlist: [Song] {
+        filteredSongs.filter { !songsInSetlist.contains($0.persistentModelID) }
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                // Add Tacet Section
-                Section {
-                    Button {
-                        showTacetEdit = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "pause.circle.fill")
-                                .font(.system(size: 22))
-                            Text("Add Tacet")
-                                .font(.body)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.primary)
-                            Spacer()
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-                
-                // Songs Section
                 Section {
                     ForEach(filteredSongs) { song in
                         LibrarySongRow(
@@ -54,18 +38,27 @@ struct SongLibrarySheet: View {
                         )
                     }
                 } header: {
-                    Text("Songs")
-                        .textCase(.uppercase)
+                    HStack {
+                        Text("Songs")
+                        Spacer()
+                        if !songsNotInSetlist.isEmpty {
+                            Button("Add All") {
+                                addAllSongs()
+                            }
+                            .font(.subheadline)
+                            .textCase(nil)
+                        }
+                    }
                 }
             }
-            .searchable(text: $searchText, prompt: "Search songs")
-            .navigationTitle("Add to Setlist")
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search songs")
+            .navigationTitle("Add Song to Setlist")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         showNewSongEditor = true
                     } label: {
@@ -78,9 +71,6 @@ struct SongLibrarySheet: View {
                     addSong(newSong)
                 })
             }
-            .sheet(isPresented: $showTacetEdit) {
-                TacetEditSheet(entry: nil, setlist: setlist)
-            }
         }
     }
 
@@ -88,6 +78,12 @@ struct SongLibrarySheet: View {
         let entry = SetlistEntry(song: song)
         context.insert(entry)
         setlist.addEntry(entry)
+    }
+
+    private func addAllSongs() {
+        for song in songsNotInSetlist {
+            addSong(song)
+        }
     }
 }
 

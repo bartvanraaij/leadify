@@ -35,14 +35,18 @@ struct SetlistDetailView: View {
             
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if !isEditing {
-                    // Primary action: Add Song (opens library with option to add tacet too)
+                    Button {
+                        showTacetEdit = true
+                    } label: {
+                        Label("Add Tacet", systemImage: "pause.circle")
+                    }
                     Button {
                         showSongLibrary = true
                     } label: {
                         Label("Add Song", systemImage: "plus")
                     }
                 }
-                
+
                 performButton
             }
         }
@@ -78,7 +82,7 @@ struct SetlistDetailView: View {
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 
-                Text("Tap the + button to add songs or tacet markers")
+                Text("Tap + to add songs or tacet markers")
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
                     .multilineTextAlignment(.center)
