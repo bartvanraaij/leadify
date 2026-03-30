@@ -60,6 +60,7 @@ struct SongLibrarySidebarView: View {
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }
+                .menuIndicator(.hidden)
             }
         }
         .alert("Delete Song", isPresented: $showDeleteConfirmation, presenting: songToDelete) { song in

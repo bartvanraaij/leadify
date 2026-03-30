@@ -53,6 +53,7 @@ struct SetlistSidebarView: View {
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                 }
+                .menuIndicator(.hidden)
             }
         }
         .sheet(isPresented: $showNewSetlistSheet) {
