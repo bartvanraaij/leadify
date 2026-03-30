@@ -1,12 +1,17 @@
 import SwiftUI
 import SwiftData
 
+enum SidebarMode {
+    case setlists, songs
+}
+
 struct ContentView: View {
     @Query private var allSetlists: [Setlist]
+    @State private var sidebarMode: SidebarMode = .setlists
     @State private var selectedSetlist: Setlist?
+    @State private var selectedSong: Song?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
-    /// Setlists sorted by date descending; undated setlists at the bottom.
     var sortedSetlists: [Setlist] {
         allSetlists.sorted { a, b in
             switch (a.date, b.date) {
@@ -19,20 +24,50 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            SetlistSidebarView(
-                setlists: sortedSetlists,
-                selectedSetlist: $selectedSetlist
-            )
+            Group {
+                switch sidebarMode {
+                case .setlists:
+                    SetlistSidebarView(
+                        setlists: sortedSetlists,
+                        selectedSetlist: $selectedSetlist
+                    )
+                case .songs:
+                    SongLibrarySidebarView(selectedSong: $selectedSong)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Picker("", selection: $sidebarMode) {
+                        Text("Setlists").tag(SidebarMode.setlists)
+                        Text("Songs").tag(SidebarMode.songs)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 190)
+                }
+            }
             .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 400)
         } detail: {
-            if let setlist = selectedSetlist {
-                SetlistDetailView(setlist: setlist)
-            } else {
-                ContentUnavailableView(
-                    "No Setlist Selected",
-                    systemImage: "music.note.list",
-                    description: Text("Select a setlist from the sidebar or create a new one.")
-                )
+            switch sidebarMode {
+            case .setlists:
+                if let setlist = selectedSetlist {
+                    SetlistDetailView(setlist: setlist)
+                } else {
+                    ContentUnavailableView(
+                        "No Setlist Selected",
+                        systemImage: "music.note.list",
+                        description: Text("Select a setlist from the sidebar or create a new one.")
+                    )
+                }
+            case .songs:
+                if let song = selectedSong {
+                    SongEditorDetailView(song: song, selectedSong: $selectedSong)
+                } else {
+                    ContentUnavailableView(
+                        "No Song Selected",
+                        systemImage: "music.note",
+                        description: Text("Select a song from the library to edit it.")
+                    )
+                }
             }
         }
         .navigationSplitViewStyle(.balanced)
