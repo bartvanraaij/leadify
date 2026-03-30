@@ -51,9 +51,8 @@ struct SongEditorDetailView: View {
                             .scrollContentBackground(.hidden)
                     }
                 }
-                .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemBackground))
+                .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: .black.opacity(0.07), radius: 8, x: 0, y: 3)
 
