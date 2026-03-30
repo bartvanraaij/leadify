@@ -57,27 +57,30 @@ struct ContentView: View {
             }
             .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 400)
         } detail: {
-            switch sidebarMode {
-            case .setlists:
-                if let setlist = selectedSetlist {
-                    SetlistDetailView(setlist: setlist)
-                } else {
-                    ContentUnavailableView(
-                        "No Setlist Selected",
-                        systemImage: "music.note.list",
-                        description: Text("Select a setlist from the sidebar or create a new one.")
-                    )
-                }
-            case .songs:
-                if let song = selectedSong {
-                    SongEditorDetailView(song: song, selectedSong: $selectedSong)
-                        .id(song.persistentModelID)
-                } else {
-                    ContentUnavailableView(
-                        "No Song Selected",
-                        systemImage: "music.note",
-                        description: Text("Select a song from the library to edit it.")
-                    )
+            ZStack {
+                Color(.systemGroupedBackground).ignoresSafeArea()
+                switch sidebarMode {
+                case .setlists:
+                    if let setlist = selectedSetlist {
+                        SetlistDetailView(setlist: setlist)
+                    } else {
+                        ContentUnavailableView(
+                            "No Setlist Selected",
+                            systemImage: "music.note.list",
+                            description: Text("Select a setlist from the sidebar or create a new one.")
+                        )
+                    }
+                case .songs:
+                    if let song = selectedSong {
+                        SongEditorDetailView(song: song, selectedSong: $selectedSong)
+                            .id(song.persistentModelID)
+                    } else {
+                        ContentUnavailableView(
+                            "No Song Selected",
+                            systemImage: "music.note",
+                            description: Text("Select a song from the library to edit it.")
+                        )
+                    }
                 }
             }
         }

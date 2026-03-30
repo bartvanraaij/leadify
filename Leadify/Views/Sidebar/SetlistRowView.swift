@@ -8,21 +8,25 @@ struct SetlistRowView: View {
     @State private var showEditSheet = false
     @State private var showDeleteAlert = false
 
+    private var isSelected: Bool {
+        selectedSetlist?.persistentModelID == setlist.persistentModelID
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(setlist.name)
                 .font(.body)
                 .fontWeight(.medium)
-                .foregroundStyle(.primary)
-            
+                .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
+
             if let formattedDate = setlist.formattedDate {
                 Text(formattedDate)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(isSelected ? Color.accentColor.opacity(0.8) : Color.secondary)
             } else {
                 Text("No date")
                     .font(.subheadline)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(isSelected ? Color.accentColor.opacity(0.6) : Color.secondary.opacity(0.6))
                     .italic()
             }
         }
