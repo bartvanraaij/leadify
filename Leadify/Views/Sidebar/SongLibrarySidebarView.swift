@@ -14,7 +14,6 @@ struct SongLibrarySidebarView: View {
     @State private var sortOrder: SongSortOrder = .alphabetical
     @State private var songToDelete: Song?
     @State private var showDeleteConfirmation = false
-    @State private var showNewSongSheet = false
 
     var sortedSongs: [Song] {
         switch sortOrder {
@@ -46,7 +45,9 @@ struct SongLibrarySidebarView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    showNewSongSheet = true
+                    let newSong = Song(title: "", content: "")
+                    context.insert(newSong)
+                    selectedSong = newSong
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -61,11 +62,6 @@ struct SongLibrarySidebarView: View {
                     Image(systemName: "arrow.up.arrow.down")
                 }
             }
-        }
-        .sheet(isPresented: $showNewSongSheet) {
-            SongEditorSheet(song: nil, onSave: { newSong in
-                selectedSong = newSong
-            })
         }
         .alert("Delete Song", isPresented: $showDeleteConfirmation, presenting: songToDelete) { song in
             Button("Delete \"\(song.title)\"", role: .destructive) {
@@ -84,10 +80,10 @@ private struct SongLibraryRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(song.title)
+            Text(song.title.isEmpty ? "New Song" : song.title)
                 .font(.body)
                 .fontWeight(.medium)
-                .foregroundStyle(.primary)
+                .foregroundStyle(song.title.isEmpty ? .secondary : .primary)
             Text(song.createdAt, style: .date)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

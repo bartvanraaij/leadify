@@ -24,37 +24,40 @@ struct SongEditorDetailView: View {
         title != song.title || reminder != (song.reminder ?? "") || content != song.content
     }
 
+    /// True when this song was just created by the + button and has never been saved.
+    private var isNewSong: Bool {
+        song.title.isEmpty && song.content.isEmpty && song.reminder == nil
+    }
+
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
 
             HStack(spacing: 16) {
-                // MARK: - Left card: Editor
-                VStack(alignment: .leading, spacing: 12) {
-                    TextField("Title", text: $title)
-                        .font(.system(size: 24, weight: .bold))
-                        .textFieldStyle(.plain)
-
-                    TextField("Reminder (optional)", text: $reminder)
-                        .font(.system(size: 15))
-                        .foregroundStyle(EditTheme.reminderColor)
-                        .textFieldStyle(.plain)
-
-                    Divider()
-
-                    TextEditor(text: $content)
-                        .font(.system(size: 15, design: .monospaced))
-                        .scrollContentBackground(.hidden)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // MARK: - Left card: Form editor
+                Form {
+                    Section("Title") {
+                        TextField("Song title", text: $title)
+                    }
+                    Section("Reminder") {
+                        TextField("Reminder (optional)", text: $reminder)
+                            .foregroundStyle(reminder.isEmpty ? .primary : EditTheme.reminderColor)
+                    }
+                    Section("Content") {
+                        TextEditor(text: $content)
+                            .font(.system(size: 15, design: .monospaced))
+                            .frame(minHeight: 200, maxHeight: .infinity)
+                            .scrollContentBackground(.hidden)
+                    }
                 }
-                .padding(24)
+                .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color(.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: .black.opacity(0.07), radius: 8, x: 0, y: 3)
 
-                // MARK: - Right card: Preview
+                // MARK: - Right card: Live preview
                 ScrollView {
                     SongEditorPreview(title: title, reminder: reminder, content: content)
                         .padding(24)
@@ -66,35 +69,33 @@ struct SongEditorDetailView: View {
             }
             .padding(20)
         }
-        .navigationTitle("Edit Song")
+        .navigationTitle(isNewSong ? "New Song" : "Edit Song")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { cancel() }
+            }
+            ToolbarItemGroup(placement: .topBarTrailing) {
                 Button(role: .destructive) {
                     showDeleteConfirmation = true
                 } label: {
                     Image(systemName: "trash")
-                        .foregroundStyle(EditTheme.destructiveColor)
                 }
-            }
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { cancel() }
-                    .disabled(!hasChanges)
-            }
-            ToolbarItem(placement: .confirmationAction) {
+                .tint(EditTheme.destructiveColor)
+
                 Button("Save") { save() }
                     .disabled(!hasChanges)
-                    .fontWeight(.semibold)
+                    .buttonStyle(.borderedProminent)
             }
         }
         .alert("Delete Song", isPresented: $showDeleteConfirmation) {
-            Button("Delete \"\(song.title)\"", role: .destructive) {
+            Button("Delete \"\(song.title.isEmpty ? "New Song" : song.title)\"", role: .destructive) {
                 selectedSong = nil
                 context.delete(song)
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("This will remove \"\(song.title)\" from all setlists. This cannot be undone.")
+            Text("This will remove this song from all setlists. This cannot be undone.")
         }
     }
 
@@ -105,13 +106,19 @@ struct SongEditorDetailView: View {
     }
 
     private func cancel() {
-        title = song.title
-        reminder = song.reminder ?? ""
-        content = song.content
+        if isNewSong {
+            // Newly created via + button, never saved — discard it
+            selectedSong = nil
+            context.delete(song)
+        } else {
+            title = song.title
+            reminder = song.reminder ?? ""
+            content = song.content
+        }
     }
 }
 
-// MARK: - Preview panel (mirrors SongBlock layout, driven by local state)
+// MARK: - Preview panel
 
 private struct SongEditorPreview: View {
     let title: String

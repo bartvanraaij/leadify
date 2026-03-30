@@ -71,6 +71,7 @@ struct ContentView: View {
             case .songs:
                 if let song = selectedSong {
                     SongEditorDetailView(song: song, selectedSong: $selectedSong)
+                        .id(song.persistentModelID)
                 } else {
                     ContentUnavailableView(
                         "No Song Selected",
