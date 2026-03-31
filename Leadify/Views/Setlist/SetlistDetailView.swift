@@ -40,12 +40,12 @@ struct SetlistDetailView: View {
                 Button {
                     showMedleyLibrary = true
                 } label: {
-                    Label("Add Medley", systemImage: "music.quarternote.3")
+                    Label("Add Medley", image: "custom.music.quarternote.3.badge.plus")
                 }
                 Button {
                     showSongLibrary = true
                 } label: {
-                    Label("Add Song", systemImage: "plus")
+                    Label("Add Song", image: "custom.music.note.badge.plus")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {

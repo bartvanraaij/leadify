@@ -9,12 +9,12 @@ struct AddEntrySection: View {
     var body: some View {
         Section {
             Button(action: onAddSong) {
-                Label("Add Song", systemImage: "music.note")
+                Label("Add Song", image: "custom.music.note.badge.plus")
                     .font(.system(size: EditTheme.songTitleSize, weight: .medium))
             }
             
             Button(action: onAddTacet) {
-                Label("Add Tacet", systemImage: "hourglass")
+                Label("Add Tacet", systemImage: "hourglass.badge.plus")
                     .font(.system(size: EditTheme.songTitleSize, weight: .medium))
             }
         } header: {

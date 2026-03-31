@@ -32,7 +32,7 @@ struct MedleyDetailView: View {
                 Button {
                     showSongLibrary = true
                 } label: {
-                    Label("Add Song", systemImage: "plus")
+                    Label("Add Song", image: "custom.music.note.badge.plus")
                 }
 
                 performButton
