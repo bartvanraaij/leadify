@@ -28,15 +28,17 @@ struct MedleyDetailView: View {
                 medleyMenu
             }
 
-            ToolbarItemGroup(placement: .topBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showSongLibrary = true
                 } label: {
                     Label("Add Song", image: "custom.music.note.badge.plus")
                 }
-
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 performButton
             }
+            .sharedBackgroundVisibility(.hidden)
         }
         .sheet(isPresented: $showSongLibrary) {
             MedleySongLibrarySheet(medley: medley)

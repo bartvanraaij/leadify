@@ -51,6 +51,7 @@ struct SetlistDetailView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 performButton
             }
+            .sharedBackgroundVisibility(.hidden)
         }
         .sheet(isPresented: $showSongLibrary) {
             SongLibrarySheet(setlist: setlist)
