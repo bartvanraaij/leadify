@@ -728,3 +728,44 @@ Verify in the simulator:
 - [ ] **Step 4: Pause for user review in simulator**
 
 Wait for user feedback before proceeding.
+
+---
+
+### Task 7: Update CLAUDE.md and docs
+
+Update project documentation to reflect the new performance view architecture, new files, and changed behavior.
+
+**Files:**
+- Modify: `CLAUDE.md`
+
+- [ ] **Step 1: Update CLAUDE.md project layout**
+
+Add the new files to the project layout tree under `Views/Performance/`:
+
+```
+│           └── Performance/             PerformanceView, PerformanceNavigator,
+│                                        PerformanceTapOverlay, PerformanceSetlistSidebar,
+│                                        SongPerformanceBlock, SongPerformanceContent,
+│                                        MedleyPerformanceBlock, TacetPerformanceBlock
+```
+
+- [ ] **Step 2: Update CLAUDE.md current status**
+
+Update the "Current status" section:
+- Move the performance mode bullet under "Done" to note the redesign: "Performance mode redesigned with ForScore-style active-entry navigation, two-phase tap zones (UIKit-based), entry dimming, and adaptive sidebar in wide mode"
+- Remove the "Font sizes in performance mode" known UI issue (superseded by the redesign — can be re-added after real-device testing)
+- Add under known UI issues: "Performance view tap zone sizes and scroll fractions may need tuning after real-device testing"
+
+- [ ] **Step 3: Update CLAUDE.md view naming conventions**
+
+Add `*Overlay` and `*Sidebar` (within Performance context) to the naming conventions if not already covered. The existing `*View` / `*Sheet` / `*Row` / `*Block` list should also mention:
+- `*Overlay` — transparent gesture layers (e.g. `PerformanceTapOverlay`)
+- `*Navigator` — pure-logic navigation helpers (e.g. `PerformanceNavigator`)
+- `*Sidebar` — sidebar/panel components (e.g. `PerformanceSetlistSidebar`)
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add CLAUDE.md
+git commit -m "docs: update CLAUDE.md for performance view redesign"
+```
