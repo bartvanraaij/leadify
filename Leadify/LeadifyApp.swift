@@ -11,7 +11,7 @@ struct LeadifyApp: App {
             // Using default local storage.
             // To enable CloudKit sync later: add a CloudKit entitlement in Xcode,
             // then use ModelConfiguration(cloudKitDatabase: .automatic).
-            container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self)
+            container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self)
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
