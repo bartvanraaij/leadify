@@ -116,6 +116,6 @@ struct PerformanceView: View {
             .symbolRenderingMode(.hierarchical)
         }
         .buttonStyle(.plain)
-        .padding(16)
+        .padding(.horizontal, 16)
     }
 }
