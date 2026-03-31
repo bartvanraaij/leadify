@@ -22,9 +22,14 @@ struct MedleyPerformanceView: View {
 
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(medley.sortedEntries) { entry in
-                            SongPerformanceBlock(song: entry.song)
-                                .padding(.horizontal, 32)
+                        ForEach(Array(medley.sortedEntries.enumerated()), id: \.element.persistentModelID) { index, entry in
+                            SongPerformanceBlock(
+                                song: entry.song,
+                                medleyName: medley.name,
+                                medleyPosition: index + 1,
+                                medleyTotal: medley.entries.count
+                            )
+                            .padding(.horizontal, 32)
                         }
                     }
                     .padding(.top, 40)

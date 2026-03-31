@@ -3,10 +3,21 @@ import MarkdownUI
 
 struct SongPerformanceBlock: View {
     let song: Song
+    var medleyName: String? = nil
+    var medleyPosition: Int? = nil
+    var medleyTotal: Int? = nil
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Medley indicator
+            if let medleyName, let medleyPosition, let medleyTotal {
+                Text("\(medleyName) — \(medleyPosition)/\(medleyTotal)")
+                    .font(.system(size: PerformanceTheme.medleyIndicatorSize, weight: .medium))
+                    .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
+                    .padding(.bottom, 8)
+            }
+
             // Title and Reminder Header
             HStack(alignment: .center, spacing: 12) {
                 // Title

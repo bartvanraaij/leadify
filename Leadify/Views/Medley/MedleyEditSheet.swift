@@ -7,7 +7,19 @@ struct MedleyEditSheet: View {
 
     var medley: Medley?
 
+    @Query(sort: \Song.title) private var allSongs: [Song]
     @State private var name: String = ""
+    @State private var searchText: String = ""
+    @State private var selectedSongIDs: Set<PersistentIdentifier> = []
+
+    private var isNew: Bool { medley == nil }
+
+    private var filteredSongs: [Song] {
+        guard !searchText.isEmpty else { return allSongs }
+        return allSongs.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -15,8 +27,40 @@ struct MedleyEditSheet: View {
                 Section("Name") {
                     TextField("e.g. Opening Set", text: $name)
                 }
+
+                if isNew {
+                    Section("Songs") {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundStyle(.secondary)
+                            TextField("Search songs", text: $searchText)
+                        }
+                        ForEach(filteredSongs) { song in
+                            HStack {
+                                Text(song.title)
+                                    .font(.body)
+                                Spacer()
+                                if selectedSongIDs.contains(song.persistentModelID) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(EditTheme.accentColor)
+                                } else {
+                                    Image(systemName: "circle")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                if selectedSongIDs.contains(song.persistentModelID) {
+                                    selectedSongIDs.remove(song.persistentModelID)
+                                } else {
+                                    selectedSongIDs.insert(song.persistentModelID)
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            .navigationTitle(medley == nil ? "New Medley" : "Edit Medley")
+            .navigationTitle(isNew ? "New Medley" : "Edit Medley")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -41,8 +85,15 @@ struct MedleyEditSheet: View {
         if let medley {
             medley.name = trimmed
         } else {
-            let new = Medley(name: trimmed)
-            context.insert(new)
+            let newMedley = Medley(name: trimmed)
+            context.insert(newMedley)
+
+            // Add selected songs in the order they appear in the library
+            for song in allSongs where selectedSongIDs.contains(song.persistentModelID) {
+                let entry = MedleyEntry(song: song)
+                context.insert(entry)
+                newMedley.addEntry(entry)
+            }
         }
         dismiss()
     }

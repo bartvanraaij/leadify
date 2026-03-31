@@ -30,7 +30,16 @@ struct PerformanceView: View {
                                 case .tacet:
                                     TacetPerformanceBlock(tacet: entry.tacet!)
                                 case .medley:
-                                    EmptyView() // Placeholder — replaced in Task 8
+                                    if let medley = entry.medley {
+                                        ForEach(Array(medley.sortedEntries.enumerated()), id: \.element.persistentModelID) { index, medleyEntry in
+                                            SongPerformanceBlock(
+                                                song: medleyEntry.song,
+                                                medleyName: medley.name,
+                                                medleyPosition: index + 1,
+                                                medleyTotal: medley.entries.count
+                                            )
+                                        }
+                                    }
                                 }
                             }
                             .padding(.horizontal, 32)

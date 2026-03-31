@@ -8,7 +8,9 @@ struct SetlistDetailView: View {
 
     @State private var showSongLibrary = false
     @State private var showTacetEdit = false
+    @State private var showMedleyLibrary = false
     @State private var editingEntry: SetlistEntry?
+    @State private var editingSongFromMedley: Song?
     @State private var showPerformance = false
     @State private var showEditSheet = false
     @State private var showDeleteAlert = false
@@ -36,6 +38,11 @@ struct SetlistDetailView: View {
                     Label("Add Tacet", systemImage: "pause.circle")
                 }
                 Button {
+                    showMedleyLibrary = true
+                } label: {
+                    Label("Add Medley", systemImage: "rectangle.stack")
+                }
+                Button {
                     showSongLibrary = true
                 } label: {
                     Label("Add Song", systemImage: "plus")
@@ -49,6 +56,12 @@ struct SetlistDetailView: View {
         }
         .sheet(isPresented: $showTacetEdit) {
             TacetEditSheet(entry: nil, setlist: setlist)
+        }
+        .sheet(isPresented: $showMedleyLibrary) {
+            MedleyLibrarySheet(setlist: setlist)
+        }
+        .sheet(item: $editingSongFromMedley) { song in
+            SongEditorSheet(song: song)
         }
         .sheet(item: $editingEntry) { entry in
             switch entry.itemType {
@@ -128,7 +141,9 @@ struct SetlistDetailView: View {
                     editingEntry = entry
                 }
             case .medley:
-                EmptyView() // Placeholder — replaced in Task 7
+                MedleySetlistGroup(entry: entry) { song in
+                    editingSongFromMedley = song
+                }
             }
         }
     }
