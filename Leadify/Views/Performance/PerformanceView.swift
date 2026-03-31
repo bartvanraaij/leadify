@@ -31,14 +31,7 @@ struct PerformanceView: View {
                                     TacetPerformanceBlock(tacet: entry.tacet!)
                                 case .medley:
                                     if let medley = entry.medley {
-                                        ForEach(Array(medley.sortedEntries.enumerated()), id: \.element.persistentModelID) { index, medleyEntry in
-                                            SongPerformanceBlock(
-                                                song: medleyEntry.song,
-                                                medleyName: medley.name,
-                                                medleyPosition: index + 1,
-                                                medleyTotal: medley.entries.count
-                                            )
-                                        }
+                                        MedleyPerformanceBlock(medley: medley)
                                     }
                                 }
                             }

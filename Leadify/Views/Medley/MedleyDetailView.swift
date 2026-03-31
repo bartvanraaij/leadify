@@ -63,7 +63,7 @@ struct MedleyDetailView: View {
     private var emptyStateView: some View {
         Section {
             VStack(spacing: 16) {
-                Image(systemName: "rectangle.stack")
+                Image(systemName: "music.quarternote.3")
                     .font(.system(size: 48))
                     .foregroundStyle(.secondary)
 

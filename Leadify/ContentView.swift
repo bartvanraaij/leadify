@@ -20,7 +20,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         switch self {
         case .setlists: "music.note.list"
         case .songs: "music.note"
-        case .medleys: "rectangle.stack.fill"
+        case .medleys: "music.quarternote.3"
         }
     }
 }
@@ -114,7 +114,7 @@ struct ContentView: View {
                     } else {
                         ContentUnavailableView(
                             "No Medley Selected",
-                            systemImage: "rectangle.stack.fill",
+                            systemImage: "music.quarternote.3",
                             description: Text("Select a medley or create a new one.")
                         )
                     }

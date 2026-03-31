@@ -14,7 +14,7 @@ struct AddEntrySection: View {
             }
             
             Button(action: onAddTacet) {
-                Label("Add Tacet", systemImage: "pause.circle")
+                Label("Add Tacet", systemImage: "hourglass")
                     .font(.system(size: EditTheme.songTitleSize, weight: .medium))
             }
         } header: {

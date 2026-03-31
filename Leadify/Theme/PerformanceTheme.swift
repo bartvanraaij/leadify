@@ -5,7 +5,7 @@ import SwiftUI
 /// Supports both light and dark mode.
 struct PerformanceTheme {
     // MARK: Font sizes
-    static let songTitleSize: CGFloat = 34
+    static let songTitleSize: CGFloat = 28
     static let reminderSize: CGFloat = 17
     static let sectionHeaderSize: CGFloat = 20
     static let chordTextSize: CGFloat = 28
@@ -30,8 +30,8 @@ struct PerformanceTheme {
     static let dividerColor = Color(light: Color(white: 0.88), dark: Color(white: 0.15))
     static let closeButtonColor = Color(light: Color.black.opacity(0.5), dark: Color.white.opacity(0.7))
 
-    // Medley indicator
-    static let medleyIndicatorSize: CGFloat = 14
+    // Medley
+    static let medleyTitleSize: CGFloat = 24
     static let medleyIndicatorColor = Color(light: Color(white: 0.5), dark: Color(white: 0.5))
 }
 

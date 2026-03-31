@@ -17,7 +17,10 @@
       "Bash(git rm:*)",
       "Skill(design)",
       "Bash(qlmanage:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(cd:*)",
+      "Bash(git mv:*)",
+      "Bash(find /Users/bartvanraaij/Dev/leadify/Leadify/Views -type f -name *.swift)"
     ]
   }
 }

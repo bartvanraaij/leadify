@@ -35,19 +35,20 @@ struct SetlistDetailView: View {
                 Button {
                     showTacetEdit = true
                 } label: {
-                    Label("Add Tacet", systemImage: "pause.circle")
+                    Label("Add Tacet", systemImage: "hourglass.badge.plus")
                 }
                 Button {
                     showMedleyLibrary = true
                 } label: {
-                    Label("Add Medley", systemImage: "rectangle.stack")
+                    Label("Add Medley", systemImage: "music.quarternote.3")
                 }
                 Button {
                     showSongLibrary = true
                 } label: {
                     Label("Add Song", systemImage: "plus")
                 }
-
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 performButton
             }
         }
