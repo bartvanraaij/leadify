@@ -106,6 +106,33 @@ final class SetlistTests: XCTestCase {
                        ["Song 1", "Song 2", "Song 3", "Song 4", "Song 5"])
     }
 
+    // MARK: - Medley entries
+
+    func test_medleyEntry_hasCorrectItemType() throws {
+        let medley = Medley(name: "Rock 1")
+        context.insert(medley)
+        let entry = SetlistEntry(medley: medley)
+        context.insert(entry)
+        XCTAssertEqual(entry.itemType, .medley)
+    }
+
+    func test_duplicate_sharesMedleyReferences() throws {
+        let medley = Medley(name: "Rock 1")
+        context.insert(medley)
+        let original = Setlist(name: "Gig A")
+        context.insert(original)
+        let entry = SetlistEntry(medley: medley)
+        context.insert(entry)
+        original.addEntry(entry)
+        try context.save()
+
+        let copy = original.duplicate(in: context)
+        try context.save()
+
+        XCTAssertEqual(copy.sortedEntries[0].medley?.persistentModelID,
+                       medley.persistentModelID)
+    }
+
     // MARK: - formattedDate
 
     func test_formattedDate_nilWhenNoDate() {

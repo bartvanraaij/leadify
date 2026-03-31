@@ -35,26 +35,26 @@ final class Setlist {
 
     /// Creates a copy of this setlist with a new name.
     /// - Songs are shared by reference (editing a song updates all setlists).
-    /// - Tacets are deep-copied (they are owned by their entry; sharing would
-    ///   cause the tacet to be deleted if the original setlist is deleted).
+    /// - Tacets are deep-copied (they are owned by their entry).
+    /// - Medleys are shared by reference (same as songs).
     func duplicate(in context: ModelContext) -> Setlist {
         let copy = Setlist(name: "\(name) (copy)", date: date)
         context.insert(copy)
         for (index, entry) in sortedEntries.enumerated() {
+            let entryCopy: SetlistEntry
             switch entry.itemType {
             case .song:
-                let entryCopy = SetlistEntry(song: entry.song!)
-                entryCopy.order = index
-                context.insert(entryCopy)
-                copy.entries.append(entryCopy)
+                entryCopy = SetlistEntry(song: entry.song!)
             case .tacet:
                 let tacetCopy = Tacet(label: entry.tacet?.label)
                 context.insert(tacetCopy)
-                let entryCopy = SetlistEntry(tacet: tacetCopy)
-                entryCopy.order = index
-                context.insert(entryCopy)
-                copy.entries.append(entryCopy)
+                entryCopy = SetlistEntry(tacet: tacetCopy)
+            case .medley:
+                entryCopy = SetlistEntry(medley: entry.medley!)
             }
+            entryCopy.order = index
+            context.insert(entryCopy)
+            copy.entries.append(entryCopy)
         }
         return copy
     }

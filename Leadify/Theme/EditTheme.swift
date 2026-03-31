@@ -20,4 +20,8 @@ struct EditTheme {
     static let tacetText = Color.secondary
     static let accentColor = Color.accentColor
     static let destructiveColor = Color.red
+
+    // Medley
+    static let medleyHeaderColor = Color.accentColor
+    static let medleyGroupBackground = Color(light: Color.accentColor.opacity(0.06), dark: Color.accentColor.opacity(0.1))
 }

@@ -29,6 +29,8 @@ struct PerformanceView: View {
                                     SongPerformanceBlock(song: entry.song!)
                                 case .tacet:
                                     TacetPerformanceBlock(tacet: entry.tacet!)
+                                case .medley:
+                                    EmptyView() // Placeholder — replaced in Task 8
                                 }
                             }
                             .padding(.horizontal, 32)
