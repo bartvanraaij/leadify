@@ -1,31 +1,23 @@
 import SwiftUI
 
-struct TacetRow: View {
+struct SongSetlistRow: View {
     let entry: SetlistEntry
     let position: Int
     let onEdit: () -> Void
     
     @Environment(\.editMode) private var editMode
 
-    private var tacet: Tacet { entry.tacet! }
+    private var song: Song { entry.song! }
     
     private var isEditing: Bool {
         editMode?.wrappedValue.isEditing == true
     }
 
-    private var displayLabel: String {
-        if let label = tacet.label, !label.isEmpty {
-            return "— \(label) —"
-        }
-        return "— Tacet —"
-    }
-
     var body: some View {
-        Text(displayLabel)
+        Text(song.title)
             .font(.body)
             .fontWeight(.regular)
-            .italic()
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.primary)
             .padding(.vertical, 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())

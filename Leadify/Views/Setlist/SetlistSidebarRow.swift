@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct SetlistRowView: View {
+struct SetlistSidebarRow: View {
     let setlist: Setlist
     @Binding var selectedSetlist: Setlist?
     @Environment(\.modelContext) private var context

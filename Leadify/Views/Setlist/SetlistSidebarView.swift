@@ -32,7 +32,7 @@ struct SetlistSidebarView: View {
     var body: some View {
         List(selection: $selectedSetlist) {
             ForEach(sortedSetlists) { setlist in
-                SetlistRowView(setlist: setlist, selectedSetlist: $selectedSetlist)
+                SetlistSidebarRow(setlist: setlist, selectedSetlist: $selectedSetlist)
                     .tag(setlist)
             }
         }

@@ -10,11 +10,14 @@
 │       ├── ContentView.swift
 │       ├── Models/                      Song, Tacet, SetlistEntry, Setlist
 │       ├── Theme/                       EditTheme, PerformanceTheme
-│       └── Views/
-│           ├── Sidebar/                 SetlistSidebarView, SetlistRowView, SetlistEditSheet
-│           ├── Performance/             PerformanceView, PerformanceViewModel, SongBlock, TacetBlock
-│           └── Setlist/
-│               └── (ordering views)     SetlistDetailView, SongEntryRow, TacetRow, etc.
+│       └── Views/                       domain-based grouping (see naming conventions below)
+│           ├── Song/                    SongDisplayView, SongEditorSheet, SongEditorDetailView,
+│           │                            SongLibrarySheet, SongLibrarySidebarView
+│           ├── Tacet/                   TacetEditSheet
+│           ├── Setlist/                 SetlistDetailView, SetlistSidebarView, SetlistSidebarRow,
+│           │                            SetlistEditSheet, SetlistAddEntrySection,
+│           │                            SongSetlistRow, TacetSetlistRow
+│           └── Performance/             PerformanceView, SongPerformanceBlock, TacetPerformanceBlock
 ├── LeadifyTests/                        SetlistTests, SongTests, TestHelpers
 ├── docs/superpowers/
 │   ├── specs/2026-03-28-leadify-design.md
@@ -74,7 +77,18 @@ All sizes and colors live in two structs:
 
 Never use literal `CGFloat` sizes or `Color(...)` values in view files. Add tokens to the theme structs instead.
 
-The custom MarkdownUI theme (`.leadifyPerformance`) is defined as an extension in `Views/Setlist/SongEditorSheet.swift`. If that file moves or grows, consider extracting it to `Theme/MarkdownTheme.swift`.
+The custom MarkdownUI theme (`.leadifyPerformance`) is defined as an extension in `Views/Song/SongEditorSheet.swift`. If that file grows, consider extracting it to `Theme/MarkdownTheme.swift`.
+
+## View naming conventions
+
+Views are grouped by **domain** (Song, Tacet, Setlist, Performance). File and struct names encode both the domain and the role:
+
+- `*View` — full-screen / pane-level views (e.g. `SetlistDetailView`, `PerformanceView`)
+- `*Sheet` — modal/sheet presentations (e.g. `SongEditorSheet`, `TacetEditSheet`)
+- `*Row` — list row components (e.g. `SongSetlistRow`, `SetlistSidebarRow`)
+- `*Block` — performance mode sections (e.g. `SongPerformanceBlock`)
+
+Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setlist/), not the entity (Song/).
 
 ## Data model key facts
 
@@ -88,7 +102,7 @@ The custom MarkdownUI theme (`.leadifyPerformance`) is defined as an extension i
 
 ### Done
 - Plan 1: All data models, themes, setlist editing/ordering UI, unit tests ✅
-- Plan 2: Performance mode (PerformanceViewModel, SongBlock, TacetBlock, PerformanceView) ✅
+- Plan 2: Performance mode (PerformanceView, SongPerformanceBlock, TacetPerformanceBlock) ✅
 - Tests: all 10 passing ✅
 
 ### Known UI issues / next refinements

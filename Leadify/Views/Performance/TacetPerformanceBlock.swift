@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct TacetBlock: View {
+struct TacetPerformanceBlock: View {
     let tacet: Tacet
 
     private var displayLabel: String {

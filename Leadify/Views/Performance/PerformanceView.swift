@@ -26,9 +26,9 @@ struct PerformanceView: View {
                             Group {
                                 switch entry.itemType {
                                 case .song:
-                                    SongBlock(song: entry.song!)
+                                    SongPerformanceBlock(song: entry.song!)
                                 case .tacet:
-                                    TacetBlock(tacet: entry.tacet!)
+                                    TacetPerformanceBlock(tacet: entry.tacet!)
                                 }
                             }
                             .padding(.horizontal, 32)

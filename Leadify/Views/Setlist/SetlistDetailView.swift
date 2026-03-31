@@ -115,11 +115,11 @@ struct SetlistDetailView: View {
         Group {
             switch entry.itemType {
             case .song:
-                SongEntryRow(entry: entry, position: position) {
+                SongSetlistRow(entry: entry, position: position) {
                     editingEntry = entry
                 }
             case .tacet:
-                TacetRow(entry: entry, position: position) {
+                TacetSetlistRow(entry: entry, position: position) {
                     editingEntry = entry
                 }
             }

@@ -1,7 +1,7 @@
 import SwiftUI
 import MarkdownUI
 
-struct SongBlock: View {
+struct SongPerformanceBlock: View {
     let song: Song
     @Environment(\.colorScheme) private var colorScheme
 
