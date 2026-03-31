@@ -23,14 +23,8 @@ struct SongBlock: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(
-                            Capsule()
-                                .fill(PerformanceTheme.reminderColor)
-                        )
-                        .shadow(
-                            color: PerformanceTheme.reminderColor.opacity(0.3),
-                            radius: 4,
-                            x: 0,
-                            y: 2
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(EditTheme.accentColor)
                         )
                 }
             }

@@ -12,6 +12,7 @@ struct ContentView: View {
     @Binding var sidebarMode: SidebarMode
     @State private var selectedSetlist: Setlist?
     @State private var selectedSong: Song?
+    @State private var isEditingSong = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     var sortedSetlists: [Setlist] {
@@ -74,8 +75,13 @@ struct ContentView: View {
                     }
                 case .songs:
                     if let song = selectedSong {
-                        SongEditorDetailView(song: song, selectedSong: $selectedSong)
-                            .id(song.persistentModelID)
+                        if isEditingSong {
+                            SongEditorDetailView(song: song, selectedSong: $selectedSong, isEditing: $isEditingSong)
+                                .id("\(song.persistentModelID)-edit")
+                        } else {
+                            SongDisplayView(song: song, selectedSong: $selectedSong, isEditing: $isEditingSong)
+                                .id(song.persistentModelID)
+                        }
                     } else {
                         ContentUnavailableView(
                             "No Song Selected",
@@ -84,6 +90,14 @@ struct ContentView: View {
                         )
                     }
                 }
+            }
+        }
+        .onChange(of: selectedSong) {
+            // New songs (from + button) go straight to edit mode
+            if let song = selectedSong, song.title.isEmpty && song.content.isEmpty {
+                isEditingSong = true
+            } else {
+                isEditingSong = false
             }
         }
         .navigationSplitViewStyle(.balanced)

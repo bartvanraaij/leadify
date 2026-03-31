@@ -5,6 +5,7 @@ import MarkdownUI
 struct SongEditorDetailView: View {
     let song: Song
     @Binding var selectedSong: Song?
+    @Binding var isEditing: Bool
     @Environment(\.modelContext) private var context
 
     @State private var title: String
@@ -13,9 +14,10 @@ struct SongEditorDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var showPreview = false
 
-    init(song: Song, selectedSong: Binding<Song?>) {
+    init(song: Song, selectedSong: Binding<Song?>, isEditing: Binding<Bool>) {
         self.song = song
         self._selectedSong = selectedSong
+        self._isEditing = isEditing
         self._title = State(initialValue: song.title)
         self._reminder = State(initialValue: song.reminder ?? "")
         self._content = State(initialValue: song.content)
@@ -45,7 +47,6 @@ struct SongEditorDetailView: View {
                         Divider().padding(.leading, 16)
 
                         TextField("Reminder", text: $reminder)
-                            .foregroundStyle(reminder.isEmpty ? .primary : EditTheme.reminderColor)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
                     }
@@ -131,13 +132,15 @@ struct SongEditorDetailView: View {
         song.title = title
         song.reminder = reminder.isEmpty ? nil : reminder
         song.content = content
+        isEditing = false
     }
 
     private func cancel() {
         if isNewSong {
             context.delete(song)
+            selectedSong = nil
         }
-        selectedSong = nil
+        isEditing = false
     }
 }
 
@@ -162,11 +165,7 @@ private struct SongEditorPreview: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Capsule().fill(PerformanceTheme.reminderColor))
-                        .shadow(
-                            color: PerformanceTheme.reminderColor.opacity(0.3),
-                            radius: 4, x: 0, y: 2
-                        )
+                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(EditTheme.accentColor))
                 }
             }
             .padding(.bottom, 28)
