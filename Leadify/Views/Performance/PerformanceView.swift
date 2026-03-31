@@ -1,106 +1,162 @@
 import SwiftUI
 
-// Tracks the content's Y position relative to the scroll container.
-// Negating minY gives us the scroll offset (how far the user has scrolled down).
-private struct ScrollOffsetKey: PreferenceKey {
-    static let defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+/// Preference key to collect entry frames (in the scroll content's coordinate space).
+private struct EntryFrameKey: PreferenceKey {
+    static let defaultValue: [Int: CGRect] = [:]
+    static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
+    }
 }
 
 struct PerformanceView: View {
     let setlist: Setlist
     @Environment(\.dismiss) private var dismiss
 
+    @State private var activeIndex: Int = 0
     @State private var scrollPosition = ScrollPosition()
     @State private var scrollOffset: CGFloat = 0
     @State private var viewportHeight: CGFloat = 0
+    @State private var entryFrames: [Int: CGRect] = [:]
+
+    private var entries: [SetlistEntry] { setlist.sortedEntries }
+    private static let wideSidebarThreshold: CGFloat = 950
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                PerformanceTheme.background.ignoresSafeArea()
+            let isWide = geo.size.width >= Self.wideSidebarThreshold
 
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(setlist.sortedEntries) { entry in
-                            Group {
-                                switch entry.itemType {
-                                case .song:
-                                    SongPerformanceBlock(song: entry.song!)
-                                case .tacet:
-                                    TacetPerformanceBlock(tacet: entry.tacet!)
-                                case .medley:
-                                    if let medley = entry.medley {
-                                        MedleyPerformanceBlock(medley: medley)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 32)
-                        }
+            HStack(spacing: 0) {
+                // Main scroll content
+                scrollContent(viewportSize: geo.size)
+
+                // Sidebar in wide mode
+                if isWide {
+                    Divider()
+                    PerformanceSetlistSidebar(
+                        entries: entries,
+                        activeIndex: activeIndex
+                    ) { index in
+                        navigateTo(index: index)
                     }
-                    .padding(.top, 40)
-                    .padding(.bottom, 80)
-                    // Report content position relative to the named coordinate space so
-                    // we can derive the current scroll offset reliably.
-                    .background(GeometryReader { contentGeo in
-                        Color.clear.preference(
-                            key: ScrollOffsetKey.self,
-                            value: -contentGeo.frame(in: .named("scrollContainer")).minY
-                        )
-                    })
-                }
-                .coordinateSpace(name: "scrollContainer")
-                .scrollPosition($scrollPosition)
-                .onPreferenceChange(ScrollOffsetKey.self) { scrollOffset = $0 }
-                // Corrects scrollOffset to the actual clamped position after animations
-                // (e.g. the last scroll down hits the bottom before travelling a full vh).
-                .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
-                    scrollOffset = y
-                }
-                // Top 20% — scroll up one viewport
-                .overlay(alignment: .top) {
-                    Color.clear
-                    .frame(maxWidth: .infinity)
-                    .frame(height: geo.size.height * 0.2)
-                    .contentShape(Rectangle())
-                    .simultaneousGesture(TapGesture().onEnded { scrollUp() })
-                }
-                // Bottom 20% — scroll down one viewport
-                // Lifted 20 pt to clear the iOS home-indicator gesture area.
-                .overlay(alignment: .bottom) {
-                    Color.clear
-                    .frame(maxWidth: .infinity)
-                    .frame(height: geo.size.height * 0.2)
-                    .contentShape(Rectangle())
-                    .padding(.bottom, 20)
-                    .simultaneousGesture(TapGesture().onEnded { scrollDown() })
+                    .frame(width: geo.size.width * 0.25)
                 }
             }
             .onAppear { viewportHeight = geo.size.height }
             .onChange(of: geo.size.height) { _, h in viewportHeight = h }
         }
-        .overlay(alignment: .topTrailing) {
-            closeButton
-        }
+        .background(PerformanceTheme.background.ignoresSafeArea())
+        .overlay(alignment: .topTrailing) { closeButton }
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
     }
 
-    // MARK: - Scroll
+    // MARK: - Scroll content
 
-    private func scrollUp() {
-        let target = max(0, scrollOffset - viewportHeight)
-        scrollOffset = target   // update immediately so rapid taps use the correct offset
-        withAnimation(.easeInOut(duration: 0.15)) {
-            scrollPosition.scrollTo(y: target)
+    @ViewBuilder
+    private func scrollContent(viewportSize: CGSize) -> some View {
+        ZStack {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(entries.enumerated()), id: \.element.persistentModelID) { index, entry in
+                        entryView(entry: entry, index: index)
+                            .padding(.horizontal, 32)
+                            .opacity(opacityFor(index: index))
+                            .animation(.easeInOut(duration: 0.3), value: activeIndex)
+                            .background(
+                                GeometryReader { entryGeo in
+                                    Color.clear.preference(
+                                        key: EntryFrameKey.self,
+                                        value: [index: entryGeo.frame(in: .named("perfScroll"))]
+                                    )
+                                }
+                            )
+                            .id(index)
+                    }
+                }
+                .padding(.top, 40)
+                .padding(.bottom, 80)
+            }
+            .coordinateSpace(name: "perfScroll")
+            .scrollPosition($scrollPosition)
+            .onPreferenceChange(EntryFrameKey.self) { entryFrames = $0 }
+            .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
+                scrollOffset = y
+            }
+
+            // Tap overlay — UIKit-based, does not block scroll
+            PerformanceTapOverlay(
+                onLeftTap: { handleTap(direction: .backward) },
+                onRightTap: { handleTap(direction: .forward) }
+            )
         }
     }
 
-    private func scrollDown() {
-        let target = scrollOffset + viewportHeight
-        scrollOffset = target   // update immediately so rapid taps use the correct offset
-        withAnimation(.easeInOut(duration: 0.15)) {
-            scrollPosition.scrollTo(y: target)
+    // MARK: - Entry rendering
+
+    @ViewBuilder
+    private func entryView(entry: SetlistEntry, index: Int) -> some View {
+        switch entry.itemType {
+        case .song:
+            SongPerformanceBlock(song: entry.song!)
+        case .tacet:
+            TacetPerformanceBlock(tacet: entry.tacet!)
+        case .medley:
+            if let medley = entry.medley {
+                MedleyPerformanceBlock(medley: medley)
+            }
+        }
+    }
+
+    // MARK: - Dimming
+
+    private func opacityFor(index: Int) -> Double {
+        if index == activeIndex { return 1.0 }
+        if index < activeIndex { return 0.3 }
+        return 0.4 // upcoming
+    }
+
+    // MARK: - Navigation
+
+    private func handleTap(direction: TapDirection) {
+        // Get the active entry's frame relative to the viewport
+        guard let frameInScroll = entryFrames[activeIndex] else { return }
+
+        // Convert from scroll-content space to viewport space:
+        // In scroll-content space, the frame's Y is relative to the content top.
+        // The viewport sees content starting at scrollOffset.
+        let viewportRelativeFrame = CGRect(
+            x: frameInScroll.minX,
+            y: frameInScroll.minY - scrollOffset,
+            width: frameInScroll.width,
+            height: frameInScroll.height
+        )
+
+        let result = PerformanceNavigator.handleTap(
+            direction: direction,
+            activeIndex: activeIndex,
+            entryCount: entries.count,
+            activeEntryFrame: viewportRelativeFrame,
+            viewportHeight: viewportHeight,
+            scrollOffset: scrollOffset
+        )
+
+        if let target = result.scrollTarget {
+            // Scroll within current entry
+            withAnimation(.easeInOut(duration: 0.25)) {
+                scrollPosition.scrollTo(y: target)
+            }
+        } else if result.newActiveIndex != activeIndex {
+            // Navigate to new entry — scroll to its anchor
+            navigateTo(index: result.newActiveIndex)
+        }
+
+        activeIndex = result.newActiveIndex
+    }
+
+    private func navigateTo(index: Int) {
+        activeIndex = index
+        withAnimation(.easeInOut(duration: 0.25)) {
+            scrollPosition.scrollTo(id: index, anchor: .top)
         }
     }
 
@@ -111,9 +167,9 @@ struct PerformanceView: View {
             dismiss()
         } label: {
             Image(systemName: "xmark.circle.fill")
-            .font(.system(size: 30))
-            .foregroundStyle(.secondary)
-            .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 30))
+                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.hierarchical)
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
