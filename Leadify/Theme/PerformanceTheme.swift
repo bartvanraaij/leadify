@@ -33,6 +33,11 @@ struct PerformanceTheme {
     // Medley
     static let medleyTitleSize: CGFloat = 24
     static let medleyIndicatorColor = Color(light: Color(white: 0.5), dark: Color(white: 0.5))
+
+    // Sidebar (wide mode)
+    static let sidebarBackground = Color(light: Color(white: 0.94), dark: Color(white: 0.08))
+    static let sidebarActiveColor = EditTheme.accentColor
+    static let sidebarTextColor = Color(light: Color(white: 0.3), dark: Color(white: 0.7))
 }
 
 // Helper extension for adaptive colors
