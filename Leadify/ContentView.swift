@@ -4,6 +4,7 @@ import SwiftData
 enum SidebarItem: String, CaseIterable, Identifiable {
     case setlists
     case songs
+    case medleys
 
     var id: String { rawValue }
 
@@ -11,6 +12,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         switch self {
         case .setlists: "Setlists"
         case .songs: "Songs"
+        case .medleys: "Medleys"
         }
     }
 
@@ -18,6 +20,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         switch self {
         case .setlists: "music.note.list"
         case .songs: "music.note"
+        case .medleys: "rectangle.stack.fill"
         }
     }
 }
@@ -32,6 +35,8 @@ struct ContentView: View {
     @State private var selectedSong: Song?
     @State private var isEditingSong = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var selectedMedley: Medley?
+    @Query private var allMedleys: [Medley]
 
     var sortedSetlists: [Setlist] {
         allSetlists.sorted { a, b in
@@ -62,11 +67,13 @@ struct ContentView: View {
                     )
                 case .songs:
                     SongLibrarySidebarView(selectedSong: $selectedSong)
+                case .medleys:
+                    MedleySidebarView(selectedMedley: $selectedMedley)
                 case nil:
                     ContentUnavailableView(
                         "Select a Category",
                         systemImage: "sidebar.left",
-                        description: Text("Choose Setlists or Songs from the sidebar.")
+                        description: Text("Choose Setlists, Songs, or Medleys from the sidebar.")
                     )
                 }
             }
@@ -99,6 +106,16 @@ struct ContentView: View {
                             "No Song Selected",
                             systemImage: "music.note",
                             description: Text("Select a song from the library to edit it.")
+                        )
+                    }
+                case .medleys:
+                    if let medley = selectedMedley {
+                        MedleyDetailView(medley: medley, selectedMedley: $selectedMedley)
+                    } else {
+                        ContentUnavailableView(
+                            "No Medley Selected",
+                            systemImage: "rectangle.stack.fill",
+                            description: Text("Select a medley or create a new one.")
                         )
                     }
                 case nil:
@@ -156,7 +173,7 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Song.self, Tacet.self, SetlistEntry.self, Setlist.self],
+        .modelContainer(for: [Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self],
                         inMemory: true)
         .environment(SongImporter())
 }
