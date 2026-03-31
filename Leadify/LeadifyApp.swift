@@ -5,7 +5,6 @@ import SwiftData
 struct LeadifyApp: App {
     let container: ModelContainer
     @State private var songImporter = SongImporter()
-    @State private var sidebarMode: SidebarMode = .setlists
 
     init() {
         do {
@@ -20,10 +19,9 @@ struct LeadifyApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(sidebarMode: $sidebarMode)
+            ContentView()
                 .environment(songImporter)
                 .onOpenURL { url in
-                    sidebarMode = .songs
                     songImporter.importFile(url: url, context: container.mainContext)
                 }
         }

@@ -1,15 +1,33 @@
 import SwiftUI
 import SwiftData
 
-enum SidebarMode {
-    case setlists, songs
+enum SidebarItem: String, CaseIterable, Identifiable {
+    case setlists
+    case songs
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .setlists: "Setlists"
+        case .songs: "Songs"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .setlists: "music.note.list"
+        case .songs: "music.note"
+        }
+    }
 }
 
 struct ContentView: View {
-    @Query private var allSetlists: [Setlist]
     @Environment(\.modelContext) private var modelContext
     @Environment(SongImporter.self) private var songImporter
-    @Binding var sidebarMode: SidebarMode
+    @Query private var allSetlists: [Setlist]
+
+    @State private var selectedSidebarItem: SidebarItem? = .setlists
     @State private var selectedSetlist: Setlist?
     @State private var selectedSong: Song?
     @State private var isEditingSong = false
@@ -27,8 +45,16 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
+            List(SidebarItem.allCases, selection: $selectedSidebarItem) { item in
+                NavigationLink(value: item) {
+                    Label(item.title, systemImage: item.icon)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 240)
+        } content: {
             Group {
-                switch sidebarMode {
+                switch selectedSidebarItem {
                 case .setlists:
                     SetlistSidebarView(
                         setlists: sortedSetlists,
@@ -36,33 +62,19 @@ struct ContentView: View {
                     )
                 case .songs:
                     SongLibrarySidebarView(selectedSong: $selectedSong)
+                case nil:
+                    ContentUnavailableView(
+                        "Select a Category",
+                        systemImage: "sidebar.left",
+                        description: Text("Choose Setlists or Songs from the sidebar.")
+                    )
                 }
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(sidebarMode == .setlists ? "Setlists" : "Songs")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
-                        .padding(.bottom, 12)
-
-                    Picker("", selection: $sidebarMode) {
-                        Text("Setlists").tag(SidebarMode.setlists)
-                        Text("Songs").tag(SidebarMode.songs)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 12)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.bar)
             }
             .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 400)
         } detail: {
             ZStack {
                 Color(.systemGroupedBackground).ignoresSafeArea()
-                switch sidebarMode {
+                switch selectedSidebarItem {
                 case .setlists:
                     if let setlist = selectedSetlist {
                         SetlistDetailView(setlist: setlist, selectedSetlist: $selectedSetlist)
@@ -70,7 +82,7 @@ struct ContentView: View {
                         ContentUnavailableView(
                             "No Setlist Selected",
                             systemImage: "music.note.list",
-                            description: Text("Select a setlist from the sidebar or create a new one.")
+                            description: Text("Select a setlist or create a new one.")
                         )
                     }
                 case .songs:
@@ -89,11 +101,12 @@ struct ContentView: View {
                             description: Text("Select a song from the library to edit it.")
                         )
                     }
+                case nil:
+                    Color.clear
                 }
             }
         }
         .onChange(of: selectedSong) {
-            // New songs (from + button) go straight to edit mode
             if let song = selectedSong, song.title.isEmpty && song.content.isEmpty {
                 isEditingSong = true
             } else {
@@ -142,7 +155,7 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(sidebarMode: .constant(.setlists))
+    ContentView()
         .modelContainer(for: [Song.self, Tacet.self, SetlistEntry.self, Setlist.self],
                         inMemory: true)
         .environment(SongImporter())

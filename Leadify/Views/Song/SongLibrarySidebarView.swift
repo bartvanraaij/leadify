@@ -32,25 +32,46 @@ struct SongLibrarySidebarView: View {
     var body: some View {
         List(selection: $selectedSong) {
             ForEach(sortedSongs) { song in
-                SongLibraryRow(song: song, isSelected: selectedSong?.persistentModelID == song.persistentModelID)
-                    .tag(song)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            songToDelete = song
-                            showDeleteConfirmation = true
-                        } label: {
-                            Label("", systemImage: "trash")
-                        }
+                NavigationLink(value: song) {
+                    SongLibraryRow(song: song, isSelected: selectedSong?.persistentModelID == song.persistentModelID)
+                }
+                .listRowBackground(
+                    selectedSong?.persistentModelID == song.persistentModelID
+                        ? RoundedRectangle(cornerRadius: 22, style: .continuous).fill(EditTheme.accentColor)
+                        : nil
+                )
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        songToDelete = song
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label("", systemImage: "trash")
                     }
+                }
             }
         }
         .listStyle(.sidebar)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showFileImporter = true
+            ToolbarItem(placement: .topBarLeading) {
+                Menu {
+                    Button {
+                        showFileImporter = true
+                    } label: {
+                        Label("Import songs", systemImage: "square.and.arrow.down")
+                    }
                 } label: {
-                    Image(systemName: "square.and.arrow.down")
+                    Label("Options", systemImage: "ellipsis.circle")
+                        .labelStyle(.iconOnly)
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 1) {
+                    Text("Songs")
+                        .font(.headline)
+                    Text("\(allSongs.count) song\(allSongs.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -98,8 +119,5 @@ private struct SongLibraryRow: View {
             .fontWeight(.medium)
             .foregroundStyle(isSelected ? .white : (song.title.isEmpty ? .secondary : .primary))
             .padding(.vertical, 4)
-            .listRowBackground(
-                isSelected ? RoundedRectangle(cornerRadius: 22, style: .continuous).fill(EditTheme.accentColor) : nil
-            )
     }
 }

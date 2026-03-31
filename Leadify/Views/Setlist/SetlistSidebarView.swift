@@ -32,12 +32,28 @@ struct SetlistSidebarView: View {
     var body: some View {
         List(selection: $selectedSetlist) {
             ForEach(sortedSetlists) { setlist in
-                SetlistSidebarRow(setlist: setlist, selectedSetlist: $selectedSetlist)
-                    .tag(setlist)
+                NavigationLink(value: setlist) {
+                    SetlistSidebarRow(setlist: setlist, selectedSetlist: $selectedSetlist)
+                }
+                .listRowBackground(
+                    selectedSetlist?.persistentModelID == setlist.persistentModelID
+                        ? RoundedRectangle(cornerRadius: 22, style: .continuous).fill(EditTheme.accentColor)
+                        : nil
+                )
             }
         }
         .listStyle(.sidebar)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 1) {
+                    Text("Setlists")
+                        .font(.headline)
+                    Text("\(setlists.count) setlist\(setlists.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showNewSetlistSheet = true

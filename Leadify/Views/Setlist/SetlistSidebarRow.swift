@@ -31,9 +31,6 @@ struct SetlistSidebarRow: View {
             }
         }
         .padding(.vertical, 4)
-        .listRowBackground(
-            isSelected ? RoundedRectangle(cornerRadius: 22, style: .continuous).fill(EditTheme.accentColor) : nil
-        )
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button(role: .destructive) {
                 showDeleteAlert = true
