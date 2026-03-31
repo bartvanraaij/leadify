@@ -88,7 +88,7 @@ Views are grouped by **domain** (Song, Tacet, Setlist, Performance). File and st
 - `*Row` — list row components (e.g. `SongSetlistRow`, `SetlistSidebarRow`)
 - `*Block` — performance mode sections (e.g. `SongPerformanceBlock`)
 
-Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setlist/), not the entity (Song/).
+Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setlist/), not the entity (Song/). `SongSetlistRow` displays the song title only (no reminder, no preview in the row).
 
 ## Data model key facts
 

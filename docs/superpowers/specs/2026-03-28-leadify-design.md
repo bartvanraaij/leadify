@@ -189,7 +189,7 @@ struct EditTheme {
 
 **Detail pane — setlist contents:**
 - Drag-to-reorder rows using SwiftUI `List` with `.onMove`.
-- Each song row: drag handle (left) · title (primary, larger) + reminder (reminder color, same size) · first line of content as preview (secondary, smaller) · edit pencil (right).
+- Each song row: drag handle (left) · title (primary) · edit pencil (right).
 - Each tacet row: drag handle · italic dimmed label · edit pencil. Visually distinct with dashed border.
 - **Inline add row at bottom** (dashed border, two tappable sections divided by a separator):
   - **+ Add Song** → opens Song Library sheet
@@ -219,7 +219,6 @@ struct EditTheme {
 - Invisible tap zones at top and bottom of screen for snap scrolling.
   - Tap bottom → scrolls so the first currently off-screen song appears at the top of the view.
   - Tap top → reverse.
-- **"Up next" label:** bottom-right corner, `upNextSize`, `upNextColor` — shows title of the first song not yet visible below the fold. Hidden when at end of setlist.
 
 **Song block:**
 - Title: `songTitleSize`, bold, `songTitleColor`
