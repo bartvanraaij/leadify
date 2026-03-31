@@ -65,7 +65,7 @@ struct ContentView: View {
                 switch sidebarMode {
                 case .setlists:
                     if let setlist = selectedSetlist {
-                        SetlistDetailView(setlist: setlist)
+                        SetlistDetailView(setlist: setlist, selectedSetlist: $selectedSetlist)
                     } else {
                         ContentUnavailableView(
                             "No Setlist Selected",

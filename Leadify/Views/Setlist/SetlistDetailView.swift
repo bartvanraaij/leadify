@@ -3,17 +3,15 @@ import SwiftData
 
 struct SetlistDetailView: View {
     @Bindable var setlist: Setlist
+    @Binding var selectedSetlist: Setlist?
     @Environment(\.modelContext) private var context
-    @Environment(\.editMode) private var editMode
 
     @State private var showSongLibrary = false
     @State private var showTacetEdit = false
     @State private var editingEntry: SetlistEntry?
     @State private var showPerformance = false
-
-    private var isEditing: Bool {
-        editMode?.wrappedValue.isEditing == true
-    }
+    @State private var showEditSheet = false
+    @State private var showDeleteAlert = false
 
     var body: some View {
         List {
@@ -28,23 +26,19 @@ struct SetlistDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                if !setlist.sortedEntries.isEmpty {
-                    EditButton()
-                }
+                setlistMenu
             }
-            
+
             ToolbarItemGroup(placement: .topBarTrailing) {
-                if !isEditing {
-                    Button {
-                        showTacetEdit = true
-                    } label: {
-                        Label("Add Tacet", systemImage: "pause.circle")
-                    }
-                    Button {
-                        showSongLibrary = true
-                    } label: {
-                        Label("Add Song", systemImage: "plus")
-                    }
+                Button {
+                    showTacetEdit = true
+                } label: {
+                    Label("Add Tacet", systemImage: "pause.circle")
+                }
+                Button {
+                    showSongLibrary = true
+                } label: {
+                    Label("Add Song", systemImage: "plus")
                 }
 
                 performButton
@@ -66,6 +60,15 @@ struct SetlistDetailView: View {
         }
         .fullScreenCover(isPresented: $showPerformance) {
             PerformanceView(setlist: setlist)
+        }
+        .sheet(isPresented: $showEditSheet) {
+            SetlistEditSheet(setlist: setlist)
+        }
+        .alert("Delete \"\(setlist.name)\"?", isPresented: $showDeleteAlert) {
+            Button("Delete", role: .destructive) { deleteSetlist() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will remove the setlist and all its entries. Songs in your library are not affected.")
         }
     }
 
@@ -126,6 +129,33 @@ struct SetlistDetailView: View {
         }
     }
 
+    private var setlistMenu: some View {
+        Menu {
+            Button {
+                showEditSheet = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+
+            Button {
+                duplicateSetlist()
+            } label: {
+                Label("Duplicate", systemImage: "doc.on.doc")
+            }
+
+            Divider()
+
+            Button(role: .destructive) {
+                showDeleteAlert = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        } label: {
+            Label("Options", systemImage: "ellipsis.circle")
+                .labelStyle(.iconOnly)
+        }
+    }
+
     private var performButton: some View {
         Button {
             showPerformance = true
@@ -152,6 +182,16 @@ struct SetlistDetailView: View {
             let entry = setlist.sortedEntries[index]
             deleteEntry(entry)
         }
+    }
+
+    private func duplicateSetlist() {
+        let copy = setlist.duplicate(in: context)
+        selectedSetlist = copy
+    }
+
+    private func deleteSetlist() {
+        selectedSetlist = nil
+        context.delete(setlist)
     }
 
     private func deleteEntry(_ entry: SetlistEntry) {
