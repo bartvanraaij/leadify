@@ -8,7 +8,8 @@
 ├── Leadify/                         ← Swift source root
 │       ├── LeadifyApp.swift
 │       ├── ContentView.swift
-│       ├── Models/                      Song, Tacet, SetlistEntry, Setlist, Medley, MedleyEntry
+│       ├── Models/                      Song, Tacet, SetlistEntry, Setlist, Medley, MedleyEntry,
+│       │                                Performable (protocol + PerformanceItem)
 │       ├── Theme/                       EditTheme, PerformanceTheme
 │       └── Views/                       domain-based grouping (see naming conventions below)
 │           ├── Song/                    SongDisplayView, SongEditorSheet, SongEditorDetailView,
@@ -19,17 +20,21 @@
 │           │                            SongSetlistRow, TacetSetlistRow,
 │           │                            MedleySetlistGroup, MedleyLibrarySheet
 │           ├── Medley/                  MedleySidebarView, MedleySidebarRow, MedleyEditSheet,
-│           │                            MedleyDetailView, MedleySongRow, MedleySongLibrarySheet,
-│           │                            MedleyPerformanceView
-│           └── Performance/             PerformanceView, SongPerformanceBlock, SongPerformanceContent,
+│           │                            MedleyDetailView, MedleySongRow, MedleySongLibrarySheet
+│           └── Performance/             PerformanceView, PerformanceTapOverlay,
+│                                        PerformanceSetlistSidebar, PerformanceNavigator,
+│                                        SongPerformanceBlock, SongPerformanceContent,
 │                                        MedleyPerformanceBlock, TacetPerformanceBlock
-├── LeadifyTests/                        SetlistTests, SongTests, MedleyTests, TestHelpers
+├── LeadifyTests/                        SetlistTests, SongTests, MedleyTests,
+│                                        PerformanceNavigationTests, TestHelpers
 ├── docs/superpowers/
 │   ├── specs/2026-03-28-leadify-design.md
 │   ├── specs/2026-03-31-medley-design.md
+│   ├── specs/2026-03-31-performance-view-redesign.md
 │   ├── plans/2026-03-28-leadify-plan-1-foundation-ordering.md
 │   ├── plans/2026-03-28-leadify-plan-2-performance-mode.md
-│   └── plans/2026-03-31-medley-plan.md
+│   ├── plans/2026-03-31-medley-plan.md
+│   └── plans/2026-03-31-performance-view-redesign-plan.md
 └── .claude/projects/.../memory/         persistent memory across sessions
 ```
 
@@ -90,6 +95,9 @@ Views are grouped by **domain** (Song, Tacet, Setlist, Medley, Performance). Fil
 - `*Sheet` — modal/sheet presentations (e.g. `SongEditorSheet`, `TacetEditSheet`)
 - `*Row` — list row components (e.g. `SongSetlistRow`, `SetlistSidebarRow`)
 - `*Block` — performance mode sections (e.g. `SongPerformanceBlock`)
+- `*Overlay` — transparent gesture layers (e.g. `PerformanceTapOverlay`)
+- `*Navigator` — pure-logic navigation helpers (e.g. `PerformanceNavigator`)
+- `*Sidebar` — sidebar/panel components (e.g. `PerformanceSetlistSidebar`)
 
 Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setlist/), not the entity (Song/). `SongSetlistRow` displays the song title only (no reminder, no preview in the row).
 
@@ -101,19 +109,21 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - `Medley` — a fixed group of songs in a specific order. Shared across setlists by reference (like Song). Has `sortedEntries`, `addEntry()`, and `duplicate(in:)`.
 - `MedleyEntry` — join object with a non-optional `Song` reference and `order: Int`. Same ordering pattern as `SetlistEntry`.
 - `Setlist.duplicate(in:)` — shares song and medley references, deep-copies tacets, preserves order.
+- `Performable` — protocol conforming types (`Setlist`, `Medley`) provide `performanceTitle` and `performanceItems: [PerformanceItem]`. `PerformanceView` accepts `any Performable`, so both setlists and medleys share the same performance UI.
+- `PerformanceItem` — lightweight value struct with `kind` (.song/.tacet/.medley), `title`, and optional model refs. `isSkippable` returns true for tacets (skipped during next/prev navigation).
 - `ModelContainer` is initialised without `.none` to keep the CloudKit migration path open.
 
-## Current status (as of 2026-03-31)
+## Current status (as of 2026-04-01)
 
 ### Done
 - Plan 1: All data models, themes, setlist editing/ordering UI, unit tests ✅
-- Plan 2: Performance mode (PerformanceView, SongPerformanceBlock, TacetPerformanceBlock) ✅
+- Performance mode redesigned with ForScore-style active-entry navigation: left/right tap zones for next/prev entry, up/down chevrons for within-entry scrolling, entry dimming, adaptive sidebar in wide mode (≥950pt), Performable protocol so both Setlist and Medley share the same PerformanceView ✅
 - Medley feature: Medley/MedleyEntry models, sidebar section, detail view with CRUD, setlist integration (grouped display), performance mode (single card with medley title), medley-only rehearsal mode ✅
 - Sidebar: three sections — Setlists / Songs / Medleys ✅
-- Tests: all 30 passing ✅
+- Tests: all passing ✅
 
 ### Known UI issues / next refinements
-- Font sizes in performance mode — user wants to test on real iPad to fine-tune
+- Performance view tap zone sizes and scroll fractions may need tuning after real-device testing
 - Song editor form height (260) — may still need adjustment depending on Dynamic Type settings
 - Tap-to-edit on rows works, but there's no visual affordance (no chevron/indicator)
 - Medley grouped display in setlist uses approach A (header + flat songs) — may iterate to B (bracket) or C (collapsed) based on testing
