@@ -9,7 +9,8 @@
 │       ├── LeadifyApp.swift
 │       ├── ContentView.swift
 │       ├── Models/                      Song, Tacet, SetlistEntry, Setlist, Medley, MedleyEntry,
-│       │                                Performable (protocol + PerformanceItem)
+│       │                                Performable (protocol + PerformanceItem),
+│       │                                MarkdownSongParser, SongImporter
 │       ├── Theme/                       EditTheme, PerformanceTheme
 │       └── Views/                       domain-based grouping (see naming conventions below)
 │           ├── Song/                    SongDisplayView, SongEditorSheet, SongEditorDetailView,
@@ -23,16 +24,21 @@
 │           │                            MedleyDetailView, MedleySongRow, MedleySongLibrarySheet
 │           └── Performance/             PerformanceView, PerformanceTapOverlay,
 │                                        PerformanceSetlistSidebar, PerformanceNavigator,
-│                                        SongPerformanceBlock, SongPerformanceContent,
-│                                        MedleyPerformanceBlock, TacetPerformanceBlock
+│                                        SongPerformanceBlock, TacetPerformanceBlock
 ├── LeadifyTests/                        SetlistTests, SongTests, MedleyTests,
-│                                        PerformanceNavigationTests, TestHelpers
+│                                        PerformanceNavigationTests, MarkdownSongParserTests,
+│                                        SongImporterTests, TestHelpers
 ├── docs/superpowers/
 │   ├── specs/2026-03-28-leadify-design.md
+│   ├── specs/2026-03-30-markdown-import-design.md
+│   ├── specs/2026-03-30-song-library-design.md
 │   ├── specs/2026-03-31-medley-design.md
 │   ├── specs/2026-03-31-performance-view-redesign.md
 │   ├── plans/2026-03-28-leadify-plan-1-foundation-ordering.md
 │   ├── plans/2026-03-28-leadify-plan-2-performance-mode.md
+│   ├── plans/2026-03-29-ui-polish-plan-3.md
+│   ├── plans/2026-03-30-markdown-import-plan.md
+│   ├── plans/2026-03-30-song-library-plan.md
 │   ├── plans/2026-03-31-medley-plan.md
 │   └── plans/2026-03-31-performance-view-redesign-plan.md
 └── .claude/projects/.../memory/         persistent memory across sessions
@@ -44,7 +50,7 @@
 # Find available simulators
 xcrun simctl list devices available | grep -i ipad
 
-# Build (use a 26.2 simulator — the project targets iOS 26.2)
+# Build (use a 26.x simulator)
 xcodebuild build -scheme Leadify \
   -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
 
@@ -119,6 +125,9 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - Plan 1: All data models, themes, setlist editing/ordering UI, unit tests ✅
 - Performance mode redesigned with ForScore-style active-entry navigation: left/right tap zones for next/prev entry, up/down chevrons for within-entry scrolling, entry dimming, adaptive sidebar in wide mode (≥950pt), Performable protocol so both Setlist and Medley share the same PerformanceView ✅
 - Medley feature: Medley/MedleyEntry models, sidebar section, detail view with CRUD, setlist integration (grouped display), performance mode (single card with medley title), medley-only rehearsal mode ✅
+- Markdown song import: MarkdownSongParser + SongImporter for importing songs from markdown files ✅
+- Song library: SongLibrarySheet, SongLibrarySidebarView for browsing/managing songs ✅
+- UI polish (plan 3) ✅
 - Sidebar: three sections — Setlists / Songs / Medleys ✅
 - Tests: all passing ✅
 

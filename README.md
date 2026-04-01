@@ -11,6 +11,7 @@ A native iPadOS app for guitarists performing live. Replaces the Google Docs + F
 - Create medleys — fixed groups of songs played back-to-back, shared across setlists like songs
 - Reorder entries with drag handles, delete by swiping left
 - Tap any entry to edit it
+- Import songs from Markdown files
 
 **Performance mode** — on stage, fullscreen:
 - Dark background, no distractions, no status bar
@@ -27,7 +28,7 @@ A native iPadOS app for guitarists performing live. Replaces the Google Docs + F
 - **SwiftUI** — all UI
 - **SwiftData** — local persistence
 - **MarkdownUI** — Markdown rendering in song editor preview and performance mode
-- Minimum deployment target: **iOS 26.2**
+- Minimum deployment target: **iOS 26**
 
 ## Project structure
 
@@ -40,10 +41,13 @@ Leadify/
 │   ├── Setlist.swift          sortedEntries, addEntry(), duplicate()
 │   ├── Medley.swift           fixed group of songs, shared by reference
 │   ├── MedleyEntry.swift      join object with Song reference and order
-│   └── Performable.swift      protocol + PerformanceItem for shared performance UI
+│   ├── Performable.swift      protocol + PerformanceItem for shared performance UI
+│   ├── MarkdownSongParser.swift  parses markdown files into Song objects
+│   └── SongImporter.swift     bulk import songs from markdown files
 ├── Theme/
 │   ├── EditTheme.swift        all sizes + colors for edit/ordering mode
-│   └── PerformanceTheme.swift all sizes + colors for performance mode
+│   ├── PerformanceTheme.swift all sizes + colors for performance mode
+│   └── MarkdownTheme.swift    custom MarkdownUI theme for performance rendering
 └── Views/                     domain-based grouping
     ├── Song/                  display, editor, library views
     ├── Tacet/                 tacet editing
@@ -79,7 +83,7 @@ E|-0--0--0--0-----------9--9--9--9--------|
 
 ## Building
 
-Open `Leadify.xcodeproj` in Xcode 26+. Select an iPad simulator (iOS 26.2+) and press **Cmd+R**.
+Open `Leadify.xcodeproj` in Xcode 26+. Select an iPad simulator (iOS 26+) and press **Cmd+R**.
 
 Run tests with **Cmd+U**.
 
