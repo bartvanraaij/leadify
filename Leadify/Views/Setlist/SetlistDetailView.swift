@@ -76,7 +76,7 @@ struct SetlistDetailView: View {
             }
         }
         .fullScreenCover(isPresented: $showPerformance) {
-            PerformanceView(setlist: setlist)
+            PerformanceView(source: setlist)
         }
         .sheet(isPresented: $showEditSheet) {
             SetlistEditSheet(setlist: setlist)

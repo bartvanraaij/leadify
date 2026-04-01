@@ -1,0 +1,87 @@
+import Foundation
+import SwiftData
+
+/// A lightweight value type representing one item in a performance.
+/// Used by PerformanceView to render and navigate without knowing about SetlistEntry or MedleyEntry.
+struct PerformanceItem: Identifiable {
+    let id: String
+    let title: String
+    let kind: Kind
+    /// Non-nil for song and medley items.
+    let song: Song?
+    /// Non-nil for tacet items.
+    let tacet: Tacet?
+    /// Non-nil for medley items (the full medley, rendered as a single block).
+    let medley: Medley?
+
+    enum Kind {
+        case song
+        case tacet
+        case medley
+    }
+
+    /// Whether this item should be skipped during next/prev navigation.
+    var isSkippable: Bool { kind == .tacet }
+}
+
+/// Anything that can be performed — provides a title and a list of performance items.
+/// Conformers: Setlist (songs, tacets, medleys) and Medley (individual songs).
+protocol Performable {
+    var performanceTitle: String { get }
+    var performanceItems: [PerformanceItem] { get }
+}
+
+extension Setlist: Performable {
+    var performanceTitle: String { name }
+
+    var performanceItems: [PerformanceItem] {
+        sortedEntries.map { entry in
+            switch entry.itemType {
+            case .song:
+                PerformanceItem(
+                    id: entry.persistentModelID.hashValue.description,
+                    title: entry.song?.title ?? "Untitled",
+                    kind: .song,
+                    song: entry.song,
+                    tacet: nil,
+                    medley: nil
+                )
+            case .tacet:
+                PerformanceItem(
+                    id: entry.persistentModelID.hashValue.description,
+                    title: entry.tacet?.label ?? "Tacet",
+                    kind: .tacet,
+                    song: nil,
+                    tacet: entry.tacet,
+                    medley: nil
+                )
+            case .medley:
+                PerformanceItem(
+                    id: entry.persistentModelID.hashValue.description,
+                    title: entry.medley?.name ?? "Medley",
+                    kind: .medley,
+                    song: nil,
+                    tacet: nil,
+                    medley: entry.medley
+                )
+            }
+        }
+    }
+}
+
+extension Medley: Performable {
+    var performanceTitle: String { name }
+
+    var performanceItems: [PerformanceItem] {
+        sortedEntries.map { entry in
+            PerformanceItem(
+                id: entry.persistentModelID.hashValue.description,
+                title: entry.song.title,
+                kind: .song,
+                song: entry.song,
+                tacet: nil,
+                medley: nil
+            )
+        }
+    }
+}

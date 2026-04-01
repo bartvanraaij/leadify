@@ -9,7 +9,7 @@ private struct EntryFrameKey: PreferenceKey {
 }
 
 struct PerformanceView: View {
-    let setlist: Setlist
+    let source: any Performable
     @Environment(\.dismiss) private var dismiss
 
     @State private var activeIndex: Int = 0
@@ -18,22 +18,24 @@ struct PerformanceView: View {
     @State private var viewportHeight: CGFloat = 0
     @State private var entryFrames: [Int: CGRect] = [:]
 
-    private var entries: [SetlistEntry] { setlist.sortedEntries }
+    private var items: [PerformanceItem] { source.performanceItems }
     private static let wideSidebarThreshold: CGFloat = 950
+    private static let scrollOvershoot: CGFloat = 40
 
     var body: some View {
         GeometryReader { geo in
             let isWide = geo.size.width >= Self.wideSidebarThreshold
 
             HStack(spacing: 0) {
-                // Main scroll content
                 scrollContent(viewportSize: geo.size)
+                    .overlay { scrollIndicators }
 
-                // Sidebar in wide mode
                 if isWide {
                     Divider()
+                        .ignoresSafeArea()
                     PerformanceSetlistSidebar(
-                        entries: entries,
+                        title: source.performanceTitle,
+                        items: items,
                         activeIndex: activeIndex
                     ) { index in
                         navigateTo(index: index)
@@ -41,11 +43,28 @@ struct PerformanceView: View {
                     .frame(width: geo.size.width * 0.25)
                 }
             }
-            .onAppear { viewportHeight = geo.size.height }
-            .onChange(of: geo.size.height) { _, h in viewportHeight = h }
+            .overlay(alignment: .topTrailing) {
+                closeButton(alignWithSidebarTitle: isWide)
+            }
+            .onAppear {
+                viewportHeight = geo.size.height
+                if let first = nextNavigableIndex(after: -1) {
+                    activeIndex = first
+                }
+            }
+            .onChange(of: geo.size) { _, newSize in
+                viewportHeight = newSize.height
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let frame = entryFrames[activeIndex] {
+                        let contentY = frame.minY + scrollOffset + Self.scrollOvershoot
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            scrollPosition.scrollTo(y: max(0, contentY))
+                        }
+                    }
+                }
+            }
         }
         .background(PerformanceTheme.background.ignoresSafeArea())
-        .overlay(alignment: .topTrailing) { closeButton }
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
     }
@@ -54,54 +73,112 @@ struct PerformanceView: View {
 
     @ViewBuilder
     private func scrollContent(viewportSize: CGSize) -> some View {
-        ZStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(Array(entries.enumerated()), id: \.element.persistentModelID) { index, entry in
-                        entryView(entry: entry, index: index)
-                            .padding(.horizontal, 32)
-                            .opacity(opacityFor(index: index))
-                            .animation(.easeInOut(duration: 0.3), value: activeIndex)
-                            .background(
-                                GeometryReader { entryGeo in
-                                    Color.clear.preference(
-                                        key: EntryFrameKey.self,
-                                        value: [index: entryGeo.frame(in: .named("perfScroll"))]
-                                    )
-                                }
-                            )
-                            .id(index)
-                    }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    itemView(item: item)
+                        .padding(.horizontal, 32)
+                        .opacity(opacityFor(index: index))
+                        .animation(.easeInOut(duration: 0.3), value: activeIndex)
+                        .background(
+                            GeometryReader { entryGeo in
+                                Color.clear.preference(
+                                    key: EntryFrameKey.self,
+                                    value: [index: entryGeo.frame(in: .named("perfScroll"))]
+                                )
+                            }
+                        )
+                        .id(index)
                 }
-                .padding(.top, 40)
-                .padding(.bottom, 80)
             }
-            .coordinateSpace(name: "perfScroll")
-            .scrollPosition($scrollPosition)
-            .onPreferenceChange(EntryFrameKey.self) { entryFrames = $0 }
-            .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
-                scrollOffset = y
-            }
-
-            // Tap overlay — UIKit-based, does not block scroll
-            PerformanceTapOverlay(
-                onLeftTap: { handleTap(direction: .backward) },
-                onRightTap: { handleTap(direction: .forward) }
+            .padding(.top, 0)
+            .padding(.bottom, 80)
+            .background(
+                PerformanceTapOverlay(
+                    onLeftTap: { navigateToPrevious() },
+                    onRightTap: { navigateToNext() },
+                    onCenterTap: { tapY in activateEntryAt(viewportY: tapY) }
+                )
             )
+        }
+        .coordinateSpace(name: "perfScroll")
+        .scrollPosition($scrollPosition)
+        .onPreferenceChange(EntryFrameKey.self) { entryFrames = $0 }
+        .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
+            scrollOffset = y
         }
     }
 
-    // MARK: - Entry rendering
+    // MARK: - Scroll indicators (up/down chevrons)
+
+    private var canScrollDown: Bool {
+        guard let frame = entryFrames[activeIndex] else { return false }
+        let entryBottomInContent = frame.maxY + scrollOffset
+        return entryBottomInContent > scrollOffset + viewportHeight + 5
+    }
+
+    private var canScrollUp: Bool {
+        guard let frame = entryFrames[activeIndex] else { return false }
+        let entryTopTarget = frame.minY + scrollOffset + Self.scrollOvershoot
+        return scrollOffset > entryTopTarget + 5
+    }
 
     @ViewBuilder
-    private func entryView(entry: SetlistEntry, index: Int) -> some View {
-        switch entry.itemType {
+    private var scrollIndicators: some View {
+        ZStack {
+            if canScrollDown {
+                VStack {
+                    Spacer()
+                    Button { scrollActiveEntryDown() } label: {
+                        Image(systemName: "chevron.compact.down")
+                            .font(.system(size: 48, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .frame(width: 80, height: 52)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(.black.opacity(0.25))
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.bottom, 24)
+                }
+                .transition(.opacity)
+            }
+
+            if canScrollUp {
+                VStack {
+                    Button { scrollActiveEntryUp() } label: {
+                        Image(systemName: "chevron.compact.up")
+                            .font(.system(size: 48, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .frame(width: 80, height: 52)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(.black.opacity(0.25))
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.top, 24)
+                    Spacer()
+                }
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: canScrollDown)
+        .animation(.easeInOut(duration: 0.2), value: canScrollUp)
+    }
+
+    // MARK: - Item rendering
+
+    @ViewBuilder
+    private func itemView(item: PerformanceItem) -> some View {
+        switch item.kind {
         case .song:
-            SongPerformanceBlock(song: entry.song!)
+            SongPerformanceBlock(song: item.song!)
         case .tacet:
-            TacetPerformanceBlock(tacet: entry.tacet!)
+            TacetPerformanceBlock(tacet: item.tacet!)
         case .medley:
-            if let medley = entry.medley {
+            if let medley = item.medley {
                 MedleyPerformanceBlock(medley: medley)
             }
         }
@@ -111,58 +188,104 @@ struct PerformanceView: View {
 
     private func opacityFor(index: Int) -> Double {
         if index == activeIndex { return 1.0 }
-        if index < activeIndex { return 0.3 }
-        return 0.4 // upcoming
+        return 0.5
     }
 
-    // MARK: - Navigation
+    // MARK: - Entry navigation (left/right taps)
 
-    private func handleTap(direction: TapDirection) {
-        // Get the active entry's frame relative to the viewport
-        guard let frameInScroll = entryFrames[activeIndex] else { return }
-
-        // Convert from scroll-content space to viewport space:
-        // In scroll-content space, the frame's Y is relative to the content top.
-        // The viewport sees content starting at scrollOffset.
-        let viewportRelativeFrame = CGRect(
-            x: frameInScroll.minX,
-            y: frameInScroll.minY - scrollOffset,
-            width: frameInScroll.width,
-            height: frameInScroll.height
-        )
-
-        let result = PerformanceNavigator.handleTap(
-            direction: direction,
-            activeIndex: activeIndex,
-            entryCount: entries.count,
-            activeEntryFrame: viewportRelativeFrame,
-            viewportHeight: viewportHeight,
-            scrollOffset: scrollOffset
-        )
-
-        if let target = result.scrollTarget {
-            // Scroll within current entry
-            withAnimation(.easeInOut(duration: 0.25)) {
-                scrollPosition.scrollTo(y: target)
-            }
-        } else if result.newActiveIndex != activeIndex {
-            // Navigate to new entry — scroll to its anchor
-            navigateTo(index: result.newActiveIndex)
+    private func nextNavigableIndex(after index: Int) -> Int? {
+        var i = index + 1
+        while i < items.count {
+            if !items[i].isSkippable { return i }
+            i += 1
         }
+        return nil
+    }
 
-        activeIndex = result.newActiveIndex
+    private func previousNavigableIndex(before index: Int) -> Int? {
+        var i = index - 1
+        while i >= 0 {
+            if !items[i].isSkippable { return i }
+            i -= 1
+        }
+        return nil
+    }
+
+    private func navigateToNext() {
+        if let idx = nextNavigableIndex(after: activeIndex) {
+            navigateTo(index: idx)
+        }
+    }
+
+    private func navigateToPrevious() {
+        if let idx = previousNavigableIndex(before: activeIndex) {
+            navigateTo(index: idx)
+        }
     }
 
     private func navigateTo(index: Int) {
         activeIndex = index
+        if let frame = entryFrames[index] {
+            let contentY = frame.minY + scrollOffset + Self.scrollOvershoot
+            withAnimation(.easeInOut(duration: 0.25)) {
+                scrollPosition.scrollTo(y: max(0, contentY))
+            }
+        }
+    }
+
+    // MARK: - Tap-to-activate (center zone)
+
+    private func activateEntryAt(viewportY contentY: CGFloat) {
+        let viewportY = contentY - scrollOffset
+        for (index, frame) in entryFrames {
+            if viewportY >= frame.minY && viewportY <= frame.maxY {
+                if index != activeIndex && !items[index].isSkippable {
+                    navigateTo(index: index)
+                }
+                return
+            }
+        }
+    }
+
+    // MARK: - Within-entry scrolling (up/down chevrons)
+
+    private func scrollActiveEntryDown() {
+        guard let frame = entryFrames[activeIndex] else { return }
+        let entryBottomInContent = frame.maxY + scrollOffset
+        let remainingBelow = entryBottomInContent - (scrollOffset + viewportHeight)
+
+        let targetY: CGFloat
+        if remainingBelow > viewportHeight {
+            targetY = scrollOffset + viewportHeight
+        } else {
+            targetY = entryBottomInContent - viewportHeight + Self.scrollOvershoot
+        }
+
         withAnimation(.easeInOut(duration: 0.25)) {
-            scrollPosition.scrollTo(id: index, anchor: .top)
+            scrollPosition.scrollTo(y: max(0, targetY))
+        }
+    }
+
+    private func scrollActiveEntryUp() {
+        guard let frame = entryFrames[activeIndex] else { return }
+        let entryTopTarget = frame.minY + scrollOffset + Self.scrollOvershoot
+        let amountAbove = scrollOffset - entryTopTarget
+
+        let targetY: CGFloat
+        if amountAbove > viewportHeight {
+            targetY = scrollOffset - viewportHeight
+        } else {
+            targetY = entryTopTarget
+        }
+
+        withAnimation(.easeInOut(duration: 0.25)) {
+            scrollPosition.scrollTo(y: max(0, targetY))
         }
     }
 
     // MARK: - Close button
 
-    private var closeButton: some View {
+    private func closeButton(alignWithSidebarTitle: Bool) -> some View {
         Button {
             dismiss()
         } label: {
@@ -172,6 +295,7 @@ struct PerformanceView: View {
                 .symbolRenderingMode(.hierarchical)
         }
         .buttonStyle(.plain)
+        .padding(.top, alignWithSidebarTitle ? 9 : 12)
         .padding(.horizontal, 16)
     }
 }

@@ -47,7 +47,7 @@ struct MedleyDetailView: View {
             SongEditorSheet(song: entry.song)
         }
         .fullScreenCover(isPresented: $showPerformance) {
-            MedleyPerformanceView(medley: medley)
+            PerformanceView(source: medley)
         }
         .sheet(isPresented: $showEditSheet) {
             MedleyEditSheet(medley: medley)

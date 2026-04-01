@@ -1,25 +1,44 @@
 import SwiftUI
 
-/// Compact setlist overview for wide-mode performance. Shows entry titles with active highlight.
+/// Compact overview for performance mode. Shows item titles with active highlight.
 struct PerformanceSetlistSidebar: View {
-    let entries: [SetlistEntry]
+    let title: String
+    let items: [PerformanceItem]
     let activeIndex: Int
     var onSelect: (Int) -> Void
 
     var body: some View {
         ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(Array(entries.enumerated()), id: \.element.persistentModelID) { index, entry in
-                        sidebarRow(index: index, entry: entry)
-                            .id(index)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(PerformanceTheme.sidebarTextColor.opacity(0.65))
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .padding(.horizontal, 22)
+                    .padding(.top, 16)
+                    .padding(.bottom, 12)
+
+                Divider()
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 4) {
+                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                            sidebarRow(index: index, item: item)
+                                .id(index)
+                        }
                     }
+                    .padding(.bottom, 16)
+                    .padding(.horizontal, 8)
                 }
-                .padding(.vertical, 16)
-            }
-            .onChange(of: activeIndex) { _, newIndex in
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    proxy.scrollTo(newIndex, anchor: .center)
+                .onChange(of: activeIndex) { _, newIndex in
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        proxy.scrollTo(newIndex, anchor: .center)
+                    }
                 }
             }
         }
@@ -28,44 +47,93 @@ struct PerformanceSetlistSidebar: View {
     }
 
     @ViewBuilder
-    private func sidebarRow(index: Int, entry: SetlistEntry) -> some View {
+    private func sidebarRow(index: Int, item: PerformanceItem) -> some View {
         let isActive = index == activeIndex
 
-        Button {
-            onSelect(index)
-        } label: {
-            HStack(spacing: 8) {
-                // Active indicator bar
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(isActive ? PerformanceTheme.sidebarActiveColor : .clear)
-                    .frame(width: 3)
+        switch item.kind {
+        case .tacet:
+            tacetLabel(item: item)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
 
-                Text(entryTitle(entry))
-                    .font(.system(size: 15, weight: isActive ? .bold : .regular))
-                    .foregroundStyle(isActive ? PerformanceTheme.sidebarActiveColor : PerformanceTheme.sidebarTextColor)
+        case .medley:
+            VStack(alignment: .leading, spacing: 0) {
+                Button {
+                    onSelect(index)
+                } label: {
+                    Text(item.title)
+                        .font(.system(size: 18))
+                        .foregroundStyle(isActive ? .white : PerformanceTheme.sidebarTextColor)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                .fill(isActive ? EditTheme.accentColor : .clear)
+                        )
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if let medley = item.medley {
+                    ForEach(medley.sortedEntries, id: \.persistentModelID) { medleyEntry in
+                        Text(medleyEntry.song.title)
+                            .font(.system(size: 14))
+                            .foregroundStyle(PerformanceTheme.sidebarTextColor.opacity(0.6))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .padding(.leading, 28)
+                            .padding(.trailing, 14)
+                            .padding(.vertical, 3)
+                    }
+                }
+            }
+
+        case .song:
+            Button {
+                onSelect(index)
+            } label: {
+                Text(item.title)
+                    .font(.system(size: 18))
+                    .foregroundStyle(isActive ? .white : PerformanceTheme.sidebarTextColor)
                     .lineLimit(1)
                     .truncationMode(.tail)
-
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .fill(isActive ? EditTheme.accentColor : .clear)
+                    )
+                    .contentShape(Rectangle())
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
     }
 
-    private func entryTitle(_ entry: SetlistEntry) -> String {
-        switch entry.itemType {
-        case .song:
-            return entry.song?.title ?? "Untitled"
-        case .tacet:
-            if let label = entry.tacet?.label, !label.isEmpty {
-                return label
-            }
-            return "Tacet"
-        case .medley:
-            return entry.medley?.name ?? "Medley"
+    @ViewBuilder
+    private func tacetLabel(item: PerformanceItem) -> some View {
+        let label = item.title.isEmpty ? "Tacet" : item.title
+        let color = PerformanceTheme.sidebarTextColor.opacity(0.7)
+
+        HStack(spacing: 8) {
+            Rectangle()
+                .fill(color)
+                .frame(height: 1)
+                .frame(maxWidth: 16)
+
+            Text(label)
+                .font(.system(size: 15).italic())
+                .foregroundStyle(color)
+                .lineLimit(1)
+
+            Rectangle()
+                .fill(color)
+                .frame(height: 1)
+                .frame(maxWidth: 16)
         }
     }
 }
