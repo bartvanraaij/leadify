@@ -85,7 +85,7 @@ All sizes and colors live in two structs:
 
 Never use literal `CGFloat` sizes or `Color(...)` values in view files. Add tokens to the theme structs instead.
 
-The custom MarkdownUI theme (`.leadifyPerformance`) is defined as an extension in `Views/Song/SongEditorSheet.swift`. If that file grows, consider extracting it to `Theme/MarkdownTheme.swift`.
+The custom MarkdownUI theme (`.leadifyPerformance`) is defined in `Theme/MarkdownTheme.swift`.
 
 ## View naming conventions
 
