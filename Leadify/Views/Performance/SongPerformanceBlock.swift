@@ -55,7 +55,7 @@ struct SongPerformanceBlock: View {
                 y: colorScheme == .dark ? 6 : 4
             )
             .padding(.horizontal, 20)
-            .padding(.vertical, 16)
+            .padding(.top, 32)
     }
 }
 
@@ -96,6 +96,6 @@ struct MedleyPerformanceBlock: View {
             y: colorScheme == .dark ? 6 : 4
         )
         .padding(.horizontal, 20)
-        .padding(.vertical, 16)
+        .padding(.top, 32)
     }
 }

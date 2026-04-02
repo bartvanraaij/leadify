@@ -26,6 +26,6 @@ struct TacetPerformanceBlock: View {
                 .frame(height: 1)
         }
         .padding(.horizontal, 32)
-        .padding(.vertical, 48)
+        .padding(.top, 96)
     }
 }

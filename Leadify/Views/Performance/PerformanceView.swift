@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Preference key to collect entry frames (in the scroll content's coordinate space).
+/// Preference key to collect entry frames in the scroll content's own coordinate space.
+/// Frames are stable absolute content positions — they do not change as the user scrolls.
 private struct EntryFrameKey: PreferenceKey {
     static let defaultValue: [Int: CGRect] = [:]
     static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
@@ -20,7 +21,9 @@ struct PerformanceView: View {
     @State private var showSidebar: Bool = false
 
     private var items: [PerformanceItem] { source.performanceItems }
-    private static let scrollOvershoot: CGFloat = 40
+
+    /// Overlap kept between scroll steps when paging through a long entry (matches inter-card spacing).
+    private static let inEntryScrollOverlap: CGFloat = 32
     private static let autoSidebarThreshold: CGFloat = 900
 
     var body: some View {
@@ -41,9 +44,8 @@ struct PerformanceView: View {
                     viewportHeight = newSize.height
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         if let frame = entryFrames[activeIndex] {
-                            let contentY = frame.minY + scrollOffset + Self.scrollOvershoot
                             withAnimation(.easeInOut(duration: 0.25)) {
-                                scrollPosition.scrollTo(y: max(0, contentY))
+                                scrollPosition.scrollTo(y: max(0, frame.minY))
                             }
                         }
                     }
@@ -81,7 +83,7 @@ struct PerformanceView: View {
                             GeometryReader { entryGeo in
                                 Color.clear.preference(
                                     key: EntryFrameKey.self,
-                                    value: [index: entryGeo.frame(in: .named("perfScroll"))]
+                                    value: [index: entryGeo.frame(in: .named("perfContent"))]
                                 )
                             }
                         )
@@ -90,15 +92,16 @@ struct PerformanceView: View {
             }
             .padding(.top, 0)
             .padding(.bottom, 80)
+            .coordinateSpace(name: "perfContent")
             .background(
                 PerformanceTapOverlay(
+                    contentWidth: viewportSize.width,
                     onLeftTap: { navigateToPrevious() },
                     onRightTap: { navigateToNext() },
-                    onCenterTap: { tapY in activateEntryAt(viewportY: tapY) }
+                    onCenterTap: { tapY in activateEntryAt(contentY: tapY) }
                 )
             )
         }
-        .coordinateSpace(name: "perfScroll")
         .scrollPosition($scrollPosition)
         .onPreferenceChange(EntryFrameKey.self) { entryFrames = $0 }
         .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
@@ -108,16 +111,21 @@ struct PerformanceView: View {
 
     // MARK: - Scroll indicators (up/down chevrons)
 
+    /// True when the active entry's bottom is below the visible viewport,
+    /// and scrollOffset has reached this entry's range (guards against mid-navigation flash).
     private var canScrollDown: Bool {
         guard let frame = entryFrames[activeIndex] else { return false }
-        let entryBottomInContent = frame.maxY + scrollOffset
-        return entryBottomInContent > scrollOffset + viewportHeight + 5
+        guard scrollOffset >= frame.minY - 5 else { return false }
+        return frame.maxY > scrollOffset + viewportHeight + 5
     }
 
+    /// True when the active entry's top is above the visible viewport,
+    /// and scrollOffset has reached this entry's range (guards against mid-navigation flash).
     private var canScrollUp: Bool {
         guard let frame = entryFrames[activeIndex] else { return false }
-        let entryTopTarget = frame.minY + scrollOffset + Self.scrollOvershoot
-        return scrollOffset > entryTopTarget + 5
+        let lastSnap = frame.maxY - viewportHeight + Self.inEntryScrollOverlap
+        guard scrollOffset <= lastSnap + 5 else { return false }
+        return scrollOffset > frame.minY + 5
     }
 
     @ViewBuilder
@@ -223,19 +231,18 @@ struct PerformanceView: View {
     private func navigateTo(index: Int) {
         activeIndex = index
         if let frame = entryFrames[index] {
-            let contentY = frame.minY + scrollOffset + Self.scrollOvershoot
             withAnimation(.easeInOut(duration: 0.25)) {
-                scrollPosition.scrollTo(y: max(0, contentY))
+                scrollPosition.scrollTo(y: max(0, frame.minY))
             }
         }
     }
 
     // MARK: - Tap-to-activate (center zone)
 
-    private func activateEntryAt(viewportY contentY: CGFloat) {
-        let viewportY = contentY - scrollOffset
+    /// tapY arrives as absolute content Y from UIScrollView.location(in: scrollView).
+    private func activateEntryAt(contentY: CGFloat) {
         for (index, frame) in entryFrames {
-            if viewportY >= frame.minY && viewportY <= frame.maxY {
+            if contentY >= frame.minY && contentY <= frame.maxY {
                 if index != activeIndex && !items[index].isSkippable {
                     navigateTo(index: index)
                 }
@@ -246,37 +253,38 @@ struct PerformanceView: View {
 
     // MARK: - Within-entry scrolling (up/down chevrons)
 
+    /// Ordered snap positions for within-entry scrolling, anchored at the entry top.
+    /// Full steps of (viewportHeight - overlap) from frame.minY, with the final step
+    /// landing at lastSnap (the near-bottom position). Pure function — always fresh on call.
+    private func inEntrySnaps(for frame: CGRect) -> [CGFloat] {
+        let lastSnap = frame.maxY - viewportHeight + Self.inEntryScrollOverlap
+        let step = viewportHeight - Self.inEntryScrollOverlap
+        guard lastSnap > frame.minY + 1, step > 0 else { return [frame.minY] }
+        var snaps: [CGFloat] = []
+        var pos = frame.minY
+        while pos < lastSnap - 1 {
+            snaps.append(pos)
+            pos += step
+        }
+        snaps.append(lastSnap)
+        return snaps
+    }
+
     private func scrollActiveEntryDown() {
         guard let frame = entryFrames[activeIndex] else { return }
-        let entryBottomInContent = frame.maxY + scrollOffset
-        let remainingBelow = entryBottomInContent - (scrollOffset + viewportHeight)
-
-        let targetY: CGFloat
-        if remainingBelow > viewportHeight {
-            targetY = scrollOffset + viewportHeight
-        } else {
-            targetY = entryBottomInContent - viewportHeight + Self.scrollOvershoot
-        }
-
+        let snaps = inEntrySnaps(for: frame)
+        guard let target = snaps.first(where: { $0 > scrollOffset + 1 }) else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
-            scrollPosition.scrollTo(y: max(0, targetY))
+            scrollPosition.scrollTo(y: max(0, target))
         }
     }
 
     private func scrollActiveEntryUp() {
         guard let frame = entryFrames[activeIndex] else { return }
-        let entryTopTarget = frame.minY + scrollOffset + Self.scrollOvershoot
-        let amountAbove = scrollOffset - entryTopTarget
-
-        let targetY: CGFloat
-        if amountAbove > viewportHeight {
-            targetY = scrollOffset - viewportHeight
-        } else {
-            targetY = entryTopTarget
-        }
-
+        let snaps = inEntrySnaps(for: frame)
+        guard let target = snaps.last(where: { $0 < scrollOffset - 1 }) else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
-            scrollPosition.scrollTo(y: max(0, targetY))
+            scrollPosition.scrollTo(y: max(0, target))
         }
     }
 
