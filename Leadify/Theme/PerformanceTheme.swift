@@ -10,6 +10,7 @@ struct PerformanceTheme {
     static let sectionHeaderSize: CGFloat = 20
     static let chordTextSize: CGFloat = 28
     static let tabFontSize: CGFloat = 16
+    static let tabTracking: CGFloat = -1.7
 
     // MARK: Colors - Modern, professional palette
     static let background = Color(light: Color(white: 0.98), dark: Color(white: 0.05))

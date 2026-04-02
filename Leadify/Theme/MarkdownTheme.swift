@@ -42,12 +42,10 @@ extension MarkdownUI.Theme {
                 }
         }
         .codeBlock { configuration in
-            configuration.label
-                .markdownTextStyle {
-                    FontFamilyVariant(.monospaced)
-                    FontSize(PerformanceTheme.tabFontSize)
-                    ForegroundColor(PerformanceTheme.tabColor)
-                }
+            Text(configuration.content)
+                .font(.system(size: PerformanceTheme.tabFontSize, design: .monospaced))
+                .foregroundStyle(PerformanceTheme.tabColor)
+                .tracking(PerformanceTheme.tabTracking)
                 .padding(.vertical, 4)
         }
 }

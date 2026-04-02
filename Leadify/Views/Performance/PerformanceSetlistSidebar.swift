@@ -82,7 +82,7 @@ struct PerformanceSetlistSidebar: View {
                     ForEach(medley.sortedEntries, id: \.persistentModelID) { medleyEntry in
                         Text(medleyEntry.song.title)
                             .font(.system(size: 14))
-                            .foregroundStyle(PerformanceTheme.sidebarTextColor.opacity(0.6))
+                            .foregroundStyle(PerformanceTheme.sidebarTextColor)
                             .lineLimit(1)
                             .truncationMode(.tail)
                             .padding(.leading, 28)
