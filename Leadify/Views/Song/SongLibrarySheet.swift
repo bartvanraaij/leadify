@@ -12,9 +12,20 @@ struct SongLibrarySheet: View {
     @State private var showNewSongEditor = false
 
     private var filteredSongs: [Song] {
-        guard !searchText.isEmpty else { return allSongs }
-        return allSongs.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText)
+        let base: [Song]
+        if searchText.isEmpty {
+            base = allSongs
+        } else {
+            base = allSongs.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        let inSetlist = songsInSetlist
+        return base.sorted { a, b in
+            let aIn = inSetlist.contains(a.persistentModelID)
+            let bIn = inSetlist.contains(b.persistentModelID)
+            if aIn != bIn { return aIn }
+            return a.title.localizedCaseInsensitiveCompare(b.title) == .orderedAscending
         }
     }
 
@@ -34,7 +45,8 @@ struct SongLibrarySheet: View {
                         LibrarySongRow(
                             song: song,
                             isInSetlist: songsInSetlist.contains(song.persistentModelID),
-                            onAdd: { addSong(song) }
+                            onAdd: { addSong(song) },
+                            onRemove: { removeSong(song) }
                         )
                     }
                 } header: {
@@ -78,6 +90,13 @@ struct SongLibrarySheet: View {
         let entry = SetlistEntry(song: song)
         context.insert(entry)
         setlist.addEntry(entry)
+        searchText = ""
+    }
+
+    private func removeSong(_ song: Song) {
+        guard let entry = setlist.sortedEntries.first(where: { $0.song?.persistentModelID == song.persistentModelID }) else { return }
+        setlist.entries.removeAll { $0.persistentModelID == entry.persistentModelID }
+        context.delete(entry)
     }
 
     private func addAllSongs() {
@@ -91,6 +110,7 @@ private struct LibrarySongRow: View {
     let song: Song
     let isInSetlist: Bool
     let onAdd: () -> Void
+    let onRemove: () -> Void
 
     var body: some View {
         HStack {
@@ -101,8 +121,12 @@ private struct LibrarySongRow: View {
             }
             Spacer()
             if isInSetlist {
-                Image(systemName: "checkmark")
-                    .foregroundStyle(.secondary)
+                Button(action: onRemove) {
+                    Image(systemName: "minus.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(.red)
+                }
+                .buttonStyle(.plain)
             } else {
                 Button(action: onAdd) {
                     Image(systemName: "plus.circle.fill")
@@ -112,6 +136,5 @@ private struct LibrarySongRow: View {
                 .buttonStyle(.plain)
             }
         }
-        .opacity(isInSetlist ? 0.5 : 1.0)
     }
 }
