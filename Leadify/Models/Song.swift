@@ -15,4 +15,10 @@ final class Song {
         self.content = content
         self.reminder = reminder
     }
+
+    func duplicate(in context: ModelContext) -> Song {
+        let copy = Song(title: "\(title) (copy)", content: content, reminder: reminder)
+        context.insert(copy)
+        return copy
+    }
 }

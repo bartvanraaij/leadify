@@ -17,6 +17,7 @@ struct SongLibrarySidebarView: View {
     @State private var songToDelete: Song?
     @State private var showDeleteConfirmation = false
     @State private var showFileImporter = false
+    @State private var showPerformance = false
 
     var sortedSongs: [Song] {
         switch sortOrder {
@@ -41,11 +42,39 @@ struct SongLibrarySidebarView: View {
                         : nil
                 )
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button {
+                        songToDelete = song
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .labelStyle(.iconOnly)
+                    }
+                    .tint(.red)
+
+                    Button {
+                        let copy = song.duplicate(in: context)
+                        selectedSong = copy
+                    } label: {
+                        Label("Duplicate", systemImage: "doc.on.doc")
+                            .labelStyle(.iconOnly)
+                    }
+                    .tint(.blue)
+                }
+                .contextMenu {
+                    Button {
+                        let copy = song.duplicate(in: context)
+                        selectedSong = copy
+                    } label: {
+                        Label("Duplicate", systemImage: "doc.on.doc")
+                    }
+
+                    Divider()
+
                     Button(role: .destructive) {
                         songToDelete = song
                         showDeleteConfirmation = true
                     } label: {
-                        Label("", systemImage: "trash")
+                        Label("Delete", systemImage: "trash")
                     }
                 }
             }
@@ -55,6 +84,13 @@ struct SongLibrarySidebarView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Menu {
+                    Button {
+                        showPerformance = true
+                    } label: {
+                        Label("Perform all", systemImage: "play.circle")
+                    }
+                    .disabled(allSongs.isEmpty)
+
                     Button {
                         showFileImporter = true
                     } label: {
@@ -83,6 +119,12 @@ struct SongLibrarySidebarView: View {
                     Image(systemName: "plus")
                 }
             }
+        }
+        .fullScreenCover(isPresented: $showPerformance) {
+            PerformanceView(source: SongCollection(
+                performanceTitle: "All songs",
+                songs: sortedSongs
+            ))
         }
         .fileImporter(
             isPresented: $showFileImporter,

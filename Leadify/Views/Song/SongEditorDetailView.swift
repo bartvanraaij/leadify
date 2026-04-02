@@ -5,7 +5,6 @@ import MarkdownUI
 struct SongEditorDetailView: View {
     let song: Song
     @Binding var selectedSong: Song?
-    @Binding var isEditing: Bool
     @Environment(\.modelContext) private var context
 
     @State private var title: String
@@ -14,10 +13,9 @@ struct SongEditorDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var showPreview = false
 
-    init(song: Song, selectedSong: Binding<Song?>, isEditing: Binding<Bool>) {
+    init(song: Song, selectedSong: Binding<Song?>) {
         self.song = song
         self._selectedSong = selectedSong
-        self._isEditing = isEditing
         self._title = State(initialValue: song.title)
         self._reminder = State(initialValue: song.reminder ?? "")
         self._content = State(initialValue: song.content)
@@ -72,28 +70,51 @@ struct SongEditorDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 .padding(.horizontal, 20)
+                .padding(.top, 35)
                 .padding(.bottom, 20)
             }
         }
-        .navigationTitle(isNewSong ? "New Song" : "Edit Song")
+        .navigationTitle(isNewSong ? "New Song" : song.title)
+        .onDisappear {
+            // Auto-delete new songs that were never saved
+            if isNewSong {
+                context.delete(song)
+            }
+        }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { cancel() }
+            ToolbarItem(placement: .topBarLeading) {
+                Menu {
+                    Button {
+                        duplicateSong()
+                    } label: {
+                        Label("Duplicate", systemImage: "doc.on.doc")
+                    }
+
+                    Divider()
+
+                    Button(role: .destructive) {
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    revert()
+                } label: {
+                    Image(systemName: "arrow.uturn.backward")
+                }
+                .disabled(!hasChanges)
+
                 Button {
                     showPreview = true
                 } label: {
                     Image(systemName: "eye")
                 }
-
-                Button(role: .destructive) {
-                    showDeleteConfirmation = true
-                } label: {
-                    Image(systemName: "trash")
-                }
-                .tint(EditTheme.destructiveColor)
 
                 Button("Save") { save() }
                     .disabled(!hasChanges)
@@ -132,15 +153,17 @@ struct SongEditorDetailView: View {
         song.title = title
         song.reminder = reminder.isEmpty ? nil : reminder
         song.content = content
-        isEditing = false
     }
 
-    private func cancel() {
-        if isNewSong {
-            context.delete(song)
-            selectedSong = nil
-        }
-        isEditing = false
+    private func revert() {
+        title = song.title
+        reminder = song.reminder ?? ""
+        content = song.content
+    }
+
+    private func duplicateSong() {
+        let copy = song.duplicate(in: context)
+        selectedSong = copy
     }
 }
 
