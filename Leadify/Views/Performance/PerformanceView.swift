@@ -22,8 +22,6 @@ struct PerformanceView: View {
 
     private var items: [PerformanceItem] { source.performanceItems }
 
-    /// Overlap kept between scroll steps when paging through a long entry (matches inter-card spacing).
-    private static let inEntryScrollOverlap: CGFloat = 32
     private static let autoSidebarThreshold: CGFloat = 900
 
     var body: some View {
@@ -31,6 +29,16 @@ struct PerformanceView: View {
             scrollContent(viewportSize: geo.size)
                 .overlay { scrollIndicators }
                 .overlay(alignment: .topLeading) { closeButton }
+                .overlay(alignment: .topLeading) {
+                    // Accessibility landmark marking the content area bounds.
+                    // Used by VoiceOver and UI tests to determine the tap zone layout.
+                    Color.clear
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .accessibilityElement()
+                        .accessibilityIdentifier("performance-content-area")
+                        .accessibilityLabel("Performance content")
+                        .allowsHitTesting(false)
+                }
                 .onAppear {
                     viewportHeight = geo.size.height
                     if geo.size.width >= Self.autoSidebarThreshold {
@@ -79,6 +87,9 @@ struct PerformanceView: View {
                         .padding(.horizontal, 32)
                         .opacity(opacityFor(index: index))
                         .animation(.easeInOut(duration: 0.3), value: activeIndex)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityIdentifier("performance-entry-\(index)")
+                        .accessibilityLabel(index == activeIndex ? "Active: \(item.title)" : item.title)
                         .background(
                             GeometryReader { entryGeo in
                                 Color.clear.preference(
@@ -111,21 +122,20 @@ struct PerformanceView: View {
 
     // MARK: - Scroll indicators (up/down chevrons)
 
-    /// True when the active entry's bottom is below the visible viewport,
-    /// and scrollOffset has reached this entry's range (guards against mid-navigation flash).
     private var canScrollDown: Bool {
-        guard let frame = entryFrames[activeIndex] else { return false }
-        guard scrollOffset >= frame.minY - 5 else { return false }
-        return frame.maxY > scrollOffset + viewportHeight + 5
+        PerformanceScrollCalculator.canScrollDown(
+            activeEntryFrame: entryFrames[activeIndex],
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight
+        )
     }
 
-    /// True when the active entry's top is above the visible viewport,
-    /// and scrollOffset has reached this entry's range (guards against mid-navigation flash).
     private var canScrollUp: Bool {
-        guard let frame = entryFrames[activeIndex] else { return false }
-        let lastSnap = frame.maxY - viewportHeight + Self.inEntryScrollOverlap
-        guard scrollOffset <= lastSnap + 5 else { return false }
-        return scrollOffset > frame.minY + 5
+        PerformanceScrollCalculator.canScrollUp(
+            activeEntryFrame: entryFrames[activeIndex],
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight
+        )
     }
 
     @ViewBuilder
@@ -145,6 +155,7 @@ struct PerformanceView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("scroll-down-chevron")
                     .padding(.bottom, 24)
                 }
                 .transition(.opacity)
@@ -163,6 +174,7 @@ struct PerformanceView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("scroll-up-chevron")
                     .padding(.top, 24)
                     Spacer()
                 }
@@ -253,27 +265,11 @@ struct PerformanceView: View {
 
     // MARK: - Within-entry scrolling (up/down chevrons)
 
-    /// Ordered snap positions for within-entry scrolling, anchored at the entry top.
-    /// Full steps of (viewportHeight - overlap) from frame.minY, with the final step
-    /// landing at lastSnap (the near-bottom position). Pure function — always fresh on call.
-    private func inEntrySnaps(for frame: CGRect) -> [CGFloat] {
-        let lastSnap = frame.maxY - viewportHeight + Self.inEntryScrollOverlap
-        let step = viewportHeight - Self.inEntryScrollOverlap
-        guard lastSnap > frame.minY + 1, step > 0 else { return [frame.minY] }
-        var snaps: [CGFloat] = []
-        var pos = frame.minY
-        while pos < lastSnap - 1 {
-            snaps.append(pos)
-            pos += step
-        }
-        snaps.append(lastSnap)
-        return snaps
-    }
-
     private func scrollActiveEntryDown() {
         guard let frame = entryFrames[activeIndex] else { return }
-        let snaps = inEntrySnaps(for: frame)
-        guard let target = snaps.first(where: { $0 > scrollOffset + 1 }) else { return }
+        guard let target = PerformanceScrollCalculator.nextSnapDown(
+            activeEntryFrame: frame, scrollOffset: scrollOffset, viewportHeight: viewportHeight
+        ) else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
             scrollPosition.scrollTo(y: max(0, target))
         }
@@ -281,8 +277,9 @@ struct PerformanceView: View {
 
     private func scrollActiveEntryUp() {
         guard let frame = entryFrames[activeIndex] else { return }
-        let snaps = inEntrySnaps(for: frame)
-        guard let target = snaps.last(where: { $0 < scrollOffset - 1 }) else { return }
+        guard let target = PerformanceScrollCalculator.nextSnapUp(
+            activeEntryFrame: frame, scrollOffset: scrollOffset, viewportHeight: viewportHeight
+        ) else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
             scrollPosition.scrollTo(y: max(0, target))
         }
@@ -300,6 +297,7 @@ struct PerformanceView: View {
                 .symbolRenderingMode(.hierarchical)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("close-performance")
         .padding(.top, 12)
         .padding(.horizontal, 16)
     }
@@ -316,6 +314,7 @@ struct PerformanceView: View {
                 .symbolRenderingMode(.hierarchical)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("toggle-sidebar")
         .padding(.top, 12)
         .padding(.horizontal, 16)
     }

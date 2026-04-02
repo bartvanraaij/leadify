@@ -24,10 +24,13 @@
 │           │                            MedleyDetailView, MedleySongRow, MedleySongLibrarySheet
 │           └── Performance/             PerformanceView, PerformanceTapOverlay,
 │                                        PerformanceSetlistSidebar, PerformanceNavigator,
+│                                        PerformanceScrollCalculator,
 │                                        SongPerformanceBlock, TacetPerformanceBlock
 ├── LeadifyTests/                        SetlistTests, SongTests, MedleyTests,
-│                                        PerformanceNavigationTests, MarkdownSongParserTests,
-│                                        SongImporterTests, TestHelpers
+│                                        PerformanceNavigationTests, PerformanceScrollCalculatorTests,
+│                                        MarkdownSongParserTests, SongImporterTests, TestHelpers
+├── LeadifyUITests/                      PerformanceUITests (black-box, size-agnostic),
+│                                        PerformanceIntegrationTest (full user session)
 ├── docs/superpowers/
 │   ├── specs/2026-03-28-leadify-design.md
 │   ├── specs/2026-03-30-markdown-import-design.md
@@ -54,9 +57,22 @@ xcrun simctl list devices available | grep -i ipad
 xcodebuild build -scheme Leadify \
   -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
 
-# Run all tests
+# Run all unit tests
 xcodebuild test -scheme Leadify \
-  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
+  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5' \
+  -only-testing:LeadifyTests
+
+# Run UI tests (single device)
+xcodebuild test -scheme Leadify \
+  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5' \
+  -only-testing:LeadifyUITests
+
+# Run UI tests on multiple iPad sizes (parallel)
+xcodebuild test -scheme Leadify \
+  -destination 'platform=iOS Simulator,name=iPad mini (A17 Pro)' \
+  -destination 'platform=iOS Simulator,name=iPad Air 11-inch (M3)' \
+  -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' \
+  -only-testing:LeadifyUITests
 
 # Run on simulator (must terminate → install → launch; launch alone uses stale binary)
 xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 bartvanraaij.Leadify 2>/dev/null
@@ -72,6 +88,19 @@ The simulator ID `B05E0EF4-...` is "iPad (A16)" running iOS 26.3. If it disappea
 ## Adding new Swift files
 
 New `.swift` files created in the project directory are automatically included in the Xcode build target. No manual "Add Files" step is needed — just build directly after creating files.
+
+## UI testing (XCUITest)
+
+Black-box UI tests in `LeadifyUITests/` test the Performance view without coupling to implementation. Key patterns:
+
+- **Test data seeding:** `--uitesting` launch arg → `UITestSeeder.seed()` with in-memory ModelContainer (behind `#if DEBUG`)
+- **Size-agnostic tap zones:** Tap coordinates derived from `performance-content-area` accessibility landmark (a `Color.clear` overlay sized to `geo.size`). Never use screen-relative coordinates.
+- **Element lookup:** Always use `app.descendants(matching: .any).matching(identifier:).firstMatch` — SwiftUI element types are unpredictable across contexts (buttons in inspector sidebar may not be found via `app.buttons`).
+- **Sidebar detection:** Use `ensureSidebarOpen()` pattern — check if sidebar exists before toggling, since it auto-shows at wide widths.
+- **Identifier propagation:** Parent `.accessibilityIdentifier()` propagates to all children in SwiftUI. Put identifiers on `.background()` views to avoid conflicts with child button identifiers.
+- **Async labels:** SwiftUI accessibility label updates are async — poll with a deadline instead of asserting immediately.
+- **Viewport-dependent tests:** Use `try XCTSkipUnless()` for features that depend on content exceeding viewport (e.g., chevron scrolling). At small window sizes the content may fit.
+- **Multi-device:** Run with multiple `-destination` flags on `xcodebuild test` for parallel testing across iPad sizes.
 
 ## SwiftData ordering — always use `sortedEntries` / `addEntry`
 

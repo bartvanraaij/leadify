@@ -29,6 +29,7 @@ struct PerformanceSetlistSidebar: View {
                     LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                             sidebarRow(index: index, item: item)
+                                .accessibilityIdentifier("sidebar-row-\(index)")
                                 .id(index)
                         }
                     }
@@ -50,7 +51,10 @@ struct PerformanceSetlistSidebar: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(PerformanceTheme.sidebarBackground)
+        .background(
+            PerformanceTheme.sidebarBackground
+                .accessibilityIdentifier("performance-sidebar")
+        )
     }
 
     @ViewBuilder
@@ -139,6 +143,8 @@ struct PerformanceSetlistSidebar: View {
                     .opacity(hasPrevious ? 1 : 0.3)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Previous entry")
+            .accessibilityIdentifier("sidebar-previous")
             .disabled(!hasPrevious)
 
             Button { onNext() } label: {
@@ -149,6 +155,8 @@ struct PerformanceSetlistSidebar: View {
                     .opacity(hasNext ? 1 : 0.3)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Next entry")
+            .accessibilityIdentifier("sidebar-next")
             .disabled(!hasNext)
         }
     }

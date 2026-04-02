@@ -8,10 +8,19 @@ struct LeadifyApp: App {
 
     init() {
         do {
-            // Using default local storage.
-            // To enable CloudKit sync later: add a CloudKit entitlement in Xcode,
-            // then use ModelConfiguration(cloudKitDatabase: .automatic).
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--uitesting") {
+                let config = ModelConfiguration(isStoredInMemoryOnly: true)
+                container = try ModelContainer(
+                    for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self,
+                    configurations: config
+                )
+            } else {
+                container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self)
+            }
+            #else
             container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self)
+            #endif
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -24,6 +33,14 @@ struct LeadifyApp: App {
                 .onOpenURL { url in
                     songImporter.importFile(url: url, context: container.mainContext)
                 }
+                #if DEBUG
+                .onAppear {
+                    if ProcessInfo.processInfo.arguments.contains("--uitesting") {
+                        UITestSeeder.seed(in: container.mainContext)
+
+                    }
+                }
+                #endif
         }
         .modelContainer(container)
     }
