@@ -13,11 +13,21 @@ struct MedleyLibrarySheet: View {
         Set(setlist.entries.compactMap { $0.medley?.persistentModelID })
     }
 
+    private var sortedMedleys: [Medley] {
+        let inSetlist = medleysInSetlist
+        return allMedleys.sorted { a, b in
+            let aIn = inSetlist.contains(a.persistentModelID)
+            let bIn = inSetlist.contains(b.persistentModelID)
+            if aIn != bIn { return aIn }
+            return a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
+        }
+    }
+
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    ForEach(allMedleys) { medley in
+                    ForEach(sortedMedleys) { medley in
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(medley.name)
@@ -29,8 +39,14 @@ struct MedleyLibrarySheet: View {
                             }
                             Spacer()
                             if medleysInSetlist.contains(medley.persistentModelID) {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.secondary)
+                                Button {
+                                    removeMedley(medley)
+                                } label: {
+                                    Image(systemName: "minus.circle.fill")
+                                        .font(.system(size: 22))
+                                        .foregroundStyle(.red)
+                                }
+                                .buttonStyle(.plain)
                             } else {
                                 Button {
                                     addMedley(medley)
@@ -42,7 +58,6 @@ struct MedleyLibrarySheet: View {
                                 .buttonStyle(.plain)
                             }
                         }
-                        .opacity(medleysInSetlist.contains(medley.persistentModelID) ? 0.5 : 1.0)
                     }
                 }
             }
@@ -60,5 +75,11 @@ struct MedleyLibrarySheet: View {
         let entry = SetlistEntry(medley: medley)
         context.insert(entry)
         setlist.addEntry(entry)
+    }
+
+    private func removeMedley(_ medley: Medley) {
+        guard let entry = setlist.sortedEntries.first(where: { $0.medley?.persistentModelID == medley.persistentModelID }) else { return }
+        setlist.entries.removeAll { $0.persistentModelID == entry.persistentModelID }
+        context.delete(entry)
     }
 }
