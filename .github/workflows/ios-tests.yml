@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: macos-15
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -30,6 +32,7 @@ jobs:
                       version = runtime.split('iOS-')[-1].replace('-', '.') if 'iOS-' in runtime else runtime
                       print(f\"{d['name']}|{version}\")
                       sys.exit(0)
+          print('No iPad simulator found', file=sys.stderr)
           sys.exit(1)
           ")
           IPAD_NAME=$(echo "$DEVICE_INFO" | cut -d'|' -f1)
@@ -48,6 +51,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Run UI tests
+        # No 'clean' here — reuses the build artifact from the unit tests step
         run: |
           xcodebuild test \
             -scheme Leadify \
