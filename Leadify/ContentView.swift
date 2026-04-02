@@ -33,7 +33,6 @@ struct ContentView: View {
     @State private var selectedSidebarItem: SidebarItem? = .setlists
     @State private var selectedSetlist: Setlist?
     @State private var selectedSong: Song?
-    @State private var isEditingSong = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var selectedMedley: Medley?
     @Query private var allMedleys: [Medley]
@@ -94,13 +93,8 @@ struct ContentView: View {
                     }
                 case .songs:
                     if let song = selectedSong {
-                        if isEditingSong {
-                            SongEditorDetailView(song: song, selectedSong: $selectedSong, isEditing: $isEditingSong)
-                                .id("\(song.persistentModelID)-edit")
-                        } else {
-                            SongDisplayView(song: song, selectedSong: $selectedSong, isEditing: $isEditingSong)
-                                .id(song.persistentModelID)
-                        }
+                        SongEditorDetailView(song: song, selectedSong: $selectedSong)
+                            .id(song.persistentModelID)
                     } else {
                         ContentUnavailableView(
                             "No Song Selected",
@@ -121,13 +115,6 @@ struct ContentView: View {
                 case nil:
                     Color.clear
                 }
-            }
-        }
-        .onChange(of: selectedSong) {
-            if let song = selectedSong, song.title.isEmpty && song.content.isEmpty {
-                isEditingSong = true
-            } else {
-                isEditingSong = false
             }
         }
         .navigationSplitViewStyle(.balanced)

@@ -69,6 +69,25 @@ extension Setlist: Performable {
     }
 }
 
+/// Ad-hoc performable for playing all songs (e.g. from the song library).
+struct SongCollection: Performable {
+    let performanceTitle: String
+    let songs: [Song]
+
+    var performanceItems: [PerformanceItem] {
+        songs.map { song in
+            PerformanceItem(
+                id: song.persistentModelID.hashValue.description,
+                title: song.title,
+                kind: .song,
+                song: song,
+                tacet: nil,
+                medley: nil
+            )
+        }
+    }
+}
+
 extension Medley: Performable {
     var performanceTitle: String { name }
 

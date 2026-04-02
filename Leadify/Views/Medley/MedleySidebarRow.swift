@@ -29,11 +29,12 @@ struct MedleySidebarRow: View {
         }
         .padding(.vertical, 4)
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button(role: .destructive) {
+            Button {
                 showDeleteAlert = true
             } label: {
                 Label("Delete", systemImage: "trash")
             }
+            .tint(.red)
 
             Button {
                 duplicateMedley()

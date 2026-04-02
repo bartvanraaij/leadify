@@ -75,13 +75,13 @@ xcodebuild test -scheme Leadify \
   -only-testing:LeadifyUITests
 
 # Run on simulator (must terminate → install → launch; launch alone uses stale binary)
-xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 bartvanraaij.Leadify 2>/dev/null
+xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify 2>/dev/null
 xcrun simctl install B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 \
   ~/Library/Developer/Xcode/DerivedData/Leadify-dcfskxmsfskcybdoxvrgstsbknvm/Build/Products/Debug-iphonesimulator/Leadify.app
-xcrun simctl launch B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 bartvanraaij.Leadify
+xcrun simctl launch B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify
 ```
 
-Bundle ID is `bartvanraaij.Leadify` (no `com.` prefix).
+Bundle ID is `dev.bartvanraaij.leadify`.
 
 The simulator ID `B05E0EF4-...` is "iPad (A16)" running iOS 26.3. If it disappears, find a replacement with `xcrun simctl list devices available | grep iPad`.
 
