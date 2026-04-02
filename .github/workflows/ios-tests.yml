@@ -19,7 +19,7 @@ jobs:
       - name: Select iPad simulator
         id: simulator
         run: |
-          IPAD_NAME=$(xcrun simctl list devices available | grep -E '^\s+iPad' | head -1 | sed 's/^ *//' | sed 's/ (.*)//')
+          IPAD_NAME=$(xcrun simctl list devices available | grep -E '^\s+iPad' | head -1 | sed 's/^ *//' | sed 's/ ([0-9A-F-]\{36\}).*//')
           if [ -z "$IPAD_NAME" ]; then
             echo "No iPad simulator found" >&2
             exit 1
