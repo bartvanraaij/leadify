@@ -21,7 +21,10 @@
       "Bash(git mv:*)",
       "Bash(find *)",
       "Bash(ls:*)",
-      "Bash(swift:*)"
+      "Bash(swift:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(xargs -I{} xcrun xcresulttool get test-results summary --path {})",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f['failureText']\\) for f in d.get\\('testFailures',[]\\)]\")"
     ]
   }
 }
