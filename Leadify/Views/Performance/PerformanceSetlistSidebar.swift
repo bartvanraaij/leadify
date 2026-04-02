@@ -6,15 +6,15 @@ struct PerformanceSetlistSidebar: View {
     let items: [PerformanceItem]
     let activeIndex: Int
     var onSelect: (Int) -> Void
+    var onPrevious: () -> Void
+    var onNext: () -> Void
 
     var body: some View {
         ScrollViewReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(PerformanceTheme.sidebarTextColor.opacity(0.65))
-                    .textCase(.uppercase)
-                    .tracking(0.5)
+                    .font(.headline)
+                    .foregroundStyle(PerformanceTheme.sidebarTextColor)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .padding(.horizontal, 22)
@@ -40,6 +40,13 @@ struct PerformanceSetlistSidebar: View {
                         proxy.scrollTo(newIndex, anchor: .center)
                     }
                 }
+
+                Divider()
+                    .padding(.horizontal, 16)
+
+                navigationButtons
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -111,6 +118,38 @@ struct PerformanceSetlistSidebar: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    private var hasPrevious: Bool {
+        items[0..<activeIndex].contains { !$0.isSkippable }
+    }
+
+    private var hasNext: Bool {
+        items.dropFirst(activeIndex + 1).contains { !$0.isSkippable }
+    }
+
+    private var navigationButtons: some View {
+        HStack(spacing: 40) {
+            Button { onPrevious() } label: {
+                Image(systemName: "chevron.left.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.hierarchical)
+                    .opacity(hasPrevious ? 1 : 0.3)
+            }
+            .buttonStyle(.plain)
+            .disabled(!hasPrevious)
+
+            Button { onNext() } label: {
+                Image(systemName: "chevron.right.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.hierarchical)
+                    .opacity(hasNext ? 1 : 0.3)
+            }
+            .buttonStyle(.plain)
+            .disabled(!hasNext)
         }
     }
 

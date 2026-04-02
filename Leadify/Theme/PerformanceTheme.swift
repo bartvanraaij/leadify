@@ -38,7 +38,7 @@ struct PerformanceTheme {
     // Sidebar (wide mode)
     static let sidebarBackground = Color(light: Color(white: 0.94), dark: Color(white: 0.08))
     static let sidebarActiveColor = EditTheme.accentColor
-    static let sidebarTextColor = Color(light: Color(white: 0.3), dark: Color(white: 0.7))
+    static let sidebarTextColor = Color(light: Color(white: 0.1), dark: Color(white: 0.9))
 }
 
 // Helper extension for adaptive colors

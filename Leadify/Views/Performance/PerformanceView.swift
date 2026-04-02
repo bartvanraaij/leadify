@@ -17,53 +17,50 @@ struct PerformanceView: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var viewportHeight: CGFloat = 0
     @State private var entryFrames: [Int: CGRect] = [:]
+    @State private var showSidebar: Bool = false
 
     private var items: [PerformanceItem] { source.performanceItems }
-    private static let wideSidebarThreshold: CGFloat = 950
     private static let scrollOvershoot: CGFloat = 40
+    private static let autoSidebarThreshold: CGFloat = 900
 
     var body: some View {
         GeometryReader { geo in
-            let isWide = geo.size.width >= Self.wideSidebarThreshold
-
-            HStack(spacing: 0) {
-                scrollContent(viewportSize: geo.size)
-                    .overlay { scrollIndicators }
-
-                if isWide {
-                    Divider()
-                        .ignoresSafeArea()
-                    PerformanceSetlistSidebar(
-                        title: source.performanceTitle,
-                        items: items,
-                        activeIndex: activeIndex
-                    ) { index in
-                        navigateTo(index: index)
+            scrollContent(viewportSize: geo.size)
+                .overlay { scrollIndicators }
+                .overlay(alignment: .topLeading) { closeButton }
+                .onAppear {
+                    viewportHeight = geo.size.height
+                    if geo.size.width >= Self.autoSidebarThreshold {
+                        showSidebar = true
                     }
-                    .frame(width: geo.size.width * 0.25)
+                    if let first = nextNavigableIndex(after: -1) {
+                        activeIndex = first
+                    }
                 }
-            }
-            .overlay(alignment: .topTrailing) {
-                closeButton(alignWithSidebarTitle: isWide)
-            }
-            .onAppear {
-                viewportHeight = geo.size.height
-                if let first = nextNavigableIndex(after: -1) {
-                    activeIndex = first
-                }
-            }
-            .onChange(of: geo.size) { _, newSize in
-                viewportHeight = newSize.height
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    if let frame = entryFrames[activeIndex] {
-                        let contentY = frame.minY + scrollOffset + Self.scrollOvershoot
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            scrollPosition.scrollTo(y: max(0, contentY))
+                .onChange(of: geo.size) { _, newSize in
+                    viewportHeight = newSize.height
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if let frame = entryFrames[activeIndex] {
+                            let contentY = frame.minY + scrollOffset + Self.scrollOvershoot
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                scrollPosition.scrollTo(y: max(0, contentY))
+                            }
                         }
                     }
                 }
-            }
         }
+        .inspector(isPresented: $showSidebar) {
+            PerformanceSetlistSidebar(
+                title: source.performanceTitle,
+                items: items,
+                activeIndex: activeIndex,
+                onSelect: { index in navigateTo(index: index) },
+                onPrevious: { navigateToPrevious() },
+                onNext: { navigateToNext() }
+            )
+            .inspectorColumnWidth(min: 220, ideal: 280, max: 380)
+        }
+        .overlay(alignment: .topTrailing) { sidebarToggleButton }
         .background(PerformanceTheme.background.ignoresSafeArea())
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -283,19 +280,35 @@ struct PerformanceView: View {
         }
     }
 
-    // MARK: - Close button
+    // MARK: - Toolbar buttons
 
-    private func closeButton(alignWithSidebarTitle: Bool) -> some View {
+    private var closeButton: some View {
         Button {
             dismiss()
         } label: {
             Image(systemName: "xmark.circle.fill")
-                .font(.system(size: 30))
+                .font(.system(size: 28))
                 .foregroundStyle(.secondary)
                 .symbolRenderingMode(.hierarchical)
         }
         .buttonStyle(.plain)
-        .padding(.top, alignWithSidebarTitle ? 9 : 12)
+        .padding(.top, 12)
+        .padding(.horizontal, 16)
+    }
+
+    private var sidebarToggleButton: some View {
+        Button {
+            withAnimation {
+                showSidebar.toggle()
+            }
+        } label: {
+            Image(systemName: "list.bullet.circle.fill")
+                .font(.system(size: 28))
+                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.hierarchical)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 12)
         .padding(.horizontal, 16)
     }
 }
