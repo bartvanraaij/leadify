@@ -46,6 +46,13 @@ struct PerformanceTapOverlay: UIViewRepresentable {
         context.coordinator.onCenterTap = onCenterTap
     }
 
+    static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+        if let gesture = coordinator.tapGesture {
+            gesture.view?.removeGestureRecognizer(gesture)
+            coordinator.tapGesture = nil
+        }
+    }
+
     class Coordinator: NSObject {
         var contentWidth: CGFloat = 0
         var onLeftTap: (() -> Void)?
