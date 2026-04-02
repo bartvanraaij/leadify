@@ -16,23 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select iPad simulator
-        id: simulator
-        run: |
-          IPAD_NAME=$(xcrun simctl list devices available | grep -E '^\s+iPad' | head -1 | sed 's/^ *//' | sed 's/ ([0-9A-F-]\{36\}).*//')
-          if [ -z "$IPAD_NAME" ]; then
-            echo "No iPad simulator found" >&2
-            exit 1
-          fi
-          echo "name=$IPAD_NAME" >> "$GITHUB_OUTPUT"
-          echo "destination=platform=iOS Simulator,name=$IPAD_NAME" >> "$GITHUB_OUTPUT"
-          echo "Selected simulator: $IPAD_NAME"
-
       - name: Run unit tests
         run: |
           xcodebuild clean test \
             -scheme Leadify \
-            -destination "${{ steps.simulator.outputs.destination }}" \
+            -destination 'platform=iOS Simulator,name=iPad (A16)' \
             -only-testing:LeadifyTests \
             CODE_SIGNING_ALLOWED=NO
 
@@ -41,6 +29,6 @@ jobs:
         run: |
           xcodebuild test \
             -scheme Leadify \
-            -destination "${{ steps.simulator.outputs.destination }}" \
+            -destination 'platform=iOS Simulator,name=iPad (A16)' \
             -only-testing:LeadifyUITests \
             CODE_SIGNING_ALLOWED=NO
