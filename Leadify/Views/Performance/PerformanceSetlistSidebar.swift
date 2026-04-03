@@ -74,7 +74,7 @@ struct PerformanceSetlistSidebar: View {
                     onSelect(index)
                 } label: {
                     Text(item.title)
-                        .font(.system(size: 18))
+                        .font(.system(size: PerformanceTheme.sidebarSongSize))
                         .foregroundStyle(isActive ? .white : PerformanceTheme.sidebarTextColor)
                         .lineLimit(1)
                         .truncationMode(.tail)
@@ -92,7 +92,7 @@ struct PerformanceSetlistSidebar: View {
                 if let medley = item.medley {
                     ForEach(medley.sortedEntries, id: \.persistentModelID) { medleyEntry in
                         Text(medleyEntry.song.title)
-                            .font(.system(size: 14))
+                            .font(.system(size: PerformanceTheme.sidebarMedleySongSize))
                             .foregroundStyle(PerformanceTheme.sidebarTextColor)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -108,7 +108,7 @@ struct PerformanceSetlistSidebar: View {
                 onSelect(index)
             } label: {
                 Text(item.title)
-                    .font(.system(size: 18))
+                    .font(.system(size: PerformanceTheme.sidebarSongSize))
                     .foregroundStyle(isActive ? .white : PerformanceTheme.sidebarTextColor)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -173,7 +173,7 @@ struct PerformanceSetlistSidebar: View {
                 .frame(maxWidth: 16)
 
             Text(label)
-                .font(.system(size: 15).italic())
+                .font(.system(size: PerformanceTheme.sidebarTacetSize).italic())
                 .foregroundStyle(color)
                 .lineLimit(1)
 
