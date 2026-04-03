@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "AD326410-9B74-42D0-8CF5-3847F2CA0D04",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Leadify.xcodeproj",
+      "identifier" : "F2AB3D172F7811B50021186D",
+      "name" : "Leadify"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Leadify.xcodeproj",
+        "identifier" : "F2AB3D2B2F78122A0021186D",
+        "name" : "LeadifyTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Leadify.xcodeproj",
+        "identifier" : "F2215D782F7E9A8200D9D77C",
+        "name" : "LeadifyUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
