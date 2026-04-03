@@ -6,7 +6,7 @@
 ## Decisions
 
 - **Always-on sync** — no settings toggle. `cloudKitDatabase: .automatic` on the ModelConfiguration.
-- **Fully invisible** — no sync status UI. Data syncs in the background when connected.
+- **Nearly invisible** — subtle sync spinner in sidebar (like Apple Notes), no other sync UI.
 - **Offline-first** — full CRUD works offline; changes sync when connectivity returns.
 - **Last-writer-wins** — CloudKit's default conflict resolution. No manual merge UI.
 - **iPad-only for now** — Mac target can be added later pointing at the same CloudKit container.
@@ -17,12 +17,12 @@
 
 Add three capabilities to the Leadify target:
 
-1. **iCloud** — enable CloudKit service, container `iCloud.bartvanraaij.Leadify`
+1. **iCloud** — enable CloudKit service, container `iCloud.dev.bartvanraaij.leadify`
 2. **Background Modes** — enable "Remote notifications" (for push-based sync)
 3. **Push Notifications** — required by CloudKit for silent push delivery
 
 These add an entitlements file (`Leadify.entitlements`) with:
-- `com.apple.developer.icloud-container-identifiers` → `["iCloud.bartvanraaij.Leadify"]`
+- `com.apple.developer.icloud-container-identifiers` → `["iCloud.dev.bartvanraaij.leadify"]`
 - `com.apple.developer.icloud-services` → `["CloudDocuments"]` (CloudKit)
 - `UIBackgroundModes` → `["remote-notification"]`
 - `aps-environment` → `development` (auto-switches to `production` on release)
@@ -124,13 +124,31 @@ Adding inverse properties like `setlist: Setlist?` on SetlistEntry means SwiftDa
 
 Scan for any code that manually sets these new properties (there shouldn't be any since they didn't exist before).
 
-### 6. No Schema Migration Needed
+### 6. Sync Status Spinner
+
+A small `ProgressView()` spinner shown in the sidebar next to the item count subtitle (e.g., "Setlists — 3 songs") while CloudKit is actively syncing. Matches the Apple Notes pattern where a spinner appears next to "557 notes" during sync.
+
+**Implementation:**
+- Create a `SyncMonitor` class (`@Observable`) that listens to `NSPersistentCloudKitContainer.eventNotification`
+- The notification includes `NSPersistentCloudKitContainer.Event` with `type` (.import/.export/.setup) and `endDate` (nil while in progress, non-nil when complete)
+- `SyncMonitor.isSyncing` is `true` when any event is in progress
+- Inject `SyncMonitor` into the environment from `LeadifyApp`
+- In the sidebar header/subtitle area, show a small inline `ProgressView()` when `isSyncing` is true
+
+**File:** `Models/SyncMonitor.swift` (new)
+
+**Behavior:**
+- Spinner appears only during active import/export — typically a few seconds
+- No spinner when idle or offline (offline just means no sync happens, no error state)
+- Not shown during UI tests (in-memory store doesn't emit CloudKit notifications)
+
+### 7. No Schema Migration Needed
 
 SwiftData with CloudKit uses lightweight migration automatically. Adding new optional properties (the inverse relationships) and changing ModelConfiguration are both handled without an explicit migration plan.
 
 ## What Does NOT Change
 
-- All views, themes, and UI code — unaffected
+- Most views, themes, and UI code — unaffected (sidebar subtitle area gets a sync spinner)
 - Performable protocol and PerformanceView — unaffected
 - Unit and UI tests — unaffected (tests use in-memory store)
 - Song import/export — unaffected
