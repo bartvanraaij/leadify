@@ -1,6 +1,14 @@
 import Foundation
 import SwiftData
 
+extension PersistentIdentifier {
+    /// Stable string representation suitable for use as an Identifiable id.
+    /// Unlike hashValue, this is consistent across app launches and unique per entry.
+    var stableHash: String {
+        "\(self)"
+    }
+}
+
 /// A lightweight value type representing one item in a performance.
 /// Used by PerformanceView to render and navigate without knowing about SetlistEntry or MedleyEntry.
 struct PerformanceItem: Identifiable {
@@ -39,7 +47,7 @@ extension Setlist: Performable {
             switch entry.itemType {
             case .song:
                 PerformanceItem(
-                    id: entry.persistentModelID.hashValue.description,
+                    id: entry.persistentModelID.stableHash,
                     title: entry.song?.title ?? "Untitled",
                     kind: .song,
                     song: entry.song,
@@ -48,7 +56,7 @@ extension Setlist: Performable {
                 )
             case .tacet:
                 PerformanceItem(
-                    id: entry.persistentModelID.hashValue.description,
+                    id: entry.persistentModelID.stableHash,
                     title: entry.tacet?.label ?? "Tacet",
                     kind: .tacet,
                     song: nil,
@@ -57,7 +65,7 @@ extension Setlist: Performable {
                 )
             case .medley:
                 PerformanceItem(
-                    id: entry.persistentModelID.hashValue.description,
+                    id: entry.persistentModelID.stableHash,
                     title: entry.medley?.name ?? "Medley",
                     kind: .medley,
                     song: nil,
@@ -77,7 +85,7 @@ struct SongCollection: Performable {
     var performanceItems: [PerformanceItem] {
         songs.map { song in
             PerformanceItem(
-                id: song.persistentModelID.hashValue.description,
+                id: song.persistentModelID.stableHash,
                 title: song.title,
                 kind: .song,
                 song: song,
@@ -94,7 +102,7 @@ extension Medley: Performable {
     var performanceItems: [PerformanceItem] {
         sortedEntries.map { entry in
             PerformanceItem(
-                id: entry.persistentModelID.hashValue.description,
+                id: entry.persistentModelID.stableHash,
                 title: entry.song.title,
                 kind: .song,
                 song: entry.song,

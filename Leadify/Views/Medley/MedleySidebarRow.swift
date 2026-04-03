@@ -13,7 +13,7 @@ struct MedleySidebarRow: View {
     }
 
     private var songCount: Int {
-        medley.entries.count
+        medley.sortedEntries.count
     }
 
     var body: some View {

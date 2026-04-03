@@ -50,7 +50,7 @@ struct PerformanceView: View {
                 }
                 .onChange(of: geo.size) { _, newSize in
                     viewportHeight = newSize.height
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    DispatchQueue.main.async {
                         if let frame = entryFrames[activeIndex] {
                             withAnimation(.easeInOut(duration: 0.25)) {
                                 scrollPosition.scrollTo(y: max(0, frame.minY))
@@ -191,9 +191,13 @@ struct PerformanceView: View {
     private func itemView(item: PerformanceItem) -> some View {
         switch item.kind {
         case .song:
-            SongPerformanceBlock(song: item.song!)
+            if let song = item.song {
+                SongPerformanceBlock(song: song)
+            }
         case .tacet:
-            TacetPerformanceBlock(tacet: item.tacet!)
+            if let tacet = item.tacet {
+                TacetPerformanceBlock(tacet: tacet)
+            }
         case .medley:
             if let medley = item.medley {
                 MedleyPerformanceBlock(medley: medley)

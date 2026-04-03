@@ -15,7 +15,8 @@ final class SetlistEntry {
     var order: Int = 0
     var createdAt: Date = Date()
 
-    /// Derived from which optional is non-nil. Extend this enum to add new item types.
+    /// Derived from which optional is non-nil. Priority: medley > song > tacet.
+    /// Only one of song/tacet/medley should be non-nil; the initializers enforce this.
     var itemType: SetlistItemType {
         if medley != nil { return .medley }
         if song != nil { return .song }

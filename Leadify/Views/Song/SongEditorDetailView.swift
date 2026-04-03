@@ -76,9 +76,14 @@ struct SongEditorDetailView: View {
         }
         .navigationTitle(isNewSong ? "New Song" : song.title)
         .onDisappear {
-            // Auto-delete new songs that were never saved
             if isNewSong {
-                context.delete(song)
+                if !title.trimmingCharacters(in: .whitespaces).isEmpty || !content.trimmingCharacters(in: .whitespaces).isEmpty {
+                    // Auto-save new songs that have content
+                    save()
+                } else {
+                    // Clean up truly empty new songs
+                    context.delete(song)
+                }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
