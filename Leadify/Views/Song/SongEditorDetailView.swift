@@ -167,6 +167,7 @@ struct SongEditorDetailView: View {
     }
 
     private func duplicateSong() {
+        if hasChanges { save() }
         let copy = song.duplicate(in: context)
         selectedSong = copy
     }
