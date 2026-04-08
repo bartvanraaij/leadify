@@ -12,6 +12,13 @@ struct PerformanceTheme {
     static let tabFontSize: CGFloat = 16
     static let tabTracking: CGFloat = -1.7
 
+    // MARK: Chord cell layout
+    static let chordCellWidth: CGFloat = 88
+    static let annotationSize: CGFloat = 22
+    static let chordLineSpacing: CGFloat = 2.0
+    static let chordDividerColor = Color(light: Color(white: 0.7), dark: Color(white: 0.4))
+    static let annotationColor = Color(light: Color(white: 0.55), dark: Color(white: 0.5))
+
     // MARK: Colors - Modern, professional palette
     static let background = Color(light: Color(white: 0.98), dark: Color(white: 0.05))
     
