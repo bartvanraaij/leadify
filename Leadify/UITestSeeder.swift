@@ -195,6 +195,25 @@ enum UITestSeeder {
         (hold, fade)
         """
 
+        let chordVarietyContent = """
+        ## Verse
+        A Bm / C#7 F#m7
+        G Em / D A
+        G Em D A (x2)
+
+        ## Pre-chorus
+        Dm7 Gsus4 / Bb F
+        Eb Cm / Ab Fm
+
+        ## Bridge
+        F#m G A Asus4 A
+        Bmaj7 Cmaj7#5 / D E
+
+        ## Outro
+        Am/G D/F# / Em C (x4, building)
+        (hold, fade)
+        """
+
         let songs = [
             Song(title: "Canal Morning", content: shortContent, reminder: "Capo 2"),
             Song(title: "Painted Sky", content: mediumContent),
@@ -208,6 +227,7 @@ enum UITestSeeder {
             Song(title: "Harbour Bell", content: mediumContent),
             Song(title: "Foxglove Road", content: longContent),
             Song(title: "Last Train Home", content: veryLongContent, reminder: "Build dynamics"),
+            Song(title: "Chord Variety Test", content: chordVarietyContent, reminder: "All chord types"),
         ]
 
         for song in songs { context.insert(song) }
