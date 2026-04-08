@@ -34,7 +34,10 @@ struct SongContentRenderer: View {
                 .padding(.top, PerformanceTheme.sectionHeaderSize * 0.8)
                 .padding(.bottom, PerformanceTheme.sectionHeaderSize * 0.2)
 
-        case .paragraph(let text):
+        case .chordLine(let tokens):
+            chordLineView(tokens)
+
+        case .plainText(let text):
             Text(text)
                 .font(.system(size: PerformanceTheme.chordTextSize, weight: .semibold))
                 .foregroundStyle(PerformanceTheme.chordTextColor)
@@ -47,6 +50,37 @@ struct SongContentRenderer: View {
                 .padding(.vertical, 4)
         }
     }
+
+    @ViewBuilder
+    private func chordLineView(_ tokens: [ChordToken]) -> some View {
+        HStack(spacing: 0) {
+            ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
+                switch token {
+                case .chord(let name):
+                    Text(name)
+                        .font(.system(size: PerformanceTheme.chordTextSize, weight: .semibold))
+                        .foregroundStyle(PerformanceTheme.chordTextColor)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .frame(width: PerformanceTheme.chordCellWidth, alignment: .leading)
+
+                case .divider:
+                    Text("/")
+                        .font(.system(size: PerformanceTheme.chordTextSize, weight: .regular))
+                        .foregroundStyle(PerformanceTheme.chordDividerColor)
+                        .frame(width: PerformanceTheme.chordCellWidth, alignment: .center)
+
+                case .annotation(let text):
+                    Text(text)
+                        .font(.system(size: PerformanceTheme.annotationSize, weight: .regular))
+                        .foregroundStyle(PerformanceTheme.annotationColor)
+                        .padding(.leading, 8)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: PerformanceTheme.chordTextSize * PerformanceTheme.chordLineSpacing)
+    }
 }
 
 // MARK: - Content blocks
@@ -56,9 +90,48 @@ extension SongContentRenderer {
     enum ContentBlock {
         case heading1(String)
         case heading2(String)
-        case paragraph(String)
+        case chordLine([ChordToken])
+        case plainText(String)
         /// Fenced code block with content and optional language hint (e.g. "abc").
         case codeBlock(String, language: String?)
+    }
+
+    /// A token within a chord line.
+    enum ChordToken: Equatable {
+        case chord(String)
+        case divider
+        case annotation(String)
+    }
+
+    /// Regex matching a valid chord name.
+    private static let chordPattern = try! NSRegularExpression(
+        pattern: #"^[A-G][b#]?(?:(?:maj|M)\d*|min|m|aug|\+|dim|ø|sus[24]?|add\d+)?\d*(?:[b#+-]\d+)*(?:/[A-G][b#]?)?$"#
+    )
+
+    /// Returns true if the token is a valid chord name.
+    static func isChord(_ token: String) -> Bool {
+        let range = NSRange(token.startIndex..., in: token)
+        return chordPattern.firstMatch(in: token, range: range) != nil
+    }
+
+    /// Tokenize a chord line string into ChordTokens.
+    static func tokenizeChordLine(_ line: String) -> [ChordToken] {
+        let parts = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+        var tokens: [ChordToken] = []
+
+        for (index, part) in parts.enumerated() {
+            if part.hasPrefix("(") {
+                let annotationText = parts[index...].joined(separator: " ")
+                tokens.append(.annotation(annotationText))
+                break
+            } else if part == "/" {
+                tokens.append(.divider)
+            } else {
+                tokens.append(.chord(part))
+            }
+        }
+
+        return tokens
     }
 
     /// Parse a markdown string into content blocks.
@@ -111,7 +184,7 @@ extension SongContentRenderer {
                 continue
             }
 
-            // Paragraph — collect consecutive non-empty, non-special lines
+            // Paragraph — each line evaluated independently as chord line or plain text
             var paraLines: [String] = []
             while index < lines.count {
                 let l = lines[index]
@@ -124,8 +197,14 @@ extension SongContentRenderer {
                 paraLines.append(l)
                 index += 1
             }
-            if !paraLines.isEmpty {
-                blocks.append(.paragraph(paraLines.joined(separator: "\n")))
+            for line in paraLines {
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                let firstToken = trimmed.split(separator: " ", maxSplits: 1).first.map(String.init) ?? ""
+                if isChord(firstToken) {
+                    blocks.append(.chordLine(tokenizeChordLine(trimmed)))
+                } else {
+                    blocks.append(.plainText(trimmed))
+                }
             }
         }
 
