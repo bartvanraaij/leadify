@@ -53,7 +53,7 @@ struct SongContentRenderer: View {
 
     @ViewBuilder
     private func chordLineView(_ tokens: [ChordToken]) -> some View {
-        HStack(spacing: 0) {
+        ChordFlowLayout(rowHeight: PerformanceTheme.chordTextSize * PerformanceTheme.chordLineSpacing) {
             ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
                 switch token {
                 case .chord(let name):
@@ -75,11 +75,10 @@ struct SongContentRenderer: View {
                         .font(.system(size: PerformanceTheme.annotationSize, weight: .regular))
                         .foregroundStyle(PerformanceTheme.annotationColor)
                         .padding(.leading, 8)
+                        .padding(.top, PerformanceTheme.annotationBaselineOffset)
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: PerformanceTheme.chordTextSize * PerformanceTheme.chordLineSpacing)
     }
 }
 
@@ -132,6 +131,43 @@ extension SongContentRenderer {
         }
 
         return tokens
+    }
+
+    /// A flow layout that wraps chord cells to the next row when they exceed the available width.
+    struct ChordFlowLayout: Layout {
+        let rowHeight: CGFloat
+
+        func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+            let maxWidth = proposal.width ?? .infinity
+            var x: CGFloat = 0
+            var rows = 1
+
+            for subview in subviews {
+                let size = subview.sizeThatFits(.unspecified)
+                if x + size.width > maxWidth && x > 0 {
+                    x = 0
+                    rows += 1
+                }
+                x += size.width
+            }
+
+            return CGSize(width: maxWidth, height: rowHeight * CGFloat(rows))
+        }
+
+        func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+            var x: CGFloat = bounds.minX
+            var y: CGFloat = bounds.minY
+
+            for subview in subviews {
+                let size = subview.sizeThatFits(.unspecified)
+                if x + size.width > bounds.maxX && x > bounds.minX {
+                    x = bounds.minX
+                    y += rowHeight
+                }
+                subview.place(at: CGPoint(x: x, y: y), anchor: .topLeading, proposal: .unspecified)
+                x += size.width
+            }
+        }
     }
 
     /// Parse a markdown string into content blocks.
