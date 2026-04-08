@@ -26,10 +26,12 @@
 │                                        PerformanceSetlistSidebar, PerformanceNavigator,
 │                                        PerformanceScrollCalculator,
 │                                        SongPerformanceBlock, TacetPerformanceBlock
-├── LeadifyTests/                        SetlistTests, SongTests, MedleyTests,
-│                                        PerformanceNavigationTests, PerformanceScrollCalculatorTests,
-│                                        MarkdownSongParserTests, SongImporterTests, TestHelpers
-├── LeadifyUITests/                      PerformanceUITests (black-box, size-agnostic),
+├── Leadify.xctestplan                   test plan (at project root, referenced by scheme)
+├── Tests/
+│   ├── UnitTests/                       SetlistTests, SongTests, MedleyTests,
+│   │                                    PerformanceNavigationTests, PerformanceScrollCalculatorTests,
+│   │                                    MarkdownSongParserTests, SongImporterTests, TestHelpers
+│   └── UITests/                         PerformanceUITests (black-box, size-agnostic),
 │                                        PerformanceIntegrationTest (full user session)
 ├── docs/superpowers/
 │   ├── specs/2026-03-28-leadify-design.md
@@ -91,7 +93,7 @@ New `.swift` files created in the project directory are automatically included i
 
 ## UI testing (XCUITest)
 
-Black-box UI tests in `LeadifyUITests/` test the Performance view without coupling to implementation. Key patterns:
+Black-box UI tests in `Tests/UITests/` test the Performance view without coupling to implementation. Key patterns:
 
 - **Test data seeding:** `--uitesting` launch arg → `UITestSeeder.seed()` with in-memory ModelContainer (behind `#if DEBUG`)
 - **Size-agnostic tap zones:** Tap coordinates derived from `performance-content-area` accessibility landmark (a `Color.clear` overlay sized to `geo.size`). Never use screen-relative coordinates.
