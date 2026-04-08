@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import MarkdownUI
 
 struct SongEditorDetailView: View {
     let song: Song

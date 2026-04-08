@@ -1,4 +1,3 @@
-import MarkdownUI
 import SwiftData
 import SwiftUI
 
@@ -134,9 +133,7 @@ struct SongContentPreview: View {
     let content: String
 
     var body: some View {
-        Markdown(content)
-            .markdownTheme(.leadifyPerformance)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        SongContentRenderer(content: content)
     }
 }
 

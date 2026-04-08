@@ -1,5 +1,4 @@
 import SwiftUI
-import MarkdownUI
 
 /// The inner content of a song in performance mode (title, reminder, divider, chords).
 /// Used by both standalone SongPerformanceBlock and MedleyPerformanceBlock.
@@ -29,8 +28,7 @@ struct SongPerformanceContent: View {
             }
             .padding(.bottom, 16)
 
-            Markdown(song.content)
-                .markdownTheme(.leadifyPerformance)
+            SongContentRenderer(content: song.content)
         }
     }
 }

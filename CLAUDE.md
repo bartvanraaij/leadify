@@ -10,11 +10,12 @@
 │       ├── ContentView.swift
 │       ├── Models/                      Song, Tacet, SetlistEntry, Setlist, Medley, MedleyEntry,
 │       │                                Performable (protocol + PerformanceItem),
-│       │                                MarkdownSongParser, SongImporter
+│       │                                SongFileParser, SongImporter
 │       ├── Theme/                       EditTheme, PerformanceTheme
 │       └── Views/                       domain-based grouping (see naming conventions below)
 │           ├── Song/                    SongDisplayView, SongEditorSheet, SongEditorDetailView,
-│           │                            SongLibrarySheet, SongLibrarySidebarView
+│           │                            SongLibrarySheet, SongLibrarySidebarView,
+│           │                            SongContentRenderer
 │           ├── Tacet/                   TacetEditSheet
 │           ├── Setlist/                 SetlistDetailView, SetlistSidebarView, SetlistSidebarRow,
 │           │                            SetlistEditSheet, SetlistAddEntrySection,
@@ -30,7 +31,7 @@
 ├── Tests/
 │   ├── UnitTests/                       SetlistTests, SongTests, MedleyTests,
 │   │                                    PerformanceNavigationTests, PerformanceScrollCalculatorTests,
-│   │                                    MarkdownSongParserTests, SongImporterTests, TestHelpers
+│   │                                    SongFileParserTests, SongImporterTests, TestHelpers
 │   └── UITests/                         PerformanceUITests (black-box, size-agnostic),
 │                                        PerformanceIntegrationTest (full user session)
 ├── docs/superpowers/
@@ -156,7 +157,8 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - Plan 1: All data models, themes, setlist editing/ordering UI, unit tests ✅
 - Performance mode redesigned with ForScore-style active-entry navigation: left/right tap zones for next/prev entry, up/down chevrons for within-entry scrolling, entry dimming, adaptive sidebar in wide mode (≥950pt), Performable protocol so both Setlist and Medley share the same PerformanceView ✅
 - Medley feature: Medley/MedleyEntry models, sidebar section, detail view with CRUD, setlist integration (grouped display), performance mode (single card with medley title), medley-only rehearsal mode ✅
-- Markdown song import: MarkdownSongParser + SongImporter for importing songs from markdown files ✅
+- Markdown song import: SongFileParser + SongImporter for importing songs from markdown files ✅
+- Custom song content renderer: SongContentRenderer replaces external MarkdownUI dependency — supports H1, H2, paragraphs, code blocks, extensible for future chord cells and ABC notation ✅
 - Song library: SongLibrarySheet, SongLibrarySidebarView for browsing/managing songs ✅
 - UI polish (plan 3) ✅
 - Sidebar: three sections — Setlists / Songs / Medleys ✅

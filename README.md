@@ -27,7 +27,7 @@ A native iPadOS app for guitarists performing live. Replaces the Google Docs + F
 
 - **SwiftUI** — all UI
 - **SwiftData** — local persistence
-- **MarkdownUI** — Markdown rendering in song editor preview and performance mode
+- **SongContentRenderer** — custom lightweight Markdown renderer for song content (H1, H2, paragraphs, code blocks)
 - Minimum deployment target: **iOS 26**
 
 ## Project structure
@@ -42,12 +42,11 @@ Leadify/
 │   ├── Medley.swift           fixed group of songs, shared by reference
 │   ├── MedleyEntry.swift      join object with Song reference and order
 │   ├── Performable.swift      protocol + PerformanceItem for shared performance UI
-│   ├── MarkdownSongParser.swift  parses markdown files into Song objects
+│   ├── SongFileParser.swift      parses markdown files with frontmatter into Song objects
 │   └── SongImporter.swift     bulk import songs from markdown files
 ├── Theme/
 │   ├── EditTheme.swift        all sizes + colors for edit/ordering mode
-│   ├── PerformanceTheme.swift all sizes + colors for performance mode
-│   └── MarkdownTheme.swift    custom MarkdownUI theme for performance rendering
+│   └── PerformanceTheme.swift all sizes + colors for performance mode
 └── Views/                     domain-based grouping
     ├── Song/                  display, editor, library views
     ├── Tacet/                 tacet editing
