@@ -16,18 +16,10 @@ struct LeadifyApp: App {
                     configurations: config
                 )
             } else {
-                let config = ModelConfiguration(cloudKitDatabase: .automatic)
-                container = try ModelContainer(
-                    for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self,
-                    configurations: config
-                )
+                container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self)
             }
             #else
-            let config = ModelConfiguration(cloudKitDatabase: .automatic)
-            container = try ModelContainer(
-                for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self,
-                configurations: config
-            )
+            container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self)
             #endif
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
