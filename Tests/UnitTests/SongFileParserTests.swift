@@ -1,7 +1,7 @@
 import XCTest
 @testable import Leadify
 
-final class MarkdownSongParserTests: XCTestCase {
+final class SongFileParserTests: XCTestCase {
 
     func test_parsesBasicSong() throws {
         let input = """
@@ -12,7 +12,7 @@ reminder: direct op Cm
 ## Couplet
 Cm Cm Cm
 """
-        let result = try MarkdownSongParser.parse(input)
+        let result = try SongFileParser.parse(input)
         XCTAssertEqual(result.title, "It's My Life")
         XCTAssertEqual(result.reminder, "direct op Cm")
         XCTAssertTrue(result.content.contains("## Couplet"))
@@ -27,7 +27,7 @@ title: Du
 ## Intro
 B F# B
 """
-        let result = try MarkdownSongParser.parse(input)
+        let result = try SongFileParser.parse(input)
         XCTAssertEqual(result.title, "Du")
         XCTAssertNil(result.reminder)
         XCTAssertTrue(result.content.contains("## Intro"))
@@ -45,15 +45,15 @@ e|---------|
 B|--2------|
 ```
 """
-        let result = try MarkdownSongParser.parse(input)
+        let result = try SongFileParser.parse(input)
         XCTAssertTrue(result.content.contains("```"))
         XCTAssertTrue(result.content.contains("e|---------|"))
     }
 
     func test_throwsOnMissingFrontmatter() {
         let input = "Just some text without frontmatter"
-        XCTAssertThrowsError(try MarkdownSongParser.parse(input)) { error in
-            XCTAssertTrue(error is MarkdownSongParser.ParseError)
+        XCTAssertThrowsError(try SongFileParser.parse(input)) { error in
+            XCTAssertTrue(error is SongFileParser.ParseError)
         }
     }
 
@@ -64,8 +64,8 @@ reminder: some reminder
 ---
 Body text
 """
-        XCTAssertThrowsError(try MarkdownSongParser.parse(input)) { error in
-            XCTAssertTrue(error is MarkdownSongParser.ParseError)
+        XCTAssertThrowsError(try SongFileParser.parse(input)) { error in
+            XCTAssertTrue(error is SongFileParser.ParseError)
         }
     }
 
@@ -79,7 +79,7 @@ title: Trimmed
 Content
 
 """
-        let result = try MarkdownSongParser.parse(input)
+        let result = try SongFileParser.parse(input)
         XCTAssertFalse(result.content.hasPrefix("\n"))
         XCTAssertFalse(result.content.hasSuffix("\n"))
     }
@@ -91,7 +91,7 @@ title: Bohemian Rhapsody (Live) — 2024
 ---
 Is this the real life?
 """
-        let result = try MarkdownSongParser.parse(input)
+        let result = try SongFileParser.parse(input)
         XCTAssertEqual(result.title, "Bohemian Rhapsody (Live) — 2024")
     }
 
@@ -103,7 +103,7 @@ reminder: key: Cm
 ---
 Body
 """
-        let result = try MarkdownSongParser.parse(input)
+        let result = try SongFileParser.parse(input)
         XCTAssertEqual(result.title, "Song: The Remix")
         XCTAssertEqual(result.reminder, "key: Cm")
     }

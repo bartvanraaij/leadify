@@ -1,6 +1,6 @@
 import Foundation
 
-struct MarkdownSongParser {
+struct SongFileParser {
 
     struct ParsedSong {
         let title: String

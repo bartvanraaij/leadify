@@ -17,7 +17,7 @@ final class SongImporterTests: XCTestCase {
     // MARK: - importParsedSong (bypasses file I/O)
 
     func test_importNewSong_insertsSong() throws {
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "New Song", reminder: "Capo 2", content: "Am G C"
         )
         importer.importParsedSong(parsed, context: context)
@@ -35,7 +35,7 @@ final class SongImporterTests: XCTestCase {
         context.insert(existing)
         try context.save()
 
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "Duplicate", reminder: nil, content: "new content"
         )
         importer.importParsedSong(parsed, context: context)
@@ -51,7 +51,7 @@ final class SongImporterTests: XCTestCase {
         context.insert(existing)
         try context.save()
 
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "My Song", reminder: nil, content: "new"
         )
         importer.importParsedSong(parsed, context: context)
@@ -64,7 +64,7 @@ final class SongImporterTests: XCTestCase {
         context.insert(existing)
         try context.save()
 
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "Overwrite Me", reminder: "new reminder", content: "new content"
         )
         importer.importParsedSong(parsed, context: context)
@@ -82,7 +82,7 @@ final class SongImporterTests: XCTestCase {
         context.insert(existing)
         try context.save()
 
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "Keep Me", reminder: nil, content: "different"
         )
         importer.importParsedSong(parsed, context: context)
@@ -99,7 +99,7 @@ final class SongImporterTests: XCTestCase {
         context.insert(existing)
         try context.save()
 
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "Both", reminder: nil, content: "imported"
         )
         importer.importParsedSong(parsed, context: context)
@@ -117,7 +117,7 @@ final class SongImporterTests: XCTestCase {
         context.insert(Song(title: "Song (2)", content: ""))
         try context.save()
 
-        let parsed = MarkdownSongParser.ParsedSong(
+        let parsed = SongFileParser.ParsedSong(
             title: "Song", reminder: nil, content: "new"
         )
         importer.importParsedSong(parsed, context: context)

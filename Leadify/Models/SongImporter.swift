@@ -18,13 +18,13 @@ class SongImporter {
     var importSummaryMessage = ""
 
     // Stored during conflict so resolveConflict can act on them
-    private(set) var conflictParsedSong: MarkdownSongParser.ParsedSong?
+    private(set) var conflictParsedSong: SongFileParser.ParsedSong?
     private(set) var conflictExistingSong: Song?
 
     var hasRemainingConflicts: Bool { !pendingConflicts.isEmpty }
 
     // Queue for batch imports
-    private var pendingConflicts: [(parsed: MarkdownSongParser.ParsedSong, existing: Song)] = []
+    private var pendingConflicts: [(parsed: SongFileParser.ParsedSong, existing: Song)] = []
     private var importedCount = 0
     private var skippedCount = 0
     private var overwrittenCount = 0
@@ -40,7 +40,7 @@ class SongImporter {
 
         do {
             let text = try String(contentsOf: url, encoding: .utf8)
-            let parsed = try MarkdownSongParser.parse(text)
+            let parsed = try SongFileParser.parse(text)
             importParsedSong(parsed, context: context)
         } catch {
             errorMessage = error.localizedDescription
@@ -72,7 +72,7 @@ class SongImporter {
 
             do {
                 let text = try String(contentsOf: url, encoding: .utf8)
-                let parsed = try MarkdownSongParser.parse(text)
+                let parsed = try SongFileParser.parse(text)
                 let existingSong = findExistingSong(title: parsed.title, context: context)
 
                 if let existingSong {
@@ -95,7 +95,7 @@ class SongImporter {
     }
 
     /// Import a parsed song, checking for duplicates.
-    func importParsedSong(_ parsed: MarkdownSongParser.ParsedSong, context: ModelContext) {
+    func importParsedSong(_ parsed: SongFileParser.ParsedSong, context: ModelContext) {
         let existingSong = findExistingSong(title: parsed.title, context: context)
 
         if let existingSong {
@@ -149,14 +149,14 @@ class SongImporter {
 
     // MARK: - Private helpers
 
-    private func applyOverwrite(parsed: MarkdownSongParser.ParsedSong, context: ModelContext) {
+    private func applyOverwrite(parsed: SongFileParser.ParsedSong, context: ModelContext) {
         if let existing = findExistingSong(title: parsed.title, context: context) {
             existing.content = parsed.content
             existing.reminder = parsed.reminder
         }
     }
 
-    private func applyKeepBoth(parsed: MarkdownSongParser.ParsedSong, context: ModelContext) {
+    private func applyKeepBoth(parsed: SongFileParser.ParsedSong, context: ModelContext) {
         let uniqueTitle = findUniqueTitle(parsed.title, context: context)
         let song = Song(title: uniqueTitle, content: parsed.content, reminder: parsed.reminder)
         context.insert(song)

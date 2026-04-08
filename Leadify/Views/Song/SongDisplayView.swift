@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import MarkdownUI
 
 // Currently unused — songs open directly in SongEditorDetailView.
 // Kept for potential future use as a read-only detail view.

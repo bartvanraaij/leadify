@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		F20AD2A92F86CF84000A38C0 /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */; };
 		F20AD2AA2F86CF84000A38C0 /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */; };
-		F2AB3D372F7813120021186D /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = F2AB3D362F7813120021186D /* MarkdownUI */; };
 		F2AB3DE92F7972BC0021186D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE82F7972BC0021186D /* README.md */; };
 		F2AB3DEA2F7972BC0021186D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE72F7972BC0021186D /* CLAUDE.md */; };
 /* End PBXBuildFile section */
@@ -47,11 +46,11 @@
 				UITests/PerformanceIntegrationTest.swift,
 				UITests/PerformanceUITests.swift,
 				UnitTests/LeadifyTests.swift,
-				UnitTests/MarkdownSongParserTests.swift,
 				UnitTests/MedleyTests.swift,
 				UnitTests/PerformanceNavigationTests.swift,
 				UnitTests/PerformanceScrollCalculatorTests.swift,
 				UnitTests/SetlistTests.swift,
+				UnitTests/SongFileParserTests.swift,
 				UnitTests/SongImporterTests.swift,
 				UnitTests/SongTests.swift,
 				UnitTests/TestHelpers.swift,
@@ -62,11 +61,11 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				UnitTests/LeadifyTests.swift,
-				UnitTests/MarkdownSongParserTests.swift,
 				UnitTests/MedleyTests.swift,
 				UnitTests/PerformanceNavigationTests.swift,
 				UnitTests/PerformanceScrollCalculatorTests.swift,
 				UnitTests/SetlistTests.swift,
+				UnitTests/SongFileParserTests.swift,
 				UnitTests/SongImporterTests.swift,
 				UnitTests/SongTests.swift,
 				UnitTests/TestHelpers.swift,
@@ -123,7 +122,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2AB3D372F7813120021186D /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +198,6 @@
 			);
 			name = Leadify;
 			packageProductDependencies = (
-				F2AB3D362F7813120021186D /* MarkdownUI */,
 			);
 			productName = Leadify;
 			productReference = F2AB3D182F7811B50021186D /* Leadify.app */;
@@ -259,7 +256,6 @@
 			mainGroup = F2AB3D0F2F7811B50021186D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				F2AB3D352F7813120021186D /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F2AB3D192F7811B50021186D /* Products */;
@@ -648,25 +644,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		F2AB3D352F7813120021186D /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.4.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		F2AB3D362F7813120021186D /* MarkdownUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F2AB3D352F7813120021186D /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
-			productName = MarkdownUI;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F2AB3D102F7811B50021186D /* Project object */;
 }
