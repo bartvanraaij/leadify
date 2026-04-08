@@ -29,6 +29,7 @@ struct PerformanceSetlistSidebar: View {
                     LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                             sidebarRow(index: index, item: item)
+                                .opacity(index == activeIndex ? 1.0 : 0.5)
                                 .accessibilityIdentifier("sidebar-row-\(index)")
                                 .id(index)
                         }
@@ -51,8 +52,10 @@ struct PerformanceSetlistSidebar: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea(edges: .bottom)
         .background(
             PerformanceTheme.sidebarBackground
+                .ignoresSafeArea()
                 .accessibilityIdentifier("performance-sidebar")
         )
     }
@@ -75,7 +78,7 @@ struct PerformanceSetlistSidebar: View {
                 } label: {
                     Text(item.title)
                         .font(.system(size: PerformanceTheme.sidebarSongSize))
-                        .foregroundStyle(isActive ? .white : PerformanceTheme.sidebarTextColor)
+                        .foregroundStyle(PerformanceTheme.sidebarTextColor)
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -83,7 +86,7 @@ struct PerformanceSetlistSidebar: View {
                         .padding(.vertical, 10)
                         .background(
                             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                .fill(isActive ? EditTheme.accentColor : .clear)
+                                .fill(isActive ? PerformanceTheme.sidebarActiveColor : .clear)
                         )
                         .contentShape(Rectangle())
                 }
@@ -109,7 +112,7 @@ struct PerformanceSetlistSidebar: View {
             } label: {
                 Text(item.title)
                     .font(.system(size: PerformanceTheme.sidebarSongSize))
-                    .foregroundStyle(isActive ? .white : PerformanceTheme.sidebarTextColor)
+                    .foregroundStyle(PerformanceTheme.sidebarTextColor)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -117,7 +120,7 @@ struct PerformanceSetlistSidebar: View {
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(isActive ? EditTheme.accentColor : .clear)
+                            .fill(isActive ? PerformanceTheme.sidebarActiveColor : .clear)
                     )
                     .contentShape(Rectangle())
             }

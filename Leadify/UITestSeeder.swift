@@ -272,6 +272,7 @@ enum UITestSeeder {
         setlist.addEntry(SetlistEntry(medley: medleyB))  // Evening Set medley
         setlist.addEntry(SetlistEntry(song: songs[9]))   // Harbour Bell
         setlist.addEntry(SetlistEntry(song: songs[11]))  // Last Train Home
+        setlist.addEntry(SetlistEntry(song: songs[12]))  // Chord Variety Test
 
         try? context.save()
     }
