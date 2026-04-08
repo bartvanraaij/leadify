@@ -33,34 +33,21 @@ struct SongPerformanceContent: View {
     }
 }
 
-/// A standalone song card with drop shadow, used for songs not in a medley.
+/// A standalone song block, used for songs not in a medley.
 struct SongPerformanceBlock: View {
     let song: Song
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         SongPerformanceContent(song: song)
             .padding(.horizontal, 32)
-            .padding(.vertical, 32)
-            .background(
-                colorScheme == .dark ? Color(white: 0.09) : Color.white
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(
-                color: colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.12),
-                radius: colorScheme == .dark ? 12 : 8,
-                x: 0,
-                y: colorScheme == .dark ? 6 : 4
-            )
-            .padding(.horizontal, 20)
             .padding(.top, 32)
+            .padding(.bottom, 16)
     }
 }
 
-/// A medley rendered as a single card — medley title on top, songs separated by subtle dividers.
+/// A medley rendered as a single block — medley title on top, songs separated by subtle dividers.
 struct MedleyPerformanceBlock: View {
     let medley: Medley
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -83,17 +70,5 @@ struct MedleyPerformanceBlock: View {
         }
         .padding(.horizontal, 32)
         .padding(.vertical, 32)
-        .background(
-            colorScheme == .dark ? Color(white: 0.09) : Color.white
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(
-            color: colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.12),
-            radius: colorScheme == .dark ? 12 : 8,
-            x: 0,
-            y: colorScheme == .dark ? 6 : 4
-        )
-        .padding(.horizontal, 20)
-        .padding(.top, 32)
     }
 }

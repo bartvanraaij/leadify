@@ -83,6 +83,12 @@ struct PerformanceView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(PerformanceTheme.dividerColor)
+                            .frame(height: 1)
+                            .padding(.horizontal, 64)
+                    }
                     itemView(item: item)
                         .padding(.horizontal, 32)
                         .opacity(opacityFor(index: index))
@@ -297,8 +303,8 @@ struct PerformanceView: View {
         } label: {
             Image(systemName: "xmark.circle.fill")
                 .font(.system(size: 28))
-                .foregroundStyle(.secondary)
-                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(PerformanceTheme.toolButtonGlyphColor, PerformanceTheme.toolButtonFillColor)
+                .symbolRenderingMode(.palette)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("close-performance")
@@ -314,8 +320,8 @@ struct PerformanceView: View {
         } label: {
             Image(systemName: "list.bullet.circle.fill")
                 .font(.system(size: 28))
-                .foregroundStyle(.secondary)
-                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(PerformanceTheme.toolButtonGlyphColor, PerformanceTheme.toolButtonFillColor)
+                .symbolRenderingMode(.palette)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toggle-sidebar")
