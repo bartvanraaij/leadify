@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F23ED38B2F7F9BC400769CFF /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F23ED38A2F7F9BC400769CFF /* Leadify.xctestplan */; };
+		F20AD2A92F86CF84000A38C0 /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */; };
+		F20AD2AA2F86CF84000A38C0 /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */; };
 		F2AB3D372F7813120021186D /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = F2AB3D362F7813120021186D /* MarkdownUI */; };
 		F2AB3DE92F7972BC0021186D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE82F7972BC0021186D /* README.md */; };
 		F2AB3DEA2F7972BC0021186D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE72F7972BC0021186D /* CLAUDE.md */; };
@@ -31,8 +32,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Leadify.xctestplan; sourceTree = "<group>"; };
 		F2215D792F7E9A8200D9D77C /* LeadifyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeadifyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F23ED38A2F7F9BC400769CFF /* Leadify.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Leadify.xctestplan; sourceTree = "<group>"; };
 		F2AB3D182F7811B50021186D /* Leadify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Leadify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2AB3D2C2F78122A0021186D /* LeadifyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeadifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2AB3DE72F7972BC0021186D /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
@@ -40,6 +41,46 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F23ED3A02F7FD05800769CFF /* Exceptions for "Tests" folder in "Leadify" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				UITests/PerformanceIntegrationTest.swift,
+				UITests/PerformanceUITests.swift,
+				UnitTests/LeadifyTests.swift,
+				UnitTests/MarkdownSongParserTests.swift,
+				UnitTests/MedleyTests.swift,
+				UnitTests/PerformanceNavigationTests.swift,
+				UnitTests/PerformanceScrollCalculatorTests.swift,
+				UnitTests/SetlistTests.swift,
+				UnitTests/SongImporterTests.swift,
+				UnitTests/SongTests.swift,
+				UnitTests/TestHelpers.swift,
+			);
+			target = F2AB3D172F7811B50021186D /* Leadify */;
+		};
+		F23ED3A12F7FD05800769CFF /* Exceptions for "Tests" folder in "LeadifyTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				UnitTests/LeadifyTests.swift,
+				UnitTests/MarkdownSongParserTests.swift,
+				UnitTests/MedleyTests.swift,
+				UnitTests/PerformanceNavigationTests.swift,
+				UnitTests/PerformanceScrollCalculatorTests.swift,
+				UnitTests/SetlistTests.swift,
+				UnitTests/SongImporterTests.swift,
+				UnitTests/SongTests.swift,
+				UnitTests/TestHelpers.swift,
+			);
+			target = F2AB3D2B2F78122A0021186D /* LeadifyTests */;
+		};
+		F23ED3A72F7FD05A00769CFF /* Exceptions for "Tests" folder in "LeadifyUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				UITests/PerformanceIntegrationTest.swift,
+				UITests/PerformanceUITests.swift,
+			);
+			target = F2215D782F7E9A8200D9D77C /* LeadifyUITests */;
+		};
 		F28B5C912F7AAD4600D152FE /* Exceptions for "Leadify" folder in "Leadify" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -50,9 +91,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F2215D7A2F7E9A8200D9D77C /* LeadifyUITests */ = {
+		F23ED38C2F7FCFEC00769CFF /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LeadifyUITests;
+			exceptions = (
+				F23ED3A02F7FD05800769CFF /* Exceptions for "Tests" folder in "Leadify" target */,
+				F23ED3A12F7FD05800769CFF /* Exceptions for "Tests" folder in "LeadifyTests" target */,
+				F23ED3A72F7FD05A00769CFF /* Exceptions for "Tests" folder in "LeadifyUITests" target */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		F2AB3D1A2F7811B50021186D /* Leadify */ = {
@@ -61,11 +107,6 @@
 				F28B5C912F7AAD4600D152FE /* Exceptions for "Leadify" folder in "Leadify" target */,
 			);
 			path = Leadify;
-			sourceTree = "<group>";
-		};
-		F2AB3D2D2F78122A0021186D /* LeadifyTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LeadifyTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -99,12 +140,11 @@
 		F2AB3D0F2F7811B50021186D = {
 			isa = PBXGroup;
 			children = (
-				F23ED38A2F7F9BC400769CFF /* Leadify.xctestplan */,
+				F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */,
+				F2AB3D1A2F7811B50021186D /* Leadify */,
+				F23ED38C2F7FCFEC00769CFF /* Tests */,
 				F2AB3DE72F7972BC0021186D /* CLAUDE.md */,
 				F2AB3DE82F7972BC0021186D /* README.md */,
-				F2AB3D1A2F7811B50021186D /* Leadify */,
-				F2AB3D2D2F78122A0021186D /* LeadifyTests */,
-				F2215D7A2F7E9A8200D9D77C /* LeadifyUITests */,
 				F2AB3D192F7811B50021186D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -135,9 +175,6 @@
 			dependencies = (
 				F2215D802F7E9A8200D9D77C /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				F2215D7A2F7E9A8200D9D77C /* LeadifyUITests */,
-			);
 			name = LeadifyUITests;
 			packageProductDependencies = (
 			);
@@ -158,6 +195,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				F23ED38C2F7FCFEC00769CFF /* Tests */,
 				F2AB3D1A2F7811B50021186D /* Leadify */,
 			);
 			name = Leadify;
@@ -180,9 +218,6 @@
 			);
 			dependencies = (
 				F2AB3D312F78122A0021186D /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				F2AB3D2D2F78122A0021186D /* LeadifyTests */,
 			);
 			name = LeadifyTests;
 			packageProductDependencies = (
@@ -243,6 +278,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F20AD2A92F86CF84000A38C0 /* Leadify.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,7 +295,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F23ED38B2F7F9BC400769CFF /* Leadify.xctestplan in Resources */,
+				F20AD2AA2F86CF84000A38C0 /* Leadify.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

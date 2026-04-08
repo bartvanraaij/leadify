@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:LeadifyTests/Leadify.xctestplan"
+            reference = "container:Leadify.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
