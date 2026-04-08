@@ -9,6 +9,8 @@ final class Song {
     var createdAt: Date = Date()
     @Relationship(deleteRule: .cascade, inverse: \SetlistEntry.song)
     var entries: [SetlistEntry] = []
+    @Relationship(deleteRule: .cascade, inverse: \MedleyEntry.song)
+    var medleyEntries: [MedleyEntry] = []
 
     init(title: String, content: String = "", reminder: String? = nil) {
         self.title = title

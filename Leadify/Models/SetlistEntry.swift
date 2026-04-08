@@ -10,8 +10,9 @@ enum SetlistItemType {
 @Model
 final class SetlistEntry {
     var song: Song?
-    @Relationship(deleteRule: .cascade) var tacet: Tacet?
+    @Relationship(deleteRule: .cascade, inverse: \Tacet.entry) var tacet: Tacet?
     var medley: Medley?
+    var setlist: Setlist?
     var order: Int = 0
     var createdAt: Date = Date()
 

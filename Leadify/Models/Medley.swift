@@ -5,7 +5,9 @@ import Foundation
 final class Medley {
     var name: String
     var createdAt: Date = Date()
-    @Relationship(deleteRule: .cascade) var entries: [MedleyEntry]
+    @Relationship(deleteRule: .cascade, inverse: \MedleyEntry.medley) var entries: [MedleyEntry]
+    @Relationship(deleteRule: .cascade, inverse: \SetlistEntry.medley)
+    var setlistEntries: [SetlistEntry] = []
 
     init(name: String) {
         self.name = name

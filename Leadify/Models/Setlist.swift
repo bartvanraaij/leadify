@@ -6,7 +6,7 @@ final class Setlist {
     var name: String
     var date: Date?
     var createdAt: Date = Date()
-    @Relationship(deleteRule: .cascade) var entries: [SetlistEntry]
+    @Relationship(deleteRule: .cascade, inverse: \SetlistEntry.setlist) var entries: [SetlistEntry]
 
     init(name: String, date: Date? = nil) {
         self.name = name

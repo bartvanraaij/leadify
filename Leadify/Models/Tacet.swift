@@ -5,6 +5,7 @@ import Foundation
 @Model
 final class Tacet {
     var label: String?
+    var entry: SetlistEntry?
 
     init(label: String? = nil) {
         self.label = label
