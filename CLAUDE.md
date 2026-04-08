@@ -31,7 +31,8 @@
 ├── Tests/
 │   ├── UnitTests/                       SetlistTests, SongTests, MedleyTests,
 │   │                                    PerformanceNavigationTests, PerformanceScrollCalculatorTests,
-│   │                                    SongFileParserTests, SongImporterTests, TestHelpers
+│   │                                    SongFileParserTests, SongContentRendererTests,
+│   │                                    SongImporterTests, TestHelpers
 │   └── UITests/                         PerformanceUITests (black-box, size-agnostic),
 │                                        PerformanceIntegrationTest (full user session)
 ├── docs/superpowers/
@@ -158,7 +159,8 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - Performance mode redesigned with ForScore-style active-entry navigation: left/right tap zones for next/prev entry, up/down chevrons for within-entry scrolling, entry dimming, adaptive sidebar in wide mode (≥950pt), Performable protocol so both Setlist and Medley share the same PerformanceView ✅
 - Medley feature: Medley/MedleyEntry models, sidebar section, detail view with CRUD, setlist integration (grouped display), performance mode (single card with medley title), medley-only rehearsal mode ✅
 - Markdown song import: SongFileParser + SongImporter for importing songs from markdown files ✅
-- Custom song content renderer: SongContentRenderer replaces external MarkdownUI dependency — supports H1, H2, paragraphs, code blocks, extensible for future chord cells and ABC notation ✅
+- Custom song content renderer: SongContentRenderer replaces external MarkdownUI dependency — supports H1, H2, chord lines (fixed-width cells), plain text, code blocks, extensible for ABC notation ✅
+- Chord cell rendering: fixed-width chord cells in performance mode with auto-shrink for long chords, divider/annotation support ✅
 - Song library: SongLibrarySheet, SongLibrarySidebarView for browsing/managing songs ✅
 - UI polish (plan 3) ✅
 - Sidebar: three sections — Setlists / Songs / Medleys ✅
