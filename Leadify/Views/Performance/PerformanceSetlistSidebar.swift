@@ -141,8 +141,8 @@ struct PerformanceSetlistSidebar: View {
             Button { onPrevious() } label: {
                 Image(systemName: "chevron.left.circle.fill")
                     .font(.system(size: 40))
-                    .foregroundStyle(PerformanceTheme.toolButtonGlyphColor, PerformanceTheme.toolButtonFillColor)
-                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.hierarchical)
                     .opacity(hasPrevious ? 1 : 0.3)
             }
             .buttonStyle(.plain)
@@ -153,8 +153,8 @@ struct PerformanceSetlistSidebar: View {
             Button { onNext() } label: {
                 Image(systemName: "chevron.right.circle.fill")
                     .font(.system(size: 40))
-                    .foregroundStyle(PerformanceTheme.toolButtonGlyphColor, PerformanceTheme.toolButtonFillColor)
-                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.hierarchical)
                     .opacity(hasNext ? 1 : 0.3)
             }
             .buttonStyle(.plain)

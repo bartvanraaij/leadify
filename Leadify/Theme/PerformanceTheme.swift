@@ -46,8 +46,7 @@ struct PerformanceTheme {
 
     // MARK: Neutral elements
     static let dividerColor = Color(light: Color(white: 0.88), dark: Color(white: 0.15))
-    static let toolButtonGlyphColor = Color(light: Color(white: 0.45), dark: Color(white: 0.8))
-    static let toolButtonFillColor = Color(light: Color(white: 0.82), dark: Color(white: 0.25))
+    static let closeButtonColor = Color(light: Color.black.opacity(0.5), dark: Color.white.opacity(0.7))
 
     // MARK: Medley
     static let medleyTitleSize: CGFloat = 24
