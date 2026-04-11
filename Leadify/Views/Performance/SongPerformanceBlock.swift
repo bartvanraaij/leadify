@@ -4,13 +4,20 @@ import SwiftUI
 /// Used by both standalone SongPerformanceBlock and MedleyPerformanceBlock.
 struct SongPerformanceContent: View {
     let song: Song
+    var titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
+    var titleBottomPadding: CGFloat = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Title and Reminder Header
             HStack(alignment: .center, spacing: 12) {
                 Text(song.title)
-                    .font(.system(size: PerformanceTheme.songTitleSize, weight: .bold))
+                    .font(
+                        .system(
+                            size: PerformanceTheme.songTitleSize,
+                            weight: .bold
+                        )
+                    )
                     .foregroundStyle(PerformanceTheme.songTitleColor)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -21,12 +28,16 @@ struct SongPerformanceContent: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(EditTheme.accentColor)
+                            RoundedRectangle(
+                                cornerRadius: 12,
+                                style: .continuous
+                            )
+                            .fill(EditTheme.accentColor)
                         )
                 }
             }
-            .padding(.bottom, 16)
+            .padding(.top, titleTopPadding)
+            .padding(.bottom, titleBottomPadding)
 
             SongContentRenderer(content: song.content)
         }
@@ -39,61 +50,62 @@ struct SongPerformanceBlock: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        SongPerformanceContent(song: song)
-            .padding(.horizontal, 32)
-            .padding(.vertical, 32)
-            .background(
-                colorScheme == .dark ? Color(white: 0.09) : Color.white
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(
-                color: colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.12),
-                radius: colorScheme == .dark ? 12 : 8,
-                x: 0,
-                y: colorScheme == .dark ? 6 : 4
-            )
-            .padding(.horizontal, 20)
-            .padding(.top, 32)
+        VStack(alignment: .leading, spacing: 0) {
+            SongPerformanceContent(song: song)
+                .padding(
+                    .bottom,
+                    (PerformanceTheme.itemInnerVerticalPadding
+                        + PerformanceTheme.chordTextSize
+                        - PerformanceTheme.chordRowHeight)
+                )
+                .background(
+                    colorScheme == .dark ? Color(white: 0.09) : Color.white
+                )
+
+            Rectangle().fill(PerformanceTheme.dividerColor).frame(height: 1)
+        }
     }
 }
 
 /// A medley rendered as a single card — medley title on top, songs separated by subtle dividers.
 struct MedleyPerformanceBlock: View {
     let medley: Medley
+    var titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Medley title
             Text(medley.name)
-                .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold))
+                .font(
+                    .system(
+                        size: PerformanceTheme.medleyTitleSize,
+                        weight: .semibold
+                    )
+                )
                 .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
+                .padding(.top, titleTopPadding)
                 .padding(.bottom, 24)
 
             // Songs with subtle dividers between them
-            ForEach(Array(medley.sortedEntries.enumerated()), id: \.element.persistentModelID) { index, entry in
-                if index > 0 {
-                    Rectangle()
-                        .fill(PerformanceTheme.dividerColor)
-                        .frame(height: 1)
-                        .padding(.vertical, 24)
-                }
-                SongPerformanceContent(song: entry.song)
+            ForEach(
+                Array(medley.sortedEntries.enumerated()),
+                id: \.element.persistentModelID
+            ) { index, entry in
+                // Divider between songs in medley
+                //                if index > 0 {
+                //                    Rectangle()
+                //                        .fill(PerformanceTheme.dividerColor)
+                //                        .frame(height: 1)
+                //                        .padding(.vertical, 16)
+                //                }
+                SongPerformanceContent(
+                    song: entry.song,
+                    titleTopPadding: 16,
+                    titleBottomPadding: 0
+                )
             }
         }
-        .padding(.horizontal, 32)
-        .padding(.vertical, 32)
-        .background(
-            colorScheme == .dark ? Color(white: 0.09) : Color.white
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(
-            color: colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.12),
-            radius: colorScheme == .dark ? 12 : 8,
-            x: 0,
-            y: colorScheme == .dark ? 6 : 4
-        )
-        .padding(.horizontal, 20)
-        .padding(.top, 32)
+
     }
 }

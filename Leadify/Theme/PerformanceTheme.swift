@@ -12,10 +12,15 @@ struct PerformanceTheme {
     static let tabFontSize: CGFloat = 16
     static let tabTracking: CGFloat = -1.7
 
+    // MARK: Performance mode spacing
+    static let itemInnerVerticalPadding: CGFloat = 32 // Inner padding
+    static let itemTopMargin: CGFloat = 0  // This is the "margin" between songs..!
+
     // MARK: Chord cell layout
     static let chordCellWidth: CGFloat = 88
     static let annotationSize: CGFloat = 22
     static let chordLineSpacing: CGFloat = 2.0
+    static let chordRowHeight: CGFloat = chordTextSize * chordLineSpacing
 
     // MARK: Base colors
     static let primaryContentColor = Color(light: Color(white: 0.1), dark: Color(white: 0.95))
@@ -45,8 +50,9 @@ struct PerformanceTheme {
     static let tabColor = Color(light: Color(red: 0.3, green: 0.5, blue: 0.4), dark: Color(red: 0.5, green: 0.8, blue: 0.6))
 
     // MARK: Neutral elements
-    static let dividerColor = Color(light: Color(white: 0.88), dark: Color(white: 0.15))
-    static let closeButtonColor = Color(light: Color.black.opacity(0.5), dark: Color.white.opacity(0.7))
+    static let dividerColor = dimmedContentColor //Color(light: Color(white: 0.88), dark: Color(white: 0.15))
+    static let toolButtonGlyphColor = Color(light: Color(white: 0.45), dark: Color(white: 0.8))
+    static let toolButtonFillColor = Color(light: Color(white: 0.82), dark: Color(white: 0.25))
 
     // MARK: Medley
     static let medleyTitleSize: CGFloat = 24

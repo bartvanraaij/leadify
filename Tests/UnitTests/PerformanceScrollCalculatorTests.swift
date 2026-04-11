@@ -13,49 +13,45 @@ final class PerformanceScrollCalculatorTests: XCTestCase {
     }
 
     func test_snaps_entryExactlyViewportHeight_returnsSingleSnap() {
-        // Entry height equals viewport — lastSnap would be minY + overlap, but not > minY + 1
-        // when overlap = 32 and height = viewportHeight, lastSnap = minY + 32
-        // step = 600 - 32 = 568 → lastSnap (32 from minY) < step, so one step covers it
+        // Entry height equals viewport — lastSnap = 600 - 600 = 0, not > 0 + 1, so single snap
         let frame = CGRect(x: 0, y: 0, width: 700, height: 600)
         let snaps = PerformanceScrollCalculator.inEntrySnaps(for: frame, viewportHeight: 600)
-        // lastSnap = 600 - 600 + 32 = 32 > 0 + 1, so we get [0, 32]
-        XCTAssertEqual(snaps, [0, 32])
+        XCTAssertEqual(snaps, [0])
     }
 
     func test_snaps_tallEntry_generatesMultipleSnaps() {
-        // viewport 600, overlap 32, step = 568
-        // frame: y=0, height=1500 → lastSnap = 1500 - 600 + 32 = 932
-        // snaps: 0, 568, 932
+        // viewport 600, step = 600
+        // frame: y=0, height=1500 → lastSnap = 1500 - 600 = 900
+        // snaps: 0, 600, 900
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
         let snaps = PerformanceScrollCalculator.inEntrySnaps(for: frame, viewportHeight: 600)
         XCTAssertEqual(snaps.count, 3)
         XCTAssertEqual(snaps[0], 0, accuracy: 1)
-        XCTAssertEqual(snaps[1], 568, accuracy: 1)
-        XCTAssertEqual(snaps[2], 932, accuracy: 1)
+        XCTAssertEqual(snaps[1], 600, accuracy: 1)
+        XCTAssertEqual(snaps[2], 900, accuracy: 1)
     }
 
     func test_snaps_entryNotAtOrigin_snapsStartAtFrameMinY() {
         // frame starts at y=500, height=1200, viewport=600
-        // lastSnap = 1700 - 600 + 32 = 1132
-        // step = 568
-        // snaps: 500, 1068, 1132
+        // lastSnap = 1700 - 600 = 1100
+        // step = 600
+        // snaps: 500, 1100
         let frame = CGRect(x: 0, y: 500, width: 700, height: 1200)
         let snaps = PerformanceScrollCalculator.inEntrySnaps(for: frame, viewportHeight: 600)
-        XCTAssertEqual(snaps.count, 3)
+        XCTAssertEqual(snaps.count, 2)
         XCTAssertEqual(snaps[0], 500, accuracy: 1)
-        XCTAssertEqual(snaps[1], 1068, accuracy: 1)
-        XCTAssertEqual(snaps[2], 1132, accuracy: 1)
+        XCTAssertEqual(snaps[1], 1100, accuracy: 1)
     }
 
     func test_snaps_veryTallEntry_generatesManySnaps() {
         // frame: y=0, height=3000, viewport=600
-        // step = 568, lastSnap = 3000 - 600 + 32 = 2432
-        // snaps: 0, 568, 1136, 1704, 2272, 2432
+        // step = 600, lastSnap = 3000 - 600 = 2400
+        // snaps: 0, 600, 1200, 1800, 2400
         let frame = CGRect(x: 0, y: 0, width: 700, height: 3000)
         let snaps = PerformanceScrollCalculator.inEntrySnaps(for: frame, viewportHeight: 600)
-        XCTAssertEqual(snaps.count, 6)
+        XCTAssertEqual(snaps.count, 5)
         XCTAssertEqual(snaps.first!, 0, accuracy: 1)
-        XCTAssertEqual(snaps.last!, 2432, accuracy: 1)
+        XCTAssertEqual(snaps.last!, 2400, accuracy: 1)
     }
 
     // MARK: - canScrollDown
@@ -113,14 +109,14 @@ final class PerformanceScrollCalculatorTests: XCTestCase {
     func test_canScrollUp_scrolledDown_returnsTrue() {
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
         XCTAssertTrue(PerformanceScrollCalculator.canScrollUp(
-            activeEntryFrame: frame, scrollOffset: 568, viewportHeight: 600
+            activeEntryFrame: frame, scrollOffset: 600, viewportHeight: 600
         ))
     }
 
     func test_canScrollUp_scrolledPastEntry_returnsFalse() {
         // scrollOffset is well past the entry's last snap
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
-        // lastSnap = 1500 - 600 + 32 = 932
+        // lastSnap = 1500 - 600 = 900
         XCTAssertFalse(PerformanceScrollCalculator.canScrollUp(
             activeEntryFrame: frame, scrollOffset: 1500, viewportHeight: 600
         ))
@@ -134,23 +130,23 @@ final class PerformanceScrollCalculatorTests: XCTestCase {
             activeEntryFrame: frame, scrollOffset: 0, viewportHeight: 600
         )
         XCTAssertNotNil(target)
-        XCTAssertEqual(target!, 568, accuracy: 1)
+        XCTAssertEqual(target!, 600, accuracy: 1)
     }
 
     func test_nextSnapDown_atMiddle_returnsNextSnap() {
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
         let target = PerformanceScrollCalculator.nextSnapDown(
-            activeEntryFrame: frame, scrollOffset: 568, viewportHeight: 600
+            activeEntryFrame: frame, scrollOffset: 600, viewportHeight: 600
         )
         XCTAssertNotNil(target)
-        // lastSnap = 932
-        XCTAssertEqual(target!, 932, accuracy: 1)
+        // lastSnap = 900
+        XCTAssertEqual(target!, 900, accuracy: 1)
     }
 
     func test_nextSnapDown_atLastSnap_returnsNil() {
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
         let target = PerformanceScrollCalculator.nextSnapDown(
-            activeEntryFrame: frame, scrollOffset: 932, viewportHeight: 600
+            activeEntryFrame: frame, scrollOffset: 900, viewportHeight: 600
         )
         XCTAssertNil(target)
     }
@@ -167,18 +163,18 @@ final class PerformanceScrollCalculatorTests: XCTestCase {
 
     func test_nextSnapUp_atBottom_returnsPreviousSnap() {
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
-        // lastSnap = 932, middle snap = 568
+        // snaps: [0, 600, 900], at 900 → previous is 600
         let target = PerformanceScrollCalculator.nextSnapUp(
-            activeEntryFrame: frame, scrollOffset: 932, viewportHeight: 600
+            activeEntryFrame: frame, scrollOffset: 900, viewportHeight: 600
         )
         XCTAssertNotNil(target)
-        XCTAssertEqual(target!, 568, accuracy: 1)
+        XCTAssertEqual(target!, 600, accuracy: 1)
     }
 
     func test_nextSnapUp_atMiddle_returnsTop() {
         let frame = CGRect(x: 0, y: 0, width: 700, height: 1500)
         let target = PerformanceScrollCalculator.nextSnapUp(
-            activeEntryFrame: frame, scrollOffset: 568, viewportHeight: 600
+            activeEntryFrame: frame, scrollOffset: 600, viewportHeight: 600
         )
         XCTAssertNotNil(target)
         XCTAssertEqual(target!, 0, accuracy: 1)

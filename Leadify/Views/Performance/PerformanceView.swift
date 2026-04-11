@@ -4,7 +4,10 @@ import SwiftUI
 /// Frames are stable absolute content positions — they do not change as the user scrolls.
 private struct EntryFrameKey: PreferenceKey {
     static let defaultValue: [Int: CGRect] = [:]
-    static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
+    static func reduce(
+        value: inout [Int: CGRect],
+        nextValue: () -> [Int: CGRect]
+    ) {
         value.merge(nextValue(), uniquingKeysWith: { $1 })
     }
 }
@@ -19,6 +22,7 @@ struct PerformanceView: View {
     @State private var viewportHeight: CGFloat = 0
     @State private var entryFrames: [Int: CGRect] = [:]
     @State private var showSidebar: Bool = false
+    @State var safeAreaInsets: EdgeInsets = .init()
 
     private var items: [PerformanceItem] { source.performanceItems }
 
@@ -27,6 +31,7 @@ struct PerformanceView: View {
     var body: some View {
         GeometryReader { geo in
             scrollContent(viewportSize: geo.size)
+
                 .overlay { scrollIndicators }
                 .overlay(alignment: .topLeading) { closeButton }
                 .overlay(alignment: .topLeading) {
@@ -40,7 +45,10 @@ struct PerformanceView: View {
                         .allowsHitTesting(false)
                 }
                 .onAppear {
-                    viewportHeight = geo.size.height
+                    safeAreaInsets = geo.safeAreaInsets
+                    viewportHeight =
+                        geo.size.height + safeAreaInsets.top
+                        + safeAreaInsets.bottom
                     if geo.size.width >= Self.autoSidebarThreshold {
                         showSidebar = true
                     }
@@ -49,7 +57,11 @@ struct PerformanceView: View {
                     }
                 }
                 .onChange(of: geo.size) { _, newSize in
-                    viewportHeight = newSize.height
+                    safeAreaInsets = geo.safeAreaInsets
+                    viewportHeight =
+                        newSize.height + safeAreaInsets.top
+                        + safeAreaInsets.bottom
+
                     DispatchQueue.main.async {
                         if let frame = entryFrames[activeIndex] {
                             withAnimation(.easeInOut(duration: 0.25)) {
@@ -71,8 +83,9 @@ struct PerformanceView: View {
             .inspectorColumnWidth(min: 220, ideal: 280, max: 380)
         }
         .overlay(alignment: .topTrailing) { sidebarToggleButton }
-        .background(PerformanceTheme.background.ignoresSafeArea())
+        .background(PerformanceTheme.background)
         .statusBarHidden(true)
+
         .persistentSystemOverlays(.hidden)
     }
 
@@ -82,28 +95,41 @@ struct PerformanceView: View {
     private func scrollContent(viewportSize: CGSize) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                ForEach(Array(items.enumerated()), id: \.element.id) {
+                    index,
+                    item in
                     itemView(item: item)
                         .padding(.horizontal, 32)
                         .opacity(opacityFor(index: index))
-                        .animation(.easeInOut(duration: 0.3), value: activeIndex)
+                        .animation(
+                            .easeInOut(duration: 0.3),
+                            value: activeIndex
+                        )
                         .accessibilityElement(children: .combine)
                         .accessibilityIdentifier("performance-entry-\(index)")
-                        .accessibilityLabel(index == activeIndex ? "Active: \(item.title)" : item.title)
+                        .accessibilityLabel(
+                            index == activeIndex
+                                ? "Active: \(item.title)" : item.title
+                        )
                         .background(
                             GeometryReader { entryGeo in
                                 Color.clear.preference(
                                     key: EntryFrameKey.self,
-                                    value: [index: entryGeo.frame(in: .named("perfContent"))]
+                                    value: [
+                                        index: entryGeo.frame(
+                                            in: .named("perfContent")
+                                        )
+                                    ]
                                 )
                             }
                         )
                         .id(index)
                 }
             }
-            .padding(.top, 0)
-            .padding(.bottom, 80)
+            //            .border(Color.orange, width: 1)
             .coordinateSpace(name: "perfContent")
+            .padding(.top, 0)
+            .padding(.bottom, 0)
             .background(
                 PerformanceTapOverlay(
                     contentWidth: viewportSize.width,
@@ -113,28 +139,37 @@ struct PerformanceView: View {
                 )
             )
         }
+
+        //        .border(Color.green, width: 1)
+        //        .border(Color.blue, width: 1)
+
+        //
         .scrollPosition($scrollPosition)
         .onPreferenceChange(EntryFrameKey.self) { entryFrames = $0 }
-        .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) { _, y in
-            scrollOffset = y
+        .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) {
+            _,
+            y in
+            scrollOffset = y + safeAreaInsets.top
         }
     }
 
     // MARK: - Scroll indicators (up/down chevrons)
 
     private var canScrollDown: Bool {
-        PerformanceScrollCalculator.canScrollDown(
+        return PerformanceScrollCalculator.canScrollDown(
             activeEntryFrame: entryFrames[activeIndex],
             scrollOffset: scrollOffset,
-            viewportHeight: viewportHeight
+            viewportHeight: viewportHeight,
+            overlap: safeAreaInsets.top
         )
     }
 
     private var canScrollUp: Bool {
-        PerformanceScrollCalculator.canScrollUp(
+        return PerformanceScrollCalculator.canScrollUp(
             activeEntryFrame: entryFrames[activeIndex],
             scrollOffset: scrollOffset,
-            viewportHeight: viewportHeight
+            viewportHeight: viewportHeight,
+            overlap: safeAreaInsets.bottom
         )
     }
 
@@ -144,14 +179,19 @@ struct PerformanceView: View {
             if canScrollDown {
                 VStack {
                     Spacer()
-                    Button { scrollActiveEntryDown() } label: {
+                    Button {
+                        scrollActiveEntryDown()
+                    } label: {
                         Image(systemName: "chevron.compact.down")
                             .font(.system(size: 48, weight: .medium))
                             .foregroundStyle(.white.opacity(0.5))
                             .frame(width: 80, height: 52)
                             .background(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .fill(.black.opacity(0.25))
+                                RoundedRectangle(
+                                    cornerRadius: 16,
+                                    style: .continuous
+                                )
+                                .fill(.black.opacity(0.25))
                             )
                     }
                     .buttonStyle(.plain)
@@ -163,14 +203,19 @@ struct PerformanceView: View {
 
             if canScrollUp {
                 VStack {
-                    Button { scrollActiveEntryUp() } label: {
+                    Button {
+                        scrollActiveEntryUp()
+                    } label: {
                         Image(systemName: "chevron.compact.up")
                             .font(.system(size: 48, weight: .medium))
                             .foregroundStyle(.white.opacity(0.5))
                             .frame(width: 80, height: 52)
                             .background(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .fill(.black.opacity(0.25))
+                                RoundedRectangle(
+                                    cornerRadius: 16,
+                                    style: .continuous
+                                )
+                                .fill(.black.opacity(0.25))
                             )
                     }
                     .buttonStyle(.plain)
@@ -209,7 +254,7 @@ struct PerformanceView: View {
 
     private func opacityFor(index: Int) -> Double {
         if index == activeIndex { return 1.0 }
-        return 0.5
+        return 0.8
     }
 
     // MARK: - Entry navigation (left/right taps)
@@ -271,9 +316,13 @@ struct PerformanceView: View {
 
     private func scrollActiveEntryDown() {
         guard let frame = entryFrames[activeIndex] else { return }
-        guard let target = PerformanceScrollCalculator.nextSnapDown(
-            activeEntryFrame: frame, scrollOffset: scrollOffset, viewportHeight: viewportHeight
-        ) else { return }
+        guard
+            let target = PerformanceScrollCalculator.nextSnapDown(
+                activeEntryFrame: frame,
+                scrollOffset: scrollOffset,
+                viewportHeight: viewportHeight
+            )
+        else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
             scrollPosition.scrollTo(y: max(0, target))
         }
@@ -281,9 +330,13 @@ struct PerformanceView: View {
 
     private func scrollActiveEntryUp() {
         guard let frame = entryFrames[activeIndex] else { return }
-        guard let target = PerformanceScrollCalculator.nextSnapUp(
-            activeEntryFrame: frame, scrollOffset: scrollOffset, viewportHeight: viewportHeight
-        ) else { return }
+        guard
+            let target = PerformanceScrollCalculator.nextSnapUp(
+                activeEntryFrame: frame,
+                scrollOffset: scrollOffset,
+                viewportHeight: viewportHeight
+            )
+        else { return }
         withAnimation(.easeInOut(duration: 0.25)) {
             scrollPosition.scrollTo(y: max(0, target))
         }
@@ -297,8 +350,11 @@ struct PerformanceView: View {
         } label: {
             Image(systemName: "xmark.circle.fill")
                 .font(.system(size: 28))
-                .foregroundStyle(.secondary)
-                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(
+                    PerformanceTheme.toolButtonGlyphColor,
+                    PerformanceTheme.toolButtonFillColor
+                )
+                .symbolRenderingMode(.palette)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("close-performance")
@@ -314,8 +370,11 @@ struct PerformanceView: View {
         } label: {
             Image(systemName: "list.bullet.circle.fill")
                 .font(.system(size: 28))
-                .foregroundStyle(.secondary)
-                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(
+                    PerformanceTheme.toolButtonGlyphColor,
+                    PerformanceTheme.toolButtonFillColor
+                )
+                .symbolRenderingMode(.palette)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toggle-sidebar")
