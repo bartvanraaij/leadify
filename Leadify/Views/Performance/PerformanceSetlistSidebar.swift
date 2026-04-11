@@ -17,16 +17,16 @@ struct PerformanceSetlistSidebar: View {
                     .foregroundStyle(PerformanceTheme.sidebarTextColor)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .padding(.horizontal, 22)
-                    .padding(.top, 16)
-                    .padding(.bottom, 12)
+                    .padding(.horizontal, PerformanceTheme.sidebarTitleHorizontalPadding)
+                    .padding(.top, PerformanceTheme.sidebarSectionSpacing)
+                    .padding(.bottom, PerformanceTheme.sidebarSectionSpacing)
 
                 Divider()
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
+                    .padding(.horizontal, PerformanceTheme.sidebarDividerHorizontalPadding)
+                    .padding(.bottom, PerformanceTheme.sidebarSmallSpacing)
 
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 4) {
+                    LazyVStack(alignment: .leading, spacing: PerformanceTheme.sidebarTightSpacing) {
                         ForEach(Array(items.enumerated()), id: \.element.id) {
                             index,
                             item in
@@ -36,21 +36,21 @@ struct PerformanceSetlistSidebar: View {
                                 .id(index)
                         }
                     }
-                    .padding(.bottom, 16)
-                    .padding(.horizontal, 8)
+                    .padding(.bottom, PerformanceTheme.sidebarSectionSpacing)
+                    .padding(.horizontal, PerformanceTheme.sidebarSmallSpacing)
                 }
                 .onChange(of: activeIndex) { _, newIndex in
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
                         proxy.scrollTo(newIndex, anchor: .center)
                     }
                 }
 
                 Divider()
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, PerformanceTheme.sidebarDividerHorizontalPadding)
 
                 navigationButtons
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, PerformanceTheme.sidebarSectionSpacing)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -69,8 +69,8 @@ struct PerformanceSetlistSidebar: View {
         case .tacet:
             tacetLabel(item: item)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
+                .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
+                .padding(.vertical, PerformanceTheme.sidebarTacetRowVerticalPadding)
 
         case .medley:
             VStack(alignment: .leading, spacing: 0) {
@@ -83,11 +83,11 @@ struct PerformanceSetlistSidebar: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
+                        .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
+                        .padding(.vertical, PerformanceTheme.sidebarRowVerticalPadding)
                         .background(
                             RoundedRectangle(
-                                cornerRadius: 22,
+                                cornerRadius: PerformanceTheme.sidebarRowCornerRadius,
                                 style: .continuous
                             )
                             .fill(
@@ -112,9 +112,9 @@ struct PerformanceSetlistSidebar: View {
                             .foregroundStyle(PerformanceTheme.sidebarTextColor)
                             .lineLimit(1)
                             .truncationMode(.tail)
-                            .padding(.leading, 28)
-                            .padding(.trailing, 14)
-                            .padding(.vertical, 3)
+                            .padding(.leading, PerformanceTheme.sidebarRowHorizontalPadding * 2)
+                            .padding(.trailing, PerformanceTheme.sidebarRowHorizontalPadding)
+                            .padding(.vertical, PerformanceTheme.sidebarTightSpacing)
                     }
                 }
             }
@@ -129,10 +129,10 @@ struct PerformanceSetlistSidebar: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
+                    .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
+                    .padding(.vertical, PerformanceTheme.sidebarRowVerticalPadding)
                     .background(
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        RoundedRectangle(cornerRadius: PerformanceTheme.sidebarRowCornerRadius, style: .continuous)
                             .fill(
                                 isActive
                                     ? PerformanceTheme.sidebarActiveColor
@@ -154,18 +154,18 @@ struct PerformanceSetlistSidebar: View {
     }
 
     private var navigationButtons: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: PerformanceTheme.sidebarNavButtonSize) {
             Button {
                 onPrevious()
             } label: {
                 Image(systemName: "chevron.left.circle.fill")
-                    .font(.system(size: 40))
+                    .font(.system(size: PerformanceTheme.sidebarNavButtonSize))
                     .foregroundStyle(
                         PerformanceTheme.toolButtonGlyphColor,
                         PerformanceTheme.toolButtonFillColor
                     )
                     .symbolRenderingMode(.palette)
-                    .opacity(hasPrevious ? 1 : 0.3)
+                    .opacity(hasPrevious ? 1 : PerformanceTheme.sidebarNavDisabledOpacity)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Previous entry")
@@ -176,13 +176,13 @@ struct PerformanceSetlistSidebar: View {
                 onNext()
             } label: {
                 Image(systemName: "chevron.right.circle.fill")
-                    .font(.system(size: 40))
+                    .font(.system(size: PerformanceTheme.sidebarNavButtonSize))
                     .foregroundStyle(
                         PerformanceTheme.toolButtonGlyphColor,
                         PerformanceTheme.toolButtonFillColor
                     )
                     .symbolRenderingMode(.palette)
-                    .opacity(hasNext ? 1 : 0.3)
+                    .opacity(hasNext ? 1 : PerformanceTheme.sidebarNavDisabledOpacity)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Next entry")
@@ -196,11 +196,11 @@ struct PerformanceSetlistSidebar: View {
         let label = item.title.isEmpty ? "Tacet" : item.title
         let color = PerformanceTheme.sidebarTextColor.opacity(0.7)
 
-        HStack(spacing: 8) {
+        HStack(spacing: PerformanceTheme.sidebarSmallSpacing) {
             Rectangle()
                 .fill(color)
                 .frame(height: 1)
-                .frame(maxWidth: 16)
+                .frame(maxWidth: PerformanceTheme.sidebarDividerHorizontalPadding)
 
             Text(label)
                 .font(.system(size: PerformanceTheme.sidebarTacetSize).italic())
@@ -210,7 +210,7 @@ struct PerformanceSetlistSidebar: View {
             Rectangle()
                 .fill(color)
                 .frame(height: 1)
-                .frame(maxWidth: 16)
+                .frame(maxWidth: PerformanceTheme.sidebarDividerHorizontalPadding)
         }
     }
 }

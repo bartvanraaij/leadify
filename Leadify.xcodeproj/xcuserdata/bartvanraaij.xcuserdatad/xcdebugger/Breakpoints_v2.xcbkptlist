@@ -14,8 +14,8 @@
             filePath = "Leadify/Views/Performance/PerformanceScrollCalculator.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
             landmarkName = "canScrollUp(activeEntryFrame:scrollOffset:viewportHeight:overlap:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "Leadify/Views/Performance/PerformanceScrollCalculator.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
             landmarkName = "canScrollDown(activeEntryFrame:scrollOffset:viewportHeight:overlap:)"
             landmarkType = "7">
          </BreakpointContent>

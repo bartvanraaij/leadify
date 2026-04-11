@@ -26,14 +26,14 @@ struct PerformanceView: View {
 
     private var items: [PerformanceItem] { source.performanceItems }
 
-    private static let autoSidebarThreshold: CGFloat = 900
+    private static let autoSidebarThreshold: CGFloat = PerformanceTheme.autoSidebarThreshold
 
     var body: some View {
         GeometryReader { geo in
             scrollContent(viewportSize: geo.size)
 
                 .overlay { scrollIndicators }
-                .overlay(alignment: .topLeading) { closeButton }
+                .overlay(alignment: .bottomTrailing) { closeButton }
                 .overlay(alignment: .topLeading) {
                     // Accessibility landmark marking the content area bounds.
                     // Used by VoiceOver and UI tests to determine the tap zone layout.
@@ -64,7 +64,7 @@ struct PerformanceView: View {
 
                     DispatchQueue.main.async {
                         if let frame = entryFrames[activeIndex] {
-                            withAnimation(.easeInOut(duration: 0.25)) {
+                            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
                                 scrollPosition.scrollTo(y: max(0, frame.minY))
                             }
                         }
@@ -80,7 +80,7 @@ struct PerformanceView: View {
                 onPrevious: { navigateToPrevious() },
                 onNext: { navigateToNext() }
             )
-            .inspectorColumnWidth(min: 220, ideal: 280, max: 380)
+            .inspectorColumnWidth(min: PerformanceTheme.inspectorColumnWidthMin, ideal: PerformanceTheme.inspectorColumnWidthIdeal, max: PerformanceTheme.inspectorColumnWidthMax)
         }
         .overlay(alignment: .topTrailing) { sidebarToggleButton }
         .background(PerformanceTheme.background)
@@ -99,10 +99,10 @@ struct PerformanceView: View {
                     index,
                     item in
                     itemView(item: item)
-                        .padding(.horizontal, 32)
+                        .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
                         .opacity(opacityFor(index: index))
                         .animation(
-                            .easeInOut(duration: 0.3),
+                            .easeInOut(duration: PerformanceTheme.dimmingAnimationDuration),
                             value: activeIndex
                         )
                         .accessibilityElement(children: .combine)
@@ -179,20 +179,20 @@ struct PerformanceView: View {
                         scrollActiveEntryDown()
                     } label: {
                         Image(systemName: "chevron.compact.down")
-                            .font(.system(size: 48, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.5))
-                            .frame(width: 80, height: 52)
+                            .font(.system(size: PerformanceTheme.chevronIconSize, weight: .medium))
+                            .foregroundStyle(.white.opacity(PerformanceTheme.chevronForegroundOpacity))
+                            .frame(width: PerformanceTheme.chevronFrameWidth, height: PerformanceTheme.chevronFrameHeight)
                             .background(
                                 RoundedRectangle(
-                                    cornerRadius: 16,
+                                    cornerRadius: PerformanceTheme.chevronCornerRadius,
                                     style: .continuous
                                 )
-                                .fill(.black.opacity(0.25))
+                                .fill(.black.opacity(PerformanceTheme.chevronBackgroundOpacity))
                             )
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("scroll-down-chevron")
-                    .padding(.bottom, 24)
+                    .padding(.bottom, PerformanceTheme.chevronEdgePadding)
                 }
                 .transition(.opacity)
             }
@@ -203,27 +203,27 @@ struct PerformanceView: View {
                         scrollActiveEntryUp()
                     } label: {
                         Image(systemName: "chevron.compact.up")
-                            .font(.system(size: 48, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.5))
-                            .frame(width: 80, height: 52)
+                            .font(.system(size: PerformanceTheme.chevronIconSize, weight: .medium))
+                            .foregroundStyle(.white.opacity(PerformanceTheme.chevronForegroundOpacity))
+                            .frame(width: PerformanceTheme.chevronFrameWidth, height: PerformanceTheme.chevronFrameHeight)
                             .background(
                                 RoundedRectangle(
-                                    cornerRadius: 16,
+                                    cornerRadius: PerformanceTheme.chevronCornerRadius,
                                     style: .continuous
                                 )
-                                .fill(.black.opacity(0.25))
+                                .fill(.black.opacity(PerformanceTheme.chevronBackgroundOpacity))
                             )
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("scroll-up-chevron")
-                    .padding(.top, 24)
+                    .padding(.top, PerformanceTheme.chevronEdgePadding)
                     Spacer()
                 }
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: canScrollDown)
-        .animation(.easeInOut(duration: 0.2), value: canScrollUp)
+        .animation(.easeInOut(duration: PerformanceTheme.chevronFadeAnimationDuration), value: canScrollDown)
+        .animation(.easeInOut(duration: PerformanceTheme.chevronFadeAnimationDuration), value: canScrollUp)
     }
 
     // MARK: - Item rendering
@@ -250,7 +250,7 @@ struct PerformanceView: View {
 
     private func opacityFor(index: Int) -> Double {
         if index == activeIndex { return 1.0 }
-        return 0.6
+        return PerformanceTheme.inactiveItemOpacity
     }
 
     // MARK: - Entry navigation (left/right taps)
@@ -288,7 +288,7 @@ struct PerformanceView: View {
     private func navigateTo(index: Int) {
         activeIndex = index
         if let frame = entryFrames[index] {
-            withAnimation(.easeInOut(duration: 0.25)) {
+            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
                 scrollPosition.scrollTo(y: max(0, frame.minY))
             }
         }
@@ -319,7 +319,7 @@ struct PerformanceView: View {
                 viewportHeight: viewportHeight
             )
         else { return }
-        withAnimation(.easeInOut(duration: 0.25)) {
+        withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
             scrollPosition.scrollTo(y: max(0, target))
         }
     }
@@ -333,7 +333,7 @@ struct PerformanceView: View {
                 viewportHeight: viewportHeight
             )
         else { return }
-        withAnimation(.easeInOut(duration: 0.25)) {
+        withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
             scrollPosition.scrollTo(y: max(0, target))
         }
     }
@@ -345,7 +345,7 @@ struct PerformanceView: View {
             dismiss()
         } label: {
             Image(systemName: "xmark.circle.fill")
-                .font(.system(size: 28))
+                .font(.system(size: PerformanceTheme.toolButtonSize))
                 .foregroundStyle(
                     PerformanceTheme.toolButtonGlyphColor,
                     PerformanceTheme.toolButtonFillColor
@@ -354,8 +354,8 @@ struct PerformanceView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("close-performance")
-        .padding(.top, 12)
-        .padding(.horizontal, 16)
+        .padding(.top, PerformanceTheme.toolButtonTopPadding)
+        .padding(.horizontal, PerformanceTheme.toolButtonHorizontalPadding)
     }
 
     private var sidebarToggleButton: some View {
@@ -365,7 +365,7 @@ struct PerformanceView: View {
             }
         } label: {
             Image(systemName: "list.bullet.circle.fill")
-                .font(.system(size: 28))
+                .font(.system(size: PerformanceTheme.toolButtonSize))
                 .foregroundStyle(
                     PerformanceTheme.toolButtonGlyphColor,
                     PerformanceTheme.toolButtonFillColor
@@ -374,7 +374,7 @@ struct PerformanceView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toggle-sidebar")
-        .padding(.top, 12)
-        .padding(.horizontal, 16)
+        .padding(.top, PerformanceTheme.toolButtonTopPadding)
+        .padding(.horizontal, PerformanceTheme.toolButtonHorizontalPadding)
     }
 }

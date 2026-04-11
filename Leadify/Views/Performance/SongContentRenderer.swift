@@ -26,9 +26,9 @@ struct SongContentRenderer: View {
                     .system(size: PerformanceTheme.songTitleSize, weight: .bold)
                 )
                 .foregroundStyle(PerformanceTheme.songTitleColor)
-                .lineSpacing(PerformanceTheme.songTitleSize * 0.1)
-                .padding(.top, PerformanceTheme.songTitleSize * 0.8)
-                .padding(.bottom, PerformanceTheme.songTitleSize * 0.2)
+                .lineSpacing(PerformanceTheme.songTitleSize * PerformanceTheme.headingLineSpacingFraction)
+                .padding(.top, PerformanceTheme.songTitleSize * PerformanceTheme.headingTopPaddingFraction)
+                .padding(.bottom, PerformanceTheme.songTitleSize * PerformanceTheme.headingBottomPaddingFraction)
 
         case .heading2(let text):
             Text(text)
@@ -39,9 +39,9 @@ struct SongContentRenderer: View {
                     )
                 )
                 .foregroundStyle(PerformanceTheme.sectionHeaderColor)
-                .lineSpacing(PerformanceTheme.sectionHeaderSize * 0.1)
-                .padding(.top, PerformanceTheme.sectionHeaderSize * 0.8)
-                .padding(.bottom, PerformanceTheme.sectionHeaderSize * 0.2)
+                .lineSpacing(PerformanceTheme.sectionHeaderSize * PerformanceTheme.headingLineSpacingFraction)
+                .padding(.top, PerformanceTheme.sectionHeaderSize * PerformanceTheme.headingTopPaddingFraction)
+                .padding(.bottom, PerformanceTheme.sectionHeaderSize * PerformanceTheme.headingBottomPaddingFraction)
 
         case .chordLine(let tokens):
             chordLineView(tokens)
@@ -66,7 +66,7 @@ struct SongContentRenderer: View {
                 )
                 .foregroundStyle(PerformanceTheme.tabColor)
                 .tracking(PerformanceTheme.tabTracking)
-                .padding(.vertical, 4)
+                .padding(.vertical, PerformanceTheme.codeBlockVerticalPadding)
         }
     }
 
@@ -84,7 +84,7 @@ struct SongContentRenderer: View {
                             )
                         )
                         .foregroundStyle(PerformanceTheme.chordTextColor)
-                        .minimumScaleFactor(0.5)
+                        .minimumScaleFactor(PerformanceTheme.chordMinimumScaleFactor)
                         .lineLimit(1)
                         .frame(
                             width: PerformanceTheme.chordCellWidth,
@@ -114,7 +114,7 @@ struct SongContentRenderer: View {
                             )
                         )
                         .foregroundStyle(PerformanceTheme.annotationColor)
-                        .padding(.leading, 8)
+                        .padding(.leading, PerformanceTheme.annotationLeadingPadding)
                         .padding(
                             .top,
                             PerformanceTheme.annotationBaselineOffset
