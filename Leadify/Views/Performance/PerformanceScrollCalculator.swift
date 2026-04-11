@@ -5,7 +5,6 @@ import UIKit
 /// Extracted from PerformanceView so the math can be unit tested independently.
 enum PerformanceScrollCalculator {
 
-    static let inEntryScrollDetectionOverlap: CGFloat = 0
     /// Ordered snap positions for within-entry scrolling, anchored at the entry top.
     /// Full steps of (viewportHeight - overlap) from frame.minY, with the final step
     /// landing at lastSnap (the near-bottom position).
@@ -43,7 +42,7 @@ enum PerformanceScrollCalculator {
         let hasRemainingPixelsBelowViewport =
             frame.maxY
             - (scrollOffset + viewportHeight
-                + self.inEntryScrollDetectionOverlap + overlap) >= 1
+                 + overlap) >= 1
 
         return hasRemainingPixelsBelowViewport
     }
@@ -57,9 +56,9 @@ enum PerformanceScrollCalculator {
     ) -> Bool {
         guard let frame else { return false }
         let lastSnap = frame.maxY - viewportHeight + overlap
-        guard scrollOffset <= lastSnap + self.inEntryScrollDetectionOverlap
+        guard scrollOffset <= lastSnap
         else { return false }
-        return scrollOffset > frame.minY + self.inEntryScrollDetectionOverlap
+        return scrollOffset > frame.minY
             + overlap
     }
 
