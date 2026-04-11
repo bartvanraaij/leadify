@@ -27,7 +27,9 @@ struct PerformanceSetlistSidebar: View {
 
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 4) {
-                        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        ForEach(Array(items.enumerated()), id: \.element.id) {
+                            index,
+                            item in
                             sidebarRow(index: index, item: item)
                                 .opacity(index == activeIndex ? 1.0 : 0.5)
                                 .accessibilityIdentifier("sidebar-row-\(index)")
@@ -52,7 +54,6 @@ struct PerformanceSetlistSidebar: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea(edges: .bottom)
         .background(
             PerformanceTheme.sidebarBackground
                 .ignoresSafeArea()
@@ -85,17 +86,29 @@ struct PerformanceSetlistSidebar: View {
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
                         .background(
-                            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                .fill(isActive ? PerformanceTheme.sidebarActiveColor : .clear)
+                            RoundedRectangle(
+                                cornerRadius: 22,
+                                style: .continuous
+                            )
+                            .fill(
+                                isActive
+                                    ? PerformanceTheme.sidebarActiveColor
+                                    : .clear
+                            )
                         )
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
 
                 if let medley = item.medley {
-                    ForEach(medley.sortedEntries, id: \.persistentModelID) { medleyEntry in
+                    ForEach(medley.sortedEntries, id: \.persistentModelID) {
+                        medleyEntry in
                         Text(medleyEntry.song.title)
-                            .font(.system(size: PerformanceTheme.sidebarMedleySongSize))
+                            .font(
+                                .system(
+                                    size: PerformanceTheme.sidebarMedleySongSize
+                                )
+                            )
                             .foregroundStyle(PerformanceTheme.sidebarTextColor)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -120,7 +133,11 @@ struct PerformanceSetlistSidebar: View {
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(isActive ? PerformanceTheme.sidebarActiveColor : .clear)
+                            .fill(
+                                isActive
+                                    ? PerformanceTheme.sidebarActiveColor
+                                    : .clear
+                            )
                     )
                     .contentShape(Rectangle())
             }
@@ -138,11 +155,16 @@ struct PerformanceSetlistSidebar: View {
 
     private var navigationButtons: some View {
         HStack(spacing: 40) {
-            Button { onPrevious() } label: {
+            Button {
+                onPrevious()
+            } label: {
                 Image(systemName: "chevron.left.circle.fill")
                     .font(.system(size: 40))
-                    .foregroundStyle(.secondary)
-                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(
+                        PerformanceTheme.toolButtonGlyphColor,
+                        PerformanceTheme.toolButtonFillColor
+                    )
+                    .symbolRenderingMode(.palette)
                     .opacity(hasPrevious ? 1 : 0.3)
             }
             .buttonStyle(.plain)
@@ -150,11 +172,16 @@ struct PerformanceSetlistSidebar: View {
             .accessibilityIdentifier("sidebar-previous")
             .disabled(!hasPrevious)
 
-            Button { onNext() } label: {
+            Button {
+                onNext()
+            } label: {
                 Image(systemName: "chevron.right.circle.fill")
                     .font(.system(size: 40))
-                    .foregroundStyle(.secondary)
-                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(
+                        PerformanceTheme.toolButtonGlyphColor,
+                        PerformanceTheme.toolButtonFillColor
+                    )
+                    .symbolRenderingMode(.palette)
                     .opacity(hasNext ? 1 : 0.3)
             }
             .buttonStyle(.plain)

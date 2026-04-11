@@ -8,7 +8,9 @@ struct SongContentRenderer: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(Self.parse(content).enumerated()), id: \.offset) { _, block in
+            ForEach(Array(Self.parse(content).enumerated()), id: \.offset) {
+                _,
+                block in
                 blockView(block)
             }
         }
@@ -20,7 +22,9 @@ struct SongContentRenderer: View {
         switch block {
         case .heading1(let text):
             Text(text)
-                .font(.system(size: PerformanceTheme.songTitleSize, weight: .bold))
+                .font(
+                    .system(size: PerformanceTheme.songTitleSize, weight: .bold)
+                )
                 .foregroundStyle(PerformanceTheme.songTitleColor)
                 .lineSpacing(PerformanceTheme.songTitleSize * 0.1)
                 .padding(.top, PerformanceTheme.songTitleSize * 0.8)
@@ -28,7 +32,12 @@ struct SongContentRenderer: View {
 
         case .heading2(let text):
             Text(text)
-                .font(.system(size: PerformanceTheme.sectionHeaderSize, weight: .semibold))
+                .font(
+                    .system(
+                        size: PerformanceTheme.sectionHeaderSize,
+                        weight: .semibold
+                    )
+                )
                 .foregroundStyle(PerformanceTheme.sectionHeaderColor)
                 .lineSpacing(PerformanceTheme.sectionHeaderSize * 0.1)
                 .padding(.top, PerformanceTheme.sectionHeaderSize * 0.8)
@@ -39,12 +48,22 @@ struct SongContentRenderer: View {
 
         case .plainText(let text):
             Text(text)
-                .font(.system(size: PerformanceTheme.chordTextSize, weight: .semibold))
+                .font(
+                    .system(
+                        size: PerformanceTheme.chordTextSize,
+                        weight: .semibold
+                    )
+                )
                 .foregroundStyle(PerformanceTheme.chordTextColor)
 
         case .codeBlock(let text, _):
             Text(text)
-                .font(.system(size: PerformanceTheme.tabFontSize, design: .monospaced))
+                .font(
+                    .system(
+                        size: PerformanceTheme.tabFontSize,
+                        design: .monospaced
+                    )
+                )
                 .foregroundStyle(PerformanceTheme.tabColor)
                 .tracking(PerformanceTheme.tabTracking)
                 .padding(.vertical, 4)
@@ -53,29 +72,53 @@ struct SongContentRenderer: View {
 
     @ViewBuilder
     private func chordLineView(_ tokens: [ChordToken]) -> some View {
-        ChordFlowLayout(rowHeight: PerformanceTheme.chordTextSize * PerformanceTheme.chordLineSpacing) {
+        ChordFlowLayout(rowHeight: PerformanceTheme.chordRowHeight) {
             ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
                 switch token {
                 case .chord(let name):
                     Text(name)
-                        .font(.system(size: PerformanceTheme.chordTextSize, weight: .semibold))
+                        .font(
+                            .system(
+                                size: PerformanceTheme.chordTextSize,
+                                weight: .semibold
+                            )
+                        )
                         .foregroundStyle(PerformanceTheme.chordTextColor)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
-                        .frame(width: PerformanceTheme.chordCellWidth, alignment: .leading)
+                        .frame(
+                            width: PerformanceTheme.chordCellWidth,
+                            alignment: .leading
+                        )
 
                 case .divider:
                     Text("/")
-                        .font(.system(size: PerformanceTheme.chordTextSize, weight: .regular))
+                        .font(
+                            .system(
+                                size: PerformanceTheme.chordTextSize,
+                                weight: .regular
+                            )
+                        )
                         .foregroundStyle(PerformanceTheme.chordDividerColor)
-                        .frame(width: PerformanceTheme.chordCellWidth, alignment: .center)
+                        .frame(
+                            width: PerformanceTheme.chordCellWidth,
+                            alignment: .center
+                        )
 
                 case .annotation(let text):
                     Text(text)
-                        .font(.system(size: PerformanceTheme.annotationSize, weight: .regular))
+                        .font(
+                            .system(
+                                size: PerformanceTheme.annotationSize,
+                                weight: .regular
+                            )
+                        )
                         .foregroundStyle(PerformanceTheme.annotationColor)
                         .padding(.leading, 8)
-                        .padding(.top, PerformanceTheme.annotationBaselineOffset)
+                        .padding(
+                            .top,
+                            PerformanceTheme.annotationBaselineOffset
+                        )
                 }
             }
         }
@@ -104,7 +147,8 @@ extension SongContentRenderer {
 
     /// Regex matching a valid chord name.
     private static let chordPattern = try! NSRegularExpression(
-        pattern: #"^[A-G][b#]?(?:(?:maj|M)\d*|min|m|aug|\+|dim|ø|sus[24]?|add\d+)?\d*(?:[b#+-]\d+)*(?:/[A-G][b#]?)?$"#
+        pattern:
+            #"^[A-G][b#]?(?:(?:maj|M)\d*|min|m|aug|\+|dim|ø|sus[24]?|add\d+)?\d*(?:[b#+-]\d+)*(?:/[A-G][b#]?)?$"#
     )
 
     /// Returns true if the token is a valid chord name.
@@ -115,7 +159,8 @@ extension SongContentRenderer {
 
     /// Tokenize a chord line string into ChordTokens.
     static func tokenizeChordLine(_ line: String) -> [ChordToken] {
-        let parts = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+        let parts = line.split(separator: " ", omittingEmptySubsequences: true)
+            .map(String.init)
         var tokens: [ChordToken] = []
 
         for (index, part) in parts.enumerated() {
@@ -137,7 +182,11 @@ extension SongContentRenderer {
     struct ChordFlowLayout: Layout {
         let rowHeight: CGFloat
 
-        func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        func sizeThatFits(
+            proposal: ProposedViewSize,
+            subviews: Subviews,
+            cache: inout ()
+        ) -> CGSize {
             let maxWidth = proposal.width ?? .infinity
             var x: CGFloat = 0
             var rows = 1
@@ -154,7 +203,12 @@ extension SongContentRenderer {
             return CGSize(width: maxWidth, height: rowHeight * CGFloat(rows))
         }
 
-        func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        func placeSubviews(
+            in bounds: CGRect,
+            proposal: ProposedViewSize,
+            subviews: Subviews,
+            cache: inout ()
+        ) {
             var x: CGFloat = bounds.minX
             var y: CGFloat = bounds.minY
 
@@ -164,7 +218,11 @@ extension SongContentRenderer {
                     x = bounds.minX
                     y += rowHeight
                 }
-                subview.place(at: CGPoint(x: x, y: y), anchor: .topLeading, proposal: .unspecified)
+                subview.place(
+                    at: CGPoint(x: x, y: y),
+                    anchor: .topLeading,
+                    proposal: .unspecified
+                )
                 x += size.width
             }
         }
@@ -181,7 +239,9 @@ extension SongContentRenderer {
 
             // Fenced code block
             if line.hasPrefix("```") {
-                let language = String(line.dropFirst(3)).trimmingCharacters(in: .whitespaces)
+                let language = String(line.dropFirst(3)).trimmingCharacters(
+                    in: .whitespaces
+                )
                 let lang: String? = language.isEmpty ? nil : language
                 var codeLines: [String] = []
                 index += 1
@@ -200,7 +260,9 @@ extension SongContentRenderer {
 
             // Heading 2 (check before H1 since ## also starts with #)
             if line.hasPrefix("## ") {
-                let text = String(line.dropFirst(3)).trimmingCharacters(in: .whitespaces)
+                let text = String(line.dropFirst(3)).trimmingCharacters(
+                    in: .whitespaces
+                )
                 if !text.isEmpty { blocks.append(.heading2(text)) }
                 index += 1
                 continue
@@ -208,7 +270,9 @@ extension SongContentRenderer {
 
             // Heading 1
             if line.hasPrefix("# ") {
-                let text = String(line.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+                let text = String(line.dropFirst(2)).trimmingCharacters(
+                    in: .whitespaces
+                )
                 if !text.isEmpty { blocks.append(.heading1(text)) }
                 index += 1
                 continue
@@ -227,7 +291,8 @@ extension SongContentRenderer {
                 if l.trimmingCharacters(in: .whitespaces).isEmpty
                     || l.hasPrefix("# ")
                     || l.hasPrefix("## ")
-                    || l.hasPrefix("```") {
+                    || l.hasPrefix("```")
+                {
                     break
                 }
                 paraLines.append(l)
@@ -235,7 +300,10 @@ extension SongContentRenderer {
             }
             for line in paraLines {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
-                let firstToken = trimmed.split(separator: " ", maxSplits: 1).first.map(String.init) ?? ""
+                let firstToken =
+                    trimmed.split(separator: " ", maxSplits: 1).first.map(
+                        String.init
+                    ) ?? ""
                 if isChord(firstToken) {
                     blocks.append(.chordLine(tokenizeChordLine(trimmed)))
                 } else {

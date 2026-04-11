@@ -7,6 +7,8 @@ enum UITestSeeder {
     @MainActor
     static func seed(in context: ModelContext) {
         // MARK: - Songs (varying content lengths)
+        
+        let noContent = ""
 
         let shortContent = """
         ## Verse
@@ -219,12 +221,12 @@ enum UITestSeeder {
             Song(title: "Painted Sky", content: mediumContent),
             Song(title: "Run to Copperville", content: longContent, reminder: "Key of Em"),
             Song(title: "Passengers", content: veryLongContent),
-            Song(title: "Bakery Lane", content: shortContent),
+            Song(title: "Bakery Lane", content: noContent),
             Song(title: "Velvet Dusk", content: mediumContent, reminder: "Slow tempo"),
             Song(title: "Thistlewood Fair", content: longContent),
             Song(title: "Paper Lanterns", content: mediumContent),
-            Song(title: "Clocktower Waltz", content: shortContent, reminder: "3/4 time"),
-            Song(title: "Harbour Bell", content: mediumContent),
+            Song(title: "Clocktower Waltz", content: noContent, reminder: "3/4 time"),
+            Song(title: "Harbour Bell", content: noContent),
             Song(title: "Foxglove Road", content: longContent),
             Song(title: "Last Train Home", content: veryLongContent, reminder: "Build dynamics"),
             Song(title: "Chord Variety Test", content: chordVarietyContent, reminder: "All chord types"),

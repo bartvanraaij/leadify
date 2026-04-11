@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 import UniformTypeIdentifiers
 
 enum SongSortOrder {
@@ -23,7 +23,8 @@ struct SongLibrarySidebarView: View {
         switch sortOrder {
         case .alphabetical:
             return allSongs.sorted {
-                $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+                $0.title.localizedCaseInsensitiveCompare($1.title)
+                    == .orderedAscending
             }
         case .dateAdded:
             return allSongs.sorted { $0.createdAt > $1.createdAt }
@@ -34,11 +35,16 @@ struct SongLibrarySidebarView: View {
         List(selection: $selectedSong) {
             ForEach(sortedSongs) { song in
                 NavigationLink(value: song) {
-                    SongLibraryRow(song: song, isSelected: selectedSong?.persistentModelID == song.persistentModelID)
+                    SongLibraryRow(
+                        song: song,
+                        isSelected: selectedSong?.persistentModelID
+                            == song.persistentModelID
+                    )
                 }
                 .listRowBackground(
                     selectedSong?.persistentModelID == song.persistentModelID
-                        ? RoundedRectangle(cornerRadius: 22, style: .continuous).fill(EditTheme.accentColor)
+                        ? RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .fill(EditTheme.accentColor)
                         : nil
                 )
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -94,7 +100,10 @@ struct SongLibrarySidebarView: View {
                     Button {
                         showFileImporter = true
                     } label: {
-                        Label("Import songs", systemImage: "square.and.arrow.down")
+                        Label(
+                            "Import songs",
+                            systemImage: "square.and.arrow.down"
+                        )
                     }
                 } label: {
                     Label("Options", systemImage: "ellipsis.circle")
@@ -105,9 +114,11 @@ struct SongLibrarySidebarView: View {
                 VStack(spacing: 1) {
                     Text("Songs")
                         .font(.headline)
-                    Text("\(allSongs.count) song\(allSongs.count == 1 ? "" : "s")")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text(
+                        "\(allSongs.count) song\(allSongs.count == 1 ? "" : "s")"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -121,10 +132,12 @@ struct SongLibrarySidebarView: View {
             }
         }
         .fullScreenCover(isPresented: $showPerformance) {
-            PerformanceView(source: SongCollection(
-                performanceTitle: "All songs",
-                songs: sortedSongs
-            ))
+            PerformanceView(
+                source: SongCollection(
+                    performanceTitle: "All songs",
+                    songs: sortedSongs
+                )
+            )
         }
         .fileImporter(
             isPresented: $showFileImporter,
@@ -139,14 +152,20 @@ struct SongLibrarySidebarView: View {
                 songImporter.showErrorAlert = true
             }
         }
-        .alert("Delete Song", isPresented: $showDeleteConfirmation, presenting: songToDelete) { song in
+        .alert(
+            "Delete Song",
+            isPresented: $showDeleteConfirmation,
+            presenting: songToDelete
+        ) { song in
             Button("Delete \"\(song.title)\"", role: .destructive) {
                 if selectedSong == song { selectedSong = nil }
                 context.delete(song)
             }
             Button("Cancel", role: .cancel) {}
         } message: { song in
-            Text("This will remove \"\(song.title)\" from all setlists. This cannot be undone.")
+            Text(
+                "This will remove \"\(song.title)\" from all setlists. This cannot be undone."
+            )
         }
     }
 }
@@ -159,7 +178,10 @@ private struct SongLibraryRow: View {
         Text(song.title.isEmpty ? "New Song" : song.title)
             .font(.body)
             .fontWeight(.medium)
-            .foregroundStyle(isSelected ? .white : (song.title.isEmpty ? .secondary : .primary))
+            .foregroundStyle(
+                isSelected
+                    ? .white : (song.title.isEmpty ? .secondary : .primary)
+            )
             .padding(.vertical, 4)
     }
 }

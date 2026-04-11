@@ -15,17 +15,22 @@ struct TacetPerformanceBlock: View {
             Rectangle()
                 .fill(PerformanceTheme.dividerColor)
                 .frame(height: 1)
-            
+
             Text(displayLabel)
-                .font(.system(size: PerformanceTheme.sectionHeaderSize, weight: .semibold))
+                .font(
+                    .system(
+                        size: PerformanceTheme.sectionHeaderSize,
+                        weight: .semibold
+                    )
+                )
                 .foregroundStyle(PerformanceTheme.tacetTextColor)
                 .tracking(2)
-            
+
             Rectangle()
                 .fill(PerformanceTheme.dividerColor)
                 .frame(height: 1)
         }
         .padding(.horizontal, 32)
-        .padding(.top, 96)
+        .padding(.vertical, PerformanceTheme.itemInnerVerticalPadding)
     }
 }
