@@ -126,7 +126,6 @@ struct PerformanceView: View {
                         .id(index)
                 }
             }
-            //            .border(Color.orange, width: 1)
             .coordinateSpace(name: "perfContent")
             .padding(.top, 0)
             .padding(.bottom, 0)
@@ -139,9 +138,6 @@ struct PerformanceView: View {
                 )
             )
         }
-
-        //        .border(Color.green, width: 1)
-        //        .border(Color.blue, width: 1)
 
         //
         .scrollPosition($scrollPosition)
@@ -254,7 +250,7 @@ struct PerformanceView: View {
 
     private func opacityFor(index: Int) -> Double {
         if index == activeIndex { return 1.0 }
-        return 0.8
+        return 0.6
     }
 
     // MARK: - Entry navigation (left/right taps)
