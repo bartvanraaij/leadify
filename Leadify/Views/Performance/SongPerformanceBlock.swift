@@ -10,7 +10,7 @@ struct SongPerformanceContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Title and Reminder Header
-            HStack(alignment: .center, spacing: 12) {
+            HStack(alignment: .center, spacing: PerformanceTheme.titleReminderSpacing) {
                 Text(song.title)
                     .font(
                         .system(
@@ -23,13 +23,13 @@ struct SongPerformanceContent: View {
 
                 if let reminder = song.reminder {
                     Text(reminder)
-                        .font(.system(size: 20, weight: .semibold))
+                        .font(.system(size: PerformanceTheme.reminderFontSize, weight: .semibold))
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, PerformanceTheme.reminderHorizontalPadding)
+                        .padding(.vertical, PerformanceTheme.reminderVerticalPadding)
                         .background(
                             RoundedRectangle(
-                                cornerRadius: 12,
+                                cornerRadius: PerformanceTheme.reminderCornerRadius,
                                 style: .continuous
                             )
                             .fill(EditTheme.accentColor)
@@ -47,7 +47,6 @@ struct SongPerformanceContent: View {
 /// A standalone song card with drop shadow, used for songs not in a medley.
 struct SongPerformanceBlock: View {
     let song: Song
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -57,9 +56,6 @@ struct SongPerformanceBlock: View {
                     (PerformanceTheme.itemInnerVerticalPadding
                         + PerformanceTheme.chordTextSize
                         - PerformanceTheme.chordRowHeight)
-                )
-                .background(
-                    colorScheme == .dark ? Color(white: 0.09) : Color.white
                 )
 
             Rectangle().fill(PerformanceTheme.dividerColor).frame(height: 1)
@@ -71,7 +67,6 @@ struct SongPerformanceBlock: View {
 struct MedleyPerformanceBlock: View {
     let medley: Medley
     var titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -85,23 +80,16 @@ struct MedleyPerformanceBlock: View {
                 )
                 .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
                 .padding(.top, titleTopPadding)
-                .padding(.bottom, 24)
+                .padding(.bottom, PerformanceTheme.medleyTitleBottomPadding)
 
             // Songs with subtle dividers between them
             ForEach(
                 Array(medley.sortedEntries.enumerated()),
                 id: \.element.persistentModelID
             ) { index, entry in
-                // Divider between songs in medley
-                //                if index > 0 {
-                //                    Rectangle()
-                //                        .fill(PerformanceTheme.dividerColor)
-                //                        .frame(height: 1)
-                //                        .padding(.vertical, 16)
-                //                }
                 SongPerformanceContent(
                     song: entry.song,
-                    titleTopPadding: 16,
+                    titleTopPadding: PerformanceTheme.medleyInnerSongTitleTopPadding,
                     titleBottomPadding: 0
                 )
             }

@@ -11,7 +11,7 @@ struct TacetPerformanceBlock: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: PerformanceTheme.tacetSpacing) {
             Rectangle()
                 .fill(PerformanceTheme.dividerColor)
                 .frame(height: 1)
@@ -24,13 +24,13 @@ struct TacetPerformanceBlock: View {
                     )
                 )
                 .foregroundStyle(PerformanceTheme.tacetTextColor)
-                .tracking(2)
+                .tracking(PerformanceTheme.tacetTracking)
 
             Rectangle()
                 .fill(PerformanceTheme.dividerColor)
                 .frame(height: 1)
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
         .padding(.vertical, PerformanceTheme.itemInnerVerticalPadding)
     }
 }
