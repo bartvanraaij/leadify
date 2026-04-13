@@ -12,6 +12,7 @@ struct SongContentRenderer: View {
                 _,
                 block in
                 blockView(block)
+                    //.border(Color.purple, width: 1)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
