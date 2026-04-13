@@ -41,7 +41,7 @@ struct PerformanceTheme {
 
     // MARK: - Heading spacing (fraction of heading font size)
     static let headingLineSpacingFraction: CGFloat = 0.1
-    static let headingTopPaddingFraction: CGFloat = 0.8
+    static let headingTopPaddingFraction: CGFloat = 0
     static let headingBottomPaddingFraction: CGFloat = 0.2
 
     // MARK: - Code block

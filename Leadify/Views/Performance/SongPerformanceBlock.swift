@@ -5,7 +5,7 @@ import SwiftUI
 struct SongPerformanceContent: View {
     let song: Song
     var titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
-    var titleBottomPadding: CGFloat = 0
+    var titleBottomPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
