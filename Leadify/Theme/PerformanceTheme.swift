@@ -108,6 +108,7 @@ struct PerformanceTheme {
 
     // MARK: - Neutral elements
     static let dividerColor = dimmedContentColor
+    static let dividerHeight:CGFloat = 1
     static let toolButtonGlyphColor = Color(light: Color(white: 0.45), dark: Color(white: 0.8))
     static let toolButtonFillColor = Color(light: Color(white: 0.82), dark: Color(white: 0.25))
 
