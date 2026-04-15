@@ -37,7 +37,7 @@ struct SongDisplayView: View {
 
                     Rectangle()
                         .fill(PerformanceTheme.dividerColor)
-                        .frame(height: 1)
+                        .frame(height: PerformanceTheme.dividerHeight)
                         .padding(.bottom, 28)
 
                     SongContentPreview(content: song.content)

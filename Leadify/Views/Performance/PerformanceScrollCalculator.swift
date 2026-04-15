@@ -4,6 +4,7 @@ import UIKit
 /// Pure-logic helper for within-entry scroll calculations (chevron up/down).
 /// Extracted from PerformanceView so the math can be unit tested independently.
 enum PerformanceScrollCalculator {
+    
 
     /// Ordered snap positions for within-entry scrolling, anchored at the entry top.
     /// Full steps of (viewportHeight - overlap) from frame.minY, with the final step
@@ -11,8 +12,9 @@ enum PerformanceScrollCalculator {
     static func inEntrySnaps(for frame: CGRect, viewportHeight: CGFloat)
         -> [CGFloat]
     {
+        let workingFrameMaxY = frame.maxY - PerformanceTheme.dividerHeight
         let step = viewportHeight
-        let lastSnap = frame.maxY - viewportHeight
+        let lastSnap = workingFrameMaxY - viewportHeight
 
         guard lastSnap > frame.minY + 1, step > 0 else { return [frame.minY] }
 
@@ -26,6 +28,14 @@ enum PerformanceScrollCalculator {
         snaps.append(lastSnap)
         return snaps
     }
+    
+    static func isWithinTolerance(_ a: CGFloat, _ b: CGFloat, _ tolerance: CGFloat = 1) -> Bool {
+        abs(a - b) <= tolerance
+    }
+    
+    static func isOutsideTolerance(_ a: CGFloat, _ b: CGFloat, _ tolerance: CGFloat = 1) -> Bool {
+        abs(a - b) >= tolerance
+    }
 
     /// Whether the active entry's bottom extends below the visible viewport.
     static func canScrollDown(
@@ -36,11 +46,15 @@ enum PerformanceScrollCalculator {
     ) -> Bool {
         guard let frame else { return false }
 
-        let entryIsInView = scrollOffset >= frame.minY
+  
+        let entryIsInView = scrollOffset >= frame.minY || isWithinTolerance(scrollOffset, frame.minY, 2)
+
         if entryIsInView == false { return false }
+        
+        let workingFrameMaxY = frame.maxY - PerformanceTheme.dividerHeight
 
         let hasRemainingPixelsBelowViewport =
-            frame.maxY
+        workingFrameMaxY
             - (scrollOffset + viewportHeight
                  + overlap) >= 1
 
