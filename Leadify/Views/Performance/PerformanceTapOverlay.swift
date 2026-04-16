@@ -10,8 +10,8 @@ struct PerformanceTapOverlay: UIViewRepresentable {
     var contentWidth: CGFloat
     var onLeftTap: () -> Void
     var onRightTap: () -> Void
-    /// Called when the user taps in the center zone. Passes the Y position in the scroll view.
-    var onCenterTap: ((CGFloat) -> Void)?
+    /// Called when the user taps in the center zone.
+    var onCenterTap: (() -> Void)?
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -57,7 +57,7 @@ struct PerformanceTapOverlay: UIViewRepresentable {
         var contentWidth: CGFloat = 0
         var onLeftTap: (() -> Void)?
         var onRightTap: (() -> Void)?
-        var onCenterTap: ((CGFloat) -> Void)?
+        var onCenterTap: (() -> Void)?
         var tapGesture: UITapGestureRecognizer?
 
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -74,7 +74,7 @@ struct PerformanceTapOverlay: UIViewRepresentable {
             } else if location.x > rightZoneStart {
                 onRightTap?()
             } else {
-                onCenterTap?(location.y)
+                onCenterTap?()
             }
         }
     }

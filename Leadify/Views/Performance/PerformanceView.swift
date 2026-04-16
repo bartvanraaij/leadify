@@ -139,7 +139,7 @@ struct PerformanceView: View {
                     contentWidth: viewportSize.width,
                     onLeftTap: { handleLeftTap() },
                     onRightTap: { handleRightTap() },
-                    onCenterTap: { tapY in activateEntryAt(contentY: tapY) }
+                    onCenterTap: { toggleToolbar() }
                 )
             )
         }
@@ -415,18 +415,10 @@ struct PerformanceView: View {
         }
     }
 
-    // MARK: - Tap-to-activate (center zone)
+    // MARK: - Toolbar
 
-    /// tapY arrives as absolute content Y from UIScrollView.location(in: scrollView).
-    private func activateEntryAt(contentY: CGFloat) {
-        for (index, frame) in entryFrames {
-            if contentY >= frame.minY && contentY <= frame.maxY {
-                if index != activeIndex && !items[index].isSkippable {
-                    navigateTo(index: index)
-                }
-                return
-            }
-        }
+    private func toggleToolbar() {
+        // Full implementation arrives in Task 4.
     }
 
     // MARK: - Within-entry scrolling (up/down chevrons)
