@@ -38,7 +38,7 @@ struct SettingsSheet: View {
                         .buttonStyle(.plain)
                     }
                 } header: {
-                    Text("Performance navigation")
+                    Text("Performance navigation mode")
                 }
             }
             .navigationTitle("Settings")

@@ -21,7 +21,7 @@ enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
     var explanation: String {
         switch self {
         case .simpleNavigation:
-            "Left tap scrolls up one screen, right tap scrolls down one screen. No song awareness."
+            "Left tap scrolls up one screen, right tap scrolls down one screen."
         case .songNavigation:
             "Left tap goes to the previous song, right tap to the next. Chevrons scroll within the current song."
         case .smartNavigation:
