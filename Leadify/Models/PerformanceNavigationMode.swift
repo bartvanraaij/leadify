@@ -13,8 +13,8 @@ enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .simpleNavigation: "Simple"
-        case .songNavigation: "Song navigation"
-        case .smartNavigation: "Smart navigation"
+        case .songNavigation: "Song"
+        case .smartNavigation: "Smart"
         }
     }
 

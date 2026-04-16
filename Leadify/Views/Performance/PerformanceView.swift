@@ -24,6 +24,7 @@ struct PerformanceView: View {
     @State private var showSidebar: Bool = false
     @State var safeAreaInsets: EdgeInsets = .init()
     @AppStorage(PerformanceNavigationMode.storageKey) private var storedNavMode: String = PerformanceNavigationMode.defaultMode.rawValue
+    @State private var showToolbar: Bool = false
 
     private var navMode: PerformanceNavigationMode {
         PerformanceNavigationMode(rawValue: storedNavMode) ?? .defaultMode
@@ -39,6 +40,19 @@ struct PerformanceView: View {
 
                 .overlay { scrollIndicators }
                 .overlay(alignment: .bottomTrailing) { closeButton }
+                .overlay(alignment: .top) {
+                    if showToolbar {
+                        PerformanceToolbar(
+                            onExit: { dismiss() },
+                            onToggleSidebar: {
+                                withAnimation { showSidebar.toggle() }
+                            }
+                        )
+                        .padding(.horizontal, 24)
+                        .padding(.top, 16)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                }
                 .overlay(alignment: .topLeading) {
                     // Accessibility landmark marking the content area bounds.
                     // Used by VoiceOver and UI tests to determine the tap zone layout.
@@ -186,19 +200,15 @@ struct PerformanceView: View {
                     Button {
                         scrollActiveEntryDown()
                     } label: {
-                        Image(systemName: "chevron.compact.down")
-                            .font(.system(size: PerformanceTheme.chevronIconSize, weight: .medium))
-                            .foregroundStyle(.white.opacity(PerformanceTheme.chevronForegroundOpacity))
-                            .frame(width: PerformanceTheme.chevronFrameWidth, height: PerformanceTheme.chevronFrameHeight)
-                            .background(
-                                RoundedRectangle(
-                                    cornerRadius: PerformanceTheme.chevronCornerRadius,
-                                    style: .continuous
-                                )
-                                .fill(.black.opacity(PerformanceTheme.chevronBackgroundOpacity))
-                            )
+                        Image(systemName: "chevron.down")
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .frame(width: 72, height: 72)
+                            .contentShape(Circle())
+                            .glassEffect(.regular.interactive(), in: .circle)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Scroll down")
                     .accessibilityIdentifier("scroll-down-chevron")
                     .padding(.bottom, PerformanceTheme.chevronEdgePadding)
                 }
@@ -210,19 +220,15 @@ struct PerformanceView: View {
                     Button {
                         scrollActiveEntryUp()
                     } label: {
-                        Image(systemName: "chevron.compact.up")
-                            .font(.system(size: PerformanceTheme.chevronIconSize, weight: .medium))
-                            .foregroundStyle(.white.opacity(PerformanceTheme.chevronForegroundOpacity))
-                            .frame(width: PerformanceTheme.chevronFrameWidth, height: PerformanceTheme.chevronFrameHeight)
-                            .background(
-                                RoundedRectangle(
-                                    cornerRadius: PerformanceTheme.chevronCornerRadius,
-                                    style: .continuous
-                                )
-                                .fill(.black.opacity(PerformanceTheme.chevronBackgroundOpacity))
-                            )
+                        Image(systemName: "chevron.up")
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .frame(width: 72, height: 72)
+                            .contentShape(Circle())
+                            .glassEffect(.regular.interactive(), in: .circle)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Scroll up")
                     .accessibilityIdentifier("scroll-up-chevron")
                     .padding(.top, PerformanceTheme.chevronEdgePadding)
                     Spacer()
@@ -418,7 +424,9 @@ struct PerformanceView: View {
     // MARK: - Toolbar
 
     private func toggleToolbar() {
-        // Full implementation arrives in Task 4.
+        withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+            showToolbar.toggle()
+        }
     }
 
     // MARK: - Within-entry scrolling (up/down chevrons)
