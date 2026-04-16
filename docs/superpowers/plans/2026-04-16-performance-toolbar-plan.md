@@ -310,7 +310,7 @@ Edit `Leadify/Views/Performance/PerformanceView.swift`.
 Add two new `@State` / `@AppStorage` properties alongside the existing ones (around line 26, after `storedNavMode`):
 
 ```swift
-    @AppStorage("performance.toolbar.autoDismiss") private var autoDismissToolbar: Bool = false
+    @AppStorage(PerformanceToolbarSettings.autoDismissStorageKey) private var autoDismissToolbar: Bool = PerformanceToolbarSettings.autoDismissDefault
     @State private var showToolbar: Bool = false
     @State private var autoDismissTask: Task<Void, Never>?
 ```
@@ -687,7 +687,7 @@ Insert at line 10 (right after `do {`):
 ```swift
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--uitest-auto-dismiss") {
-                UserDefaults.standard.set(true, forKey: "performance.toolbar.autoDismiss")
+                UserDefaults.standard.set(true, forKey: PerformanceToolbarSettings.autoDismissStorageKey)
             }
             #endif
 ```
