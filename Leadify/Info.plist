@@ -28,8 +28,6 @@
 		<string>LaunchScreenBackground</string>
 		<key>UIImageName</key>
 		<string>LaunchScreenLogo</string>
-		<key>UIImageRespectsSafeAreaInsets</key>
-		<true/>
 	</dict>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
