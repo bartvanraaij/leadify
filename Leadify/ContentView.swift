@@ -50,26 +50,26 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            List(SidebarItem.allCases, selection: $selectedSidebarItem) { item in
-                NavigationLink(value: item) {
-                    Label(item.title, systemImage: item.icon)
+            List(selection: $selectedSidebarItem) {
+                ForEach(SidebarItem.allCases) { item in
+                    NavigationLink(value: item) {
+                        Label(item.title, systemImage: item.icon)
+                    }
                 }
             }
+            .listStyle(.sidebar)
             .navigationBarTitleDisplayMode(.inline)
             .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 240)
-            .safeAreaInset(edge: .bottom) {
-                Button {
-                    showSettings = true
-                } label: {
-                    Label("Settings", systemImage: "slider.horizontal.3")
-                        .font(.body)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "switch.2")
+                    }
+                    .accessibilityLabel("Preferences")
+                    .accessibilityIdentifier("open-settings")
                 }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("open-settings")
             }
             .sheet(isPresented: $showSettings) {
                 SettingsSheet()
