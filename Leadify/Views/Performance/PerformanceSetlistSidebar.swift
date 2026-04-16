@@ -155,39 +155,37 @@ struct PerformanceSetlistSidebar: View {
 
     private var navigationButtons: some View {
         HStack(spacing: PerformanceTheme.sidebarNavButtonSize) {
+            
             Button {
                 onPrevious()
             } label: {
-                Image(systemName: "chevron.left.circle.fill")
-                    .font(.system(size: PerformanceTheme.sidebarNavButtonSize))
-                    .foregroundStyle(
-                        PerformanceTheme.toolButtonGlyphColor,
-                        PerformanceTheme.toolButtonFillColor
-                    )
-                    .symbolRenderingMode(.palette)
-                    .opacity(hasPrevious ? 1 : PerformanceTheme.sidebarNavDisabledOpacity)
+                Image(systemName: "chevron.backward")
+                    .fontWeight(.semibold)
+                    .frame(width: 48, height: 48)
+                    .contentShape(Circle())
+                    .glassEffect(.regular.interactive(), in: .circle)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Previous entry")
             .accessibilityIdentifier("sidebar-previous")
             .disabled(!hasPrevious)
-
+            
+            
             Button {
                 onNext()
             } label: {
-                Image(systemName: "chevron.right.circle.fill")
-                    .font(.system(size: PerformanceTheme.sidebarNavButtonSize))
-                    .foregroundStyle(
-                        PerformanceTheme.toolButtonGlyphColor,
-                        PerformanceTheme.toolButtonFillColor
-                    )
-                    .symbolRenderingMode(.palette)
-                    .opacity(hasNext ? 1 : PerformanceTheme.sidebarNavDisabledOpacity)
+                Image(systemName: "chevron.forward")
+                    .fontWeight(.semibold)
+                    .frame(width: 48, height: 48)
+                    .contentShape(Circle())
+                    .glassEffect(.regular.interactive(), in: .circle)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Next entry")
             .accessibilityIdentifier("sidebar-next")
             .disabled(!hasNext)
+            
+
         }
     }
 
