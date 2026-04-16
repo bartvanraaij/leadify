@@ -39,7 +39,6 @@ struct PerformanceView: View {
             scrollContent(viewportSize: geo.size)
 
                 .overlay { scrollIndicators }
-                .overlay(alignment: .bottomTrailing) { closeButton }
                 .overlay(alignment: .top) {
                     if showToolbar {
                         PerformanceToolbar(
@@ -101,7 +100,6 @@ struct PerformanceView: View {
             )
             .inspectorColumnWidth(min: PerformanceTheme.inspectorColumnWidthMin, ideal: PerformanceTheme.inspectorColumnWidthIdeal, max: PerformanceTheme.inspectorColumnWidthMax)
         }
-        .overlay(alignment: .topTrailing) { sidebarToggleButton }
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
 
@@ -459,43 +457,4 @@ struct PerformanceView: View {
         }
     }
 
-    // MARK: - Toolbar buttons
-
-    private var closeButton: some View {
-        Button {
-            dismiss()
-        } label: {
-            Image(systemName: "xmark.circle.fill")
-                .font(.system(size: PerformanceTheme.toolButtonSize))
-                .foregroundStyle(
-                    PerformanceTheme.toolButtonGlyphColor,
-                    PerformanceTheme.toolButtonFillColor
-                )
-                .symbolRenderingMode(.palette)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("close-performance")
-        .padding(.top, PerformanceTheme.toolButtonTopPadding)
-        .padding(.horizontal, PerformanceTheme.toolButtonHorizontalPadding)
-    }
-
-    private var sidebarToggleButton: some View {
-        Button {
-            withAnimation {
-                showSidebar.toggle()
-            }
-        } label: {
-            Image(systemName: "list.bullet.circle.fill")
-                .font(.system(size: PerformanceTheme.toolButtonSize))
-                .foregroundStyle(
-                    PerformanceTheme.toolButtonGlyphColor,
-                    PerformanceTheme.toolButtonFillColor
-                )
-                .symbolRenderingMode(.palette)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("toggle-sidebar")
-        .padding(.top, PerformanceTheme.toolButtonTopPadding)
-        .padding(.horizontal, PerformanceTheme.toolButtonHorizontalPadding)
-    }
 }
