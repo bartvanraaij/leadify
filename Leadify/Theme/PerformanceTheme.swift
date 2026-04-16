@@ -56,18 +56,7 @@ struct PerformanceTheme {
     static let inactiveItemOpacity: Double = 0.6
 
     // MARK: - Scroll chevrons
-    static let chevronIconSize: CGFloat = 48
-    static let chevronFrameWidth: CGFloat = 80
-    static let chevronFrameHeight: CGFloat = 52
-    static let chevronCornerRadius: CGFloat = 16
-    static let chevronBackgroundOpacity: Double = 0.25
-    static let chevronForegroundOpacity: Double = 0.5
     static let chevronEdgePadding: CGFloat = 24
-
-    // MARK: - Tool buttons (close, sidebar toggle)
-    static let toolButtonSize: CGFloat = 28
-    static let toolButtonTopPadding: CGFloat = 12
-    static let toolButtonHorizontalPadding: CGFloat = 16
 
     // MARK: - Reminder badge
     static let reminderFontSize: CGFloat = 20
@@ -109,9 +98,6 @@ struct PerformanceTheme {
     // MARK: - Neutral elements
     static let dividerColor = dimmedContentColor
     static let dividerHeight:CGFloat = 1
-    static let toolButtonGlyphColor = Color(light: Color(white: 0.45), dark: Color(white: 0.8))
-    static let toolButtonFillColor = Color(light: Color(white: 0.82), dark: Color(white: 0.25))
-
     // MARK: - Sidebar (wide mode)
     static let sidebarBackground = Color(light: Color(white: 0.94), dark: Color(white: 0.08))
     static let sidebarActiveColor = Color.secondary.opacity(0.2)
