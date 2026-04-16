@@ -36,6 +36,7 @@ struct ContentView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var selectedMedley: Medley?
     @Query private var allMedleys: [Medley]
+    @State private var showSettings: Bool = false
 
     var sortedSetlists: [Setlist] {
         allSetlists.sorted { a, b in
@@ -56,6 +57,23 @@ struct ContentView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 240)
+            .safeAreaInset(edge: .bottom) {
+                Button {
+                    showSettings = true
+                } label: {
+                    Label("Settings", systemImage: "slider.horizontal.3")
+                        .font(.body)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("open-settings")
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsSheet()
+            }
         } content: {
             Group {
                 switch selectedSidebarItem {

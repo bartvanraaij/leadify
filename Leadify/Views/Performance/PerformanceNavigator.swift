@@ -12,18 +12,20 @@ struct NavigationResult {
 }
 
 /// Pure-logic helper for the two-phase ForScore-style tap navigation.
-/// All frames are in the scroll view's coordinate space relative to the viewport.
-/// NOT USED
+///
+/// Frames are in absolute scroll-content coordinates (same convention as
+/// `PerformanceScrollCalculator`). Phase 1 (scroll-within) is delegated to the
+/// calculator so tap steps match chevron steps exactly, including the
+/// `dividerHeight` trim on `frame.maxY` and sub-pixel tolerances.
 enum PerformanceNavigator {
-    private static let scrollFraction: CGFloat = 0.6
-
     static func handleTap(
         direction: TapDirection,
         activeIndex: Int,
         entryCount: Int,
         activeEntryFrame: CGRect,
+        scrollOffset: CGFloat,
         viewportHeight: CGFloat,
-        scrollOffset: CGFloat
+        overlap: CGFloat = 0
     ) -> NavigationResult {
         switch direction {
         case .forward:
@@ -31,15 +33,17 @@ enum PerformanceNavigator {
                 activeIndex: activeIndex,
                 entryCount: entryCount,
                 activeEntryFrame: activeEntryFrame,
+                scrollOffset: scrollOffset,
                 viewportHeight: viewportHeight,
-                scrollOffset: scrollOffset
+                overlap: overlap
             )
         case .backward:
             return handleBackward(
                 activeIndex: activeIndex,
                 activeEntryFrame: activeEntryFrame,
+                scrollOffset: scrollOffset,
                 viewportHeight: viewportHeight,
-                scrollOffset: scrollOffset
+                overlap: overlap
             )
         }
     }
@@ -48,59 +52,62 @@ enum PerformanceNavigator {
         activeIndex: Int,
         entryCount: Int,
         activeEntryFrame: CGRect,
+        scrollOffset: CGFloat,
         viewportHeight: CGFloat,
-        scrollOffset: CGFloat
+        overlap: CGFloat
     ) -> NavigationResult {
-        let entryBottom = activeEntryFrame.maxY
-        let viewportBottom = viewportHeight
-
-        // Phase 1: entry extends below viewport — scroll within
-        if entryBottom > viewportBottom + 1 {
-            let target = scrollOffset + viewportHeight * scrollFraction
-            return NavigationResult(
-                newActiveIndex: activeIndex,
-                scrollTarget: target
+        // Phase 1: entry extends below viewport — scroll within, matching chevron snap.
+        if PerformanceScrollCalculator.canScrollDown(
+            activeEntryFrame: activeEntryFrame,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight,
+            overlap: overlap
+        ),
+            let target = PerformanceScrollCalculator.nextSnapDown(
+                activeEntryFrame: activeEntryFrame,
+                scrollOffset: scrollOffset,
+                viewportHeight: viewportHeight
             )
+        {
+            return NavigationResult(newActiveIndex: activeIndex, scrollTarget: target)
         }
 
-        // Phase 2: entry bottom visible — advance to next (if not last)
+        // Phase 2: entry bottom visible — advance to next (if not last).
         if activeIndex < entryCount - 1 {
-            return NavigationResult(
-                newActiveIndex: activeIndex + 1,
-                scrollTarget: nil
-            )
+            return NavigationResult(newActiveIndex: activeIndex + 1, scrollTarget: nil)
         }
 
-        // Already at last entry and fully visible — do nothing
         return NavigationResult(newActiveIndex: activeIndex, scrollTarget: nil)
     }
 
     private static func handleBackward(
         activeIndex: Int,
         activeEntryFrame: CGRect,
+        scrollOffset: CGFloat,
         viewportHeight: CGFloat,
-        scrollOffset: CGFloat
+        overlap: CGFloat
     ) -> NavigationResult {
-        let entryTop = activeEntryFrame.minY
-
-        // Phase 1: entry extends above viewport — scroll within
-        if entryTop < -1 {
-            let target = max(0, scrollOffset - viewportHeight * scrollFraction)
-            return NavigationResult(
-                newActiveIndex: activeIndex,
-                scrollTarget: target
+        // Phase 1: entry extends above viewport — scroll within, matching chevron snap.
+        if PerformanceScrollCalculator.canScrollUp(
+            activeEntryFrame: activeEntryFrame,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight,
+            overlap: overlap
+        ),
+            let target = PerformanceScrollCalculator.nextSnapUp(
+                activeEntryFrame: activeEntryFrame,
+                scrollOffset: scrollOffset,
+                viewportHeight: viewportHeight
             )
+        {
+            return NavigationResult(newActiveIndex: activeIndex, scrollTarget: target)
         }
 
-        // Phase 2: entry top visible — go to previous (if not first)
+        // Phase 2: entry top visible — go to previous (if not first).
         if activeIndex > 0 {
-            return NavigationResult(
-                newActiveIndex: activeIndex - 1,
-                scrollTarget: nil
-            )
+            return NavigationResult(newActiveIndex: activeIndex - 1, scrollTarget: nil)
         }
 
-        // Already at first entry and top visible — do nothing
         return NavigationResult(newActiveIndex: activeIndex, scrollTarget: nil)
     }
 }
