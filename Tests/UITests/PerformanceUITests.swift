@@ -33,6 +33,15 @@ final class PerformanceUITests: XCTestCase {
         app.launch()
     }
 
+    /// Relaunch the app forcing a specific navigation mode. Use at the start of
+    /// a test that depends on a specific mode's behavior (e.g. chevron visibility
+    /// requires songNavigation).
+    func relaunch(withNavMode rawValue: String) {
+        app.terminate()
+        app.launchArguments = ["--uitesting", "--uitest-nav-mode=\(rawValue)"]
+        app.launch()
+    }
+
     // MARK: - Element helpers
 
     /// The visible content area. Its frame reflects the actual content bounds
@@ -78,6 +87,7 @@ final class PerformanceUITests: XCTestCase {
     func ensureSidebarOpen() {
         let sidebar = app.descendants(matching: .any).matching(identifier: "performance-sidebar").firstMatch
         if !sidebar.exists {
+            revealToolbar()
             app.buttons["toggle-sidebar"].tap()
             XCTAssertTrue(sidebar.waitForExistence(timeout: 2), "Sidebar should appear after toggle")
         }
@@ -96,6 +106,15 @@ final class PerformanceUITests: XCTestCase {
     func tapRightZone() { tapContentArea(atHorizontalFraction: 0.85) }
     func tapLeftZone() { tapContentArea(atHorizontalFraction: 0.15) }
     func tapCenterZone() { tapContentArea(atHorizontalFraction: 0.5) }
+
+    /// Reveal the performance toolbar by center-tapping if not already visible.
+    func revealToolbar() {
+        let toolbar = app.descendants(matching: .any).matching(identifier: "performance-toolbar").firstMatch
+        if !toolbar.exists {
+            tapCenterZone()
+            XCTAssertTrue(toolbar.waitForExistence(timeout: 2), "Toolbar should appear after center tap")
+        }
+    }
 
     /// Assert that an entry is active. Polls briefly for async label updates.
     func assertEntryIsActive(_ index: Int, file: StaticString = #filePath, line: UInt = #line) {
@@ -189,10 +208,12 @@ final class PerformanceUITests: XCTestCase {
     func test_sidebarToggle_showsAndHidesSidebar() {
         enterPerformanceMode()
 
+        revealToolbar()
         let toggleButton = app.buttons["toggle-sidebar"]
         XCTAssertTrue(toggleButton.waitForExistence(timeout: 2))
 
         toggleButton.tap()
+        revealToolbar()
         toggleButton.tap()
     }
 
@@ -237,6 +258,7 @@ final class PerformanceUITests: XCTestCase {
     func test_closeButton_dismissesPerformanceView() {
         enterPerformanceMode()
 
+        revealToolbar()
         let closeButton = app.buttons["close-performance"]
         XCTAssertTrue(closeButton.waitForExistence(timeout: 2))
         closeButton.tap()
@@ -249,6 +271,7 @@ final class PerformanceUITests: XCTestCase {
     // MARK: - Within-Entry Scrolling (Chevrons)
 
     func test_longSong_downChevronAppears_andScrollsDown() throws {
+        relaunch(withNavMode: "songNavigation")
         enterPerformanceMode()
         navigateViaSidebar(to: 5) // Passengers (very long)
 
@@ -266,6 +289,7 @@ final class PerformanceUITests: XCTestCase {
     }
 
     func test_upChevron_scrollsBackUp() throws {
+        relaunch(withNavMode: "songNavigation")
         enterPerformanceMode()
         navigateViaSidebar(to: 5) // Passengers (very long)
 
@@ -307,6 +331,7 @@ final class PerformanceUITests: XCTestCase {
         tapRightZone()
 
         assertEntryIsActive(11)
+        revealToolbar()
         XCTAssertTrue(app.buttons["close-performance"].exists, "Should still be in performance mode")
     }
 

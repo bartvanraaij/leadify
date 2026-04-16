@@ -34,6 +34,15 @@ final class PerformanceIntegrationTest: XCTestCase {
 
     func tapRightZone() { tapContentArea(atHorizontalFraction: 0.85) }
     func tapLeftZone() { tapContentArea(atHorizontalFraction: 0.15) }
+    func tapCenterZone() { tapContentArea(atHorizontalFraction: 0.5) }
+
+    func revealToolbar() {
+        let toolbar = app.descendants(matching: .any).matching(identifier: "performance-toolbar").firstMatch
+        if !toolbar.exists {
+            tapCenterZone()
+            XCTAssertTrue(toolbar.waitForExistence(timeout: 2), "Toolbar should appear after center tap")
+        }
+    }
 
     func assertActive(_ index: Int, file: StaticString = #filePath, line: UInt = #line) {
         let el = entry(index)
@@ -49,6 +58,7 @@ final class PerformanceIntegrationTest: XCTestCase {
     func ensureSidebarOpen() {
         let sidebar = app.descendants(matching: .any).matching(identifier: "performance-sidebar").firstMatch
         if !sidebar.exists {
+            revealToolbar()
             app.buttons["toggle-sidebar"].tap()
             XCTAssertTrue(sidebar.waitForExistence(timeout: 2), "Sidebar should appear after toggle")
         }
@@ -143,6 +153,7 @@ final class PerformanceIntegrationTest: XCTestCase {
         assertActive(0)
 
         // === Close performance and reopen it ===
+        revealToolbar()
         app.buttons["close-performance"].tap()
         XCTAssertTrue(performButton.waitForExistence(timeout: 2), "Should be back at setlist detail")
 
@@ -157,8 +168,10 @@ final class PerformanceIntegrationTest: XCTestCase {
         assertActive(0)
 
         // === Toggle sidebar off and on ===
+        revealToolbar()
         let toggleButton = app.buttons["toggle-sidebar"]
         toggleButton.tap()
+        revealToolbar()
         toggleButton.tap()
 
         // === Still functional after sidebar toggle ===
@@ -166,6 +179,7 @@ final class PerformanceIntegrationTest: XCTestCase {
         assertActive(1)
 
         // === Close performance — session complete ===
+        revealToolbar()
         app.buttons["close-performance"].tap()
         XCTAssertTrue(performButton.waitForExistence(timeout: 2), "Should end at setlist detail")
     }

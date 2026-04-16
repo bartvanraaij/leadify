@@ -10,8 +10,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 0,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: 0, width: 700, height: 800),
-            viewportHeight: 600,
-            scrollOffset: 0
+            scrollOffset: 0,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 0)
         XCTAssertNotNil(result.scrollTarget)
@@ -24,8 +24,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 0,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: 0, width: 700, height: 400),
-            viewportHeight: 600,
-            scrollOffset: 0
+            scrollOffset: 0,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 1)
         XCTAssertNil(result.scrollTarget)
@@ -37,8 +37,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 2,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: 0, width: 700, height: 400),
-            viewportHeight: 600,
-            scrollOffset: 0
+            scrollOffset: 0,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 2)
         XCTAssertNil(result.scrollTarget)
@@ -50,8 +50,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 2,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: 0, width: 700, height: 800),
-            viewportHeight: 600,
-            scrollOffset: 0
+            scrollOffset: 0,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 2)
         XCTAssertNotNil(result.scrollTarget)
@@ -66,8 +66,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 1,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: -200, width: 700, height: 800),
-            viewportHeight: 600,
-            scrollOffset: 500
+            scrollOffset: 500,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 1)
         XCTAssertNotNil(result.scrollTarget)
@@ -80,8 +80,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 1,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: 20, width: 700, height: 400),
-            viewportHeight: 600,
-            scrollOffset: 100
+            scrollOffset: 100,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 0)
         XCTAssertNil(result.scrollTarget)
@@ -93,8 +93,8 @@ final class PerformanceNavigationTests: XCTestCase {
             activeIndex: 0,
             entryCount: 3,
             activeEntryFrame: CGRect(x: 0, y: 0, width: 700, height: 400),
-            viewportHeight: 600,
-            scrollOffset: 0
+            scrollOffset: 0,
+            viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 0)
         XCTAssertNil(result.scrollTarget)
