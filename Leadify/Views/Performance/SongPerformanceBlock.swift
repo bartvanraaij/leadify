@@ -93,6 +93,8 @@ struct MedleyPerformanceBlock: View {
                     titleBottomPadding: 0
                 )
             }
+            
+            Rectangle().fill(PerformanceTheme.dividerColor).frame(height: 1)
         }
 
     }
