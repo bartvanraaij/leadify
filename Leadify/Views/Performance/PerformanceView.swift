@@ -23,6 +23,11 @@ struct PerformanceView: View {
     @State private var entryFrames: [Int: CGRect] = [:]
     @State private var showSidebar: Bool = false
     @State var safeAreaInsets: EdgeInsets = .init()
+    @AppStorage(PerformanceNavigationMode.storageKey) private var storedNavMode: String = PerformanceNavigationMode.defaultMode.rawValue
+
+    private var navMode: PerformanceNavigationMode {
+        PerformanceNavigationMode(rawValue: storedNavMode) ?? .defaultMode
+    }
 
     private var items: [PerformanceItem] { source.performanceItems }
 
@@ -132,8 +137,8 @@ struct PerformanceView: View {
             .background(
                 PerformanceTapOverlay(
                     contentWidth: viewportSize.width,
-                    onLeftTap: { navigateToPrevious() },
-                    onRightTap: { navigateToNext() },
+                    onLeftTap: { handleLeftTap() },
+                    onRightTap: { handleRightTap() },
                     onCenterTap: { tapY in activateEntryAt(contentY: tapY) }
                 )
             )
@@ -146,12 +151,14 @@ struct PerformanceView: View {
             _,
             y in
             scrollOffset = y + safeAreaInsets.top
+            syncActiveIndexToViewportIfNeeded()
         }
     }
 
     // MARK: - Scroll indicators (up/down chevrons)
 
     private var canScrollDown: Bool {
+        guard navMode.showsChevrons else { return false }
         return PerformanceScrollCalculator.canScrollDown(
             activeEntryFrame: entryFrames[activeIndex],
             scrollOffset: scrollOffset,
@@ -161,6 +168,7 @@ struct PerformanceView: View {
     }
 
     private var canScrollUp: Bool {
+        guard navMode.showsChevrons else { return false }
         return PerformanceScrollCalculator.canScrollUp(
             activeEntryFrame: entryFrames[activeIndex],
             scrollOffset: scrollOffset,
@@ -249,6 +257,7 @@ struct PerformanceView: View {
     // MARK: - Dimming
 
     private func opacityFor(index: Int) -> Double {
+        if navMode == .simpleNavigation { return 1.0 }
         if index == activeIndex { return 1.0 }
         return PerformanceTheme.inactiveItemOpacity
     }
@@ -290,6 +299,118 @@ struct PerformanceView: View {
         if let frame = entryFrames[index] {
             withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
                 scrollPosition.scrollTo(y: max(0, frame.minY))
+            }
+        }
+    }
+
+    // MARK: - Simple-mode sidebar highlight sync
+
+    /// In simple mode the user scrolls freely with no song-level active index,
+    /// so update `activeIndex` from scroll position to keep the sidebar highlight
+    /// in sync with what's visible. Other modes manage `activeIndex` themselves.
+    private func syncActiveIndexToViewportIfNeeded() {
+        guard navMode == .simpleNavigation else { return }
+        let viewportTop = scrollOffset
+        let viewportBottom = scrollOffset + viewportHeight
+        let visible = entryFrames
+            .filter { index, frame in
+                frame.maxY > viewportTop
+                    && frame.minY < viewportBottom
+                    && items.indices.contains(index)
+                    && !items[index].isSkippable
+            }
+            .sorted { $0.key < $1.key }
+
+        guard !visible.isEmpty else { return }
+
+        let candidate: Int?
+        if visible.count == 1 {
+            candidate = visible[0].key
+        } else {
+            // Multiple entries on screen: activate the first whose title (top edge) is visible.
+            candidate = visible.first(where: { _, frame in frame.minY >= viewportTop })?.key
+        }
+
+        if let candidate, candidate != activeIndex {
+            activeIndex = candidate
+        }
+    }
+
+    // MARK: - Tap dispatch (per navigation mode)
+
+    private func handleLeftTap() {
+        switch navMode {
+        case .simpleNavigation: scrollViewportBy(direction: .backward)
+        case .songNavigation: navigateToPrevious()
+        case .smartNavigation: handleNavigatorTap(.backward)
+        }
+    }
+
+    private func handleRightTap() {
+        switch navMode {
+        case .simpleNavigation: scrollViewportBy(direction: .forward)
+        case .songNavigation: navigateToNext()
+        case .smartNavigation: handleNavigatorTap(.forward)
+        }
+    }
+
+    private func scrollViewportBy(direction: TapDirection) {
+        let step = viewportHeight
+        let delta = direction == .forward ? step : -step
+        let target = max(0, scrollOffset + delta)
+        withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+            scrollPosition.scrollTo(y: target)
+        }
+    }
+
+    // MARK: - Two-phase tap navigation (PerformanceNavigator)
+
+    private func handleNavigatorTap(_ direction: TapDirection) {
+        guard let frame = entryFrames[activeIndex] else {
+            // Fall back to simple entry navigation if frame not yet measured.
+            direction == .forward ? navigateToNext() : navigateToPrevious()
+            return
+        }
+
+        let overlap = direction == .forward ? safeAreaInsets.top : safeAreaInsets.bottom
+
+        let result = PerformanceNavigator.handleTap(
+            direction: direction,
+            activeIndex: activeIndex,
+            entryCount: items.count,
+            activeEntryFrame: frame,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight,
+            overlap: overlap
+        )
+
+        if result.newActiveIndex != activeIndex {
+            // Respect skippable entries by stepping onward if navigator picked one.
+            if items.indices.contains(result.newActiveIndex),
+               items[result.newActiveIndex].isSkippable {
+                direction == .forward ? navigateToNext() : navigateToPrevious()
+            } else if direction == .backward,
+                      let prevFrame = entryFrames[result.newActiveIndex] {
+                // Going back: land on the previous entry's last snap (near-bottom),
+                // mirroring how scrolling up through it would end.
+                activeIndex = result.newActiveIndex
+                let snaps = PerformanceScrollCalculator.inEntrySnaps(
+                    for: prevFrame,
+                    viewportHeight: viewportHeight
+                )
+                let target = snaps.last ?? prevFrame.minY
+                withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                    scrollPosition.scrollTo(y: max(0, target))
+                }
+            } else {
+                navigateTo(index: result.newActiveIndex)
+            }
+            return
+        }
+
+        if let target = result.scrollTarget {
+            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                scrollPosition.scrollTo(y: max(0, target))
             }
         }
     }
