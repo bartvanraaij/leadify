@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the always-visible close and sidebar-toggle buttons in performance mode with an on-demand floating capsule toolbar revealed by a center tap, and add in-performance navigation-mode switching.
+**Goal:** Replace the always-visible close and sidebar-toggle buttons in performance mode with an on-demand floating toolbar revealed by a center tap, and add in-performance navigation-mode switching.
 
-**Architecture:** A single new SwiftUI view (`PerformanceToolbar`) rendered as an overlay on `PerformanceView`. Visibility is driven by a `@State` flag toggled by the existing center-tap zone of `PerformanceTapOverlay`. Mode picker uses native SwiftUI `Menu` bound to the existing `@AppStorage` for `PerformanceNavigationMode`. Optional auto-dismiss uses a cancellable `Task`.
+**Architecture:** A single new SwiftUI view (`PerformanceToolbar`) rendered as an overlay on the performance content pane. Visibility is driven by a `@State` flag toggled by the existing center-tap zone of `PerformanceTapOverlay`. Mode picker uses native SwiftUI `Menu` bound to the existing `@AppStorage` for `PerformanceNavigationMode`. The toolbar is explicit-show / explicit-hide — no auto-dismiss.
 
 **Tech Stack:** SwiftUI (iOS 26), stock components only — `HStack`, `Button`, `Menu`, `Label`, `.regularMaterial`, `.overlay`.
 
@@ -46,7 +46,13 @@
 
 ---
 
-## Task 1: Add "Auto-dismiss performance toolbar" setting
+## Task 1: Add "Auto-dismiss performance toolbar" setting — **REMOVED mid-execution**
+
+> **Status:** Implemented in commit `7a0ea27`, then reverted after user feedback. Auto-dismiss was dropped entirely because any time-based dismissal would fight every future toolbar feature (metronome, tuner, etc.). The spec now specifies explicit-show / explicit-hide only. If executing this plan fresh, **skip this task** and do not create `PerformanceToolbarSettings.swift`.
+
+---
+
+## Task 1 (original): Add "Auto-dismiss performance toolbar" setting
 
 **Files:**
 - Modify: `Leadify/Views/Settings/SettingsSheet.swift`
@@ -674,27 +680,9 @@ git commit -m "test: route existing toolbar lookups through the new center-tap r
 **Files:**
 - Modify: `Tests/UITests/PerformanceUITests.swift`
 
-**Scope:** Cover the behaviors that are new in this feature: center-tap shows the toolbar, center-tap again hides it, left/right taps do not affect toolbar visibility, mode menu changes the stored mode, auto-dismiss removes the toolbar when the setting is on.
+**Scope:** Cover the behaviors that are new in this feature: center-tap shows the toolbar, center-tap again hides it, left/right taps do not affect toolbar visibility, mode menu changes the stored mode.
 
-Note on auto-dismiss: flipping an `@AppStorage` value from a UI test is awkward. Instead, add a launch argument `--uitest-auto-dismiss` and have the app pre-set `performance.toolbar.autoDismiss = true` when it's present (similar to the existing `--uitesting` seed pattern).
-
-- [ ] **Step 1: Wire the launch argument for auto-dismiss**
-
-Edit `Leadify/LeadifyApp.swift`. Inside the `init()` block (line 9), add a `#if DEBUG` branch that pre-sets the `@AppStorage` default when the launch argument is present. Place it *before* the existing `#if DEBUG` ModelContainer branch, so the value is set before the view hierarchy reads it.
-
-Insert at line 10 (right after `do {`):
-
-```swift
-            #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--uitest-auto-dismiss") {
-                UserDefaults.standard.set(true, forKey: PerformanceToolbarSettings.autoDismissStorageKey)
-            }
-            #endif
-```
-
-The existing `#if DEBUG` / `--uitesting` / ModelContainer block stays exactly as it is, immediately below.
-
-- [ ] **Step 2: Add the new tests to `PerformanceUITests.swift`**
+- [ ] **Step 1: Add the new tests to `PerformanceUITests.swift`**
 
 Append the following tests at the bottom of the class in `Tests/UITests/PerformanceUITests.swift` (before the closing brace):
 
@@ -748,32 +736,9 @@ Append the following tests at the bottom of the class in `Tests/UITests/Performa
         XCTAssertTrue(simpleItem.waitForExistence(timeout: 2), "Menu should show 'Simple' option")
         simpleItem.tap()
 
-        // The menu label should now reflect the new mode.
-        // We re-open the toolbar if auto-dismiss fired.
-        revealToolbar()
         let updatedMenu = app.buttons["performance-mode-menu"]
         XCTAssertTrue(updatedMenu.waitForExistence(timeout: 2))
         XCTAssertTrue(updatedMenu.label.contains("Simple"), "Mode menu label should show new mode, got: '\(updatedMenu.label)'")
-    }
-
-    func test_autoDismiss_hidesToolbarWhenEnabled() {
-        app.terminate()
-        app.launchArguments = ["--uitesting", "--uitest-auto-dismiss"]
-        app.launch()
-
-        enterPerformanceMode()
-        revealToolbar()
-
-        let toolbar = app.descendants(matching: .any).matching(identifier: "performance-toolbar").firstMatch
-        XCTAssertTrue(toolbar.exists)
-
-        // Auto-dismiss fires after ~4 seconds. Poll up to 6 seconds.
-        let deadline = Date().addingTimeInterval(6)
-        while Date() < deadline {
-            if !toolbar.exists { return }
-            usleep(100_000)
-        }
-        XCTFail("Toolbar should have auto-dismissed within 6 seconds")
     }
 ```
 
@@ -797,13 +762,13 @@ xcodebuild test -scheme Leadify \
   -only-testing:LeadifyUITests/PerformanceUITests
 ```
 
-Expected: all four new tests pass.
+Expected: all three new tests pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add Tests/UITests/PerformanceUITests.swift Leadify/LeadifyApp.swift
-git commit -m "test: cover toolbar reveal, mode switch, and auto-dismiss"
+git add Tests/UITests/PerformanceUITests.swift
+git commit -m "test: cover toolbar reveal and mode switch"
 ```
 
 ---
@@ -862,12 +827,10 @@ Spec sections → task coverage:
 | Spec section | Covered by |
 |---|---|
 | Reveal & dismiss via center-tap | Tasks 3, 4 |
-| Auto-dismiss setting (default off) | Tasks 1, 4 |
-| Floating capsule, native SwiftUI | Task 2 |
+| Floating toolbar, native SwiftUI (Liquid Glass) | Task 2 |
 | Toolbar contents (Exit / Mode / Sidebar) | Task 2 |
 | Mode menu driven by `@AppStorage` | Task 2 |
 | Removal of old corner buttons | Task 5 |
-| Settings sheet toggle | Task 1 |
 | UI test updates | Tasks 6, 7 |
 | Theme cleanup | Task 8 |
 

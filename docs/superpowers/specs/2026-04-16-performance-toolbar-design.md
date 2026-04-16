@@ -31,7 +31,7 @@ Both are always visible while performing and are visually distracting. Switching
 - A single tap in the existing **center tap zone** shows the toolbar.
 - Another single tap in the center zone hides it.
 - Taps in the left or right tap zones continue to drive navigation and do not affect toolbar visibility.
-- If the "Auto-dismiss performance toolbar" setting is **on**, the toolbar hides itself 4 seconds after it was shown or after the last interaction with any toolbar button. Default is **off**.
+- **No auto-dismiss.** The user explicitly controls visibility. Auto-dismiss was considered and rejected: any time-based dismissal forces every future toolbar feature (metronome, annotations, tuner, etc.) to dance around pause/resume logic. The toolbar is ephemeral-by-invocation, not ephemeral-by-timer.
 
 ### Removed capability
 
@@ -64,13 +64,7 @@ There is no explicit close-the-toolbar button; the center-tap toggle and (option
 
 ## Settings-sheet change
 
-Add one new row to the existing settings sheet:
-
-- **Toggle:** "Auto-dismiss performance toolbar"
-- **Default:** off
-- **Persistence:** `@AppStorage` under a new key (e.g. `performance.toolbar.autoDismiss`).
-
-The 4-second duration is not user-configurable.
+None. No new settings are introduced by this feature.
 
 ## Removed code
 
@@ -97,7 +91,6 @@ A new UI test covers:
 - Center-tap shows the toolbar; another center-tap hides it.
 - Left/right tap zones still navigate and do not affect toolbar visibility.
 - Changing the mode via the menu updates the stored preference and the menu label.
-- When auto-dismiss is on, the toolbar disappears within ~5 seconds of no interaction.
 
 Existing unit tests for `PerformanceNavigator` and `PerformanceScrollCalculator` are unaffected.
 
@@ -107,7 +100,7 @@ Existing unit tests for `PerformanceNavigator` and `PerformanceScrollCalculator`
 - `Leadify/Views/Performance/PerformanceTapOverlay.swift` — center-tap callback now emits a plain toggle event (no content-Y payload needed).
 - New file: `Leadify/Views/Performance/PerformanceToolbar.swift` — the capsule toolbar view.
 - `Leadify/Theme/PerformanceTheme.swift` — add any token used by the toolbar (padding, vertical offset). No new color tokens needed since it uses `.regularMaterial` and system tint.
-- `Leadify/Views/Settings/SettingsSheet.swift` — add a new section with the auto-dismiss toggle row.
+- (No changes to `SettingsSheet.swift`.)
 - `Tests/UITests/PerformanceUITests.swift` and `PerformanceIntegrationTest.swift` — update lookups.
 
 ## Open questions / deferred

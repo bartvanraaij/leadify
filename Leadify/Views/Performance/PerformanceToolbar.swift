@@ -15,37 +15,51 @@ struct PerformanceToolbar: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onExit) {
-                Label("Done", systemImage: "xmark")
-            }
-            .accessibilityIdentifier("close-performance")
+        GlassEffectContainer(spacing: 32) {
+            HStack(spacing: 0) {
+                Button(action: onExit) {
+                    Label("Done", systemImage: "xmark")
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .controlSize(.large)
+                .accessibilityIdentifier("close-performance")
 
-            Menu {
-                ForEach(PerformanceNavigationMode.allCases) { mode in
-                    Button {
-                        storedMode = mode.rawValue
-                    } label: {
-                        if mode == currentMode {
-                            Label(mode.title, systemImage: "checkmark")
-                        } else {
-                            Text(mode.title)
+                Spacer(minLength: 16)
+
+                Menu {
+                    ForEach(PerformanceNavigationMode.allCases) { mode in
+                        Button {
+                            storedMode = mode.rawValue
+                        } label: {
+                            if mode == currentMode {
+                                Label(mode.title, systemImage: "checkmark")
+                            } else {
+                                Text(mode.title)
+                            }
                         }
                     }
+                } label: {
+                    Label(currentMode.title, systemImage: "hand.tap")
                 }
-            } label: {
-                Label(currentMode.title, systemImage: "slider.horizontal.3")
-            }
-            .accessibilityIdentifier("performance-mode-menu")
+                .buttonStyle(.glass)
+                .controlSize(.large)
+                .accessibilityIdentifier("performance-mode-menu")
 
-            Button(action: onToggleSidebar) {
-                Label("Sidebar", systemImage: "sidebar.right")
+                Spacer(minLength: 16)
+
+                Button(action: onToggleSidebar) {
+                    Label("Sidebar", systemImage: "sidebar.right")
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .controlSize(.large)
+                .accessibilityIdentifier("toggle-sidebar")
             }
-            .accessibilityIdentifier("toggle-sidebar")
+            .fontWeight(.semibold)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.regularMaterial, in: Capsule())
         .accessibilityIdentifier("performance-toolbar")
     }
 }

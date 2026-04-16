@@ -3,7 +3,6 @@ import SwiftUI
 struct SettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(PerformanceNavigationMode.storageKey) private var storedMode: String = PerformanceNavigationMode.defaultMode.rawValue
-    @AppStorage(PerformanceToolbarSettings.autoDismissStorageKey) private var autoDismissToolbar: Bool = PerformanceToolbarSettings.autoDismissDefault
 
     private var selection: Binding<PerformanceNavigationMode> {
         Binding(
@@ -40,12 +39,6 @@ struct SettingsSheet: View {
                     }
                 } header: {
                     Text("Performance navigation mode")
-                }
-
-                Section {
-                    Toggle("Auto-dismiss performance toolbar", isOn: $autoDismissToolbar)
-                } footer: {
-                    Text("When on, the toolbar hides itself a few seconds after it was shown.")
                 }
             }
             .navigationTitle("Settings")
