@@ -196,12 +196,6 @@ private struct SongEditorPreview: View {
                         .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(EditTheme.accentColor))
                 }
             }
-            .padding(.bottom, 28)
-
-            Rectangle()
-                .fill(PerformanceTheme.dividerColor)
-                .frame(height: 1)
-                .padding(.bottom, 28)
 
             SongContentPreview(content: content)
         }

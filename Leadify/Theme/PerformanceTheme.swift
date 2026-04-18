@@ -10,8 +10,6 @@ struct PerformanceTheme {
     static let reminderSize: CGFloat = 17
     static let sectionHeaderSize: CGFloat = 22
     static let chordTextSize: CGFloat = 28
-    static let tabFontSize: CGFloat = 16
-    static let tabTracking: CGFloat = -1.7
 
     // MARK: - Layout
     static let itemHorizontalPadding: CGFloat = 32
@@ -45,7 +43,13 @@ struct PerformanceTheme {
     static let headingBottomPaddingFraction: CGFloat = 0.2
 
     // MARK: - Code block
+    static let tabFontSize: CGFloat = 18
+    static let tabTracking: CGFloat = -2.2
     static let codeBlockVerticalPadding: CGFloat = 4
+    /// Compression multiplier for tab/code block line spacing. Values closer to 1.0 = less compression = more spacing between lines.
+    static let codeBlockLineCompressionMultiplier: CGFloat = 1.15
+    /// Extra bottom padding added beneath overlapped code blocks to prevent adjacent content overlap.
+    static let codeBlockExtraBottomPadding: CGFloat = 24
 
     // MARK: - Animation durations
     static let navigationAnimationDuration: Double = 0.25
@@ -132,3 +136,4 @@ extension Color {
         }))
     }
 }
+
