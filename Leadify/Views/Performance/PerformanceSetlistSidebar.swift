@@ -114,18 +114,25 @@ struct PerformanceSetlistSidebar: View {
                 if let medley = item.medley {
                     ForEach(medley.sortedEntries, id: \.persistentModelID) {
                         medleyEntry in
-                        Text(medleyEntry.song.title)
-                            .font(
-                                .system(
-                                    size: PerformanceTheme.sidebarMedleySongSize
+                        Button {
+                            onSelect(index)
+                        } label: {
+                            Text(medleyEntry.song.title)
+                                .font(
+                                    .system(
+                                        size: PerformanceTheme.sidebarMedleySongSize
+                                    )
                                 )
-                            )
-                            .foregroundStyle(PerformanceTheme.sidebarTextColor)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .padding(.leading, PerformanceTheme.sidebarRowHorizontalPadding * 2)
-                            .padding(.trailing, PerformanceTheme.sidebarRowHorizontalPadding)
-                            .padding(.vertical, PerformanceTheme.sidebarTightSpacing)
+                                .foregroundStyle(PerformanceTheme.sidebarTextColor)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading, PerformanceTheme.sidebarRowHorizontalPadding * 2)
+                                .padding(.trailing, PerformanceTheme.sidebarRowHorizontalPadding)
+                                .padding(.vertical, PerformanceTheme.sidebarTightSpacing)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
