@@ -15,7 +15,8 @@ struct SongPerformanceContent: View {
                     .font(
                         .system(
                             size: PerformanceTheme.songTitleSize,
-                            weight: .bold
+                            weight: .bold,
+                            design: .rounded
                         )
                     )
                     .foregroundStyle(PerformanceTheme.songTitleColor)
@@ -43,7 +44,7 @@ struct SongPerformanceBlock: View {
         VStack(alignment: .leading, spacing: 0) {
             if let medleyTitle {
                 Text(medleyTitle)
-                    .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold))
+                    .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold, design: .rounded))
                     .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
                     .padding(.top, PerformanceTheme.itemInnerVerticalPadding)
                     .padding(.bottom, PerformanceTheme.medleyTitleBottomPadding)
@@ -74,7 +75,8 @@ struct MedleyPerformanceBlock: View {
                 .font(
                     .system(
                         size: PerformanceTheme.medleyTitleSize,
-                        weight: .semibold
+                        weight: .semibold,
+                        design: .rounded
                     )
                 )
                 .foregroundStyle(PerformanceTheme.medleyIndicatorColor)

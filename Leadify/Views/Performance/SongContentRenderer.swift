@@ -40,7 +40,7 @@ struct SongContentRenderer: View {
         case .heading1(let text):
             Text(text)
                 .font(
-                    .system(size: PerformanceTheme.songTitleSize, weight: .bold)
+                    .system(size: PerformanceTheme.songTitleSize, weight: .bold, design: .rounded)
                 )
                 .foregroundStyle(PerformanceTheme.songTitleColor)
                 .lineSpacing(PerformanceTheme.songTitleSize * PerformanceTheme.headingLineSpacingFraction)
@@ -48,11 +48,12 @@ struct SongContentRenderer: View {
                 .padding(.bottom, PerformanceTheme.songTitleSize * PerformanceTheme.headingBottomPaddingFraction)
 
         case .heading2(let text):
-            Text(text)
+            Text(text.lowercased())
                 .font(
                     .system(
                         size: PerformanceTheme.sectionHeaderSize,
-                        weight: .semibold
+                        weight: .semibold,
+                        design: .rounded
                     )
                 )
                 .foregroundStyle(PerformanceTheme.sectionHeaderColor)
