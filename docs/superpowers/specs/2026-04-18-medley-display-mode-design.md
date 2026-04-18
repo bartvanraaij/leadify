@@ -8,8 +8,8 @@ Two options, stored per `Medley`:
 
 | Mode | Behavior |
 |------|----------|
-| **Combined** | Current behavior — medley renders as one block with all songs inside, navigated as a single item |
 | **Separated** | Each song in the medley becomes its own performance item, displayed and navigated individually |
+| **Combined** | Current behavior — medley renders as one block with all songs inside, navigated as a single item |
 
 Default for new medleys: **Separated**.
 
@@ -19,8 +19,8 @@ Add to `Medley`:
 
 ```swift
 enum MedleyDisplayMode: String, Codable, CaseIterable {
-    case combined
     case separated
+    case combined
 }
 ```
 
@@ -30,8 +30,8 @@ New property: `displayMode: MedleyDisplayMode` (default `.separated`).
 
 In `Setlist`'s `Performable` conformance (`performanceItems`):
 
-- **`.combined`**: Emit one `.medley` PerformanceItem (current behavior).
-- **`.separated`**: Emit N `.song` PerformanceItems — one per `MedleyEntry` in sorted order. The first item carries `medleyTitle: String?` set to the medley's name; the rest have `medleyTitle == nil`.
+- **`.separated`**: Emit N `.song` PerformanceItems
+- **`.combined`**: Emit one `.medley` PerformanceItem (current behavior). — one per `MedleyEntry` in sorted order. The first item carries `medleyTitle: String?` set to the medley's name; the rest have `medleyTitle == nil`.
 
 `PerformanceItem` gains an optional `medleyTitle: String?` field (default `nil`).
 
@@ -47,8 +47,8 @@ Each separated song's stable ID is derived from the `MedleyEntry`'s `persistentM
 
 ## Performance Sidebar
 
-- **`.combined`**: Current behavior — medley title with indented sub-songs, navigable as one unit.
-- **`.separated`**: Each song appears as its own sidebar row. The first song has a small medley label above it (medley indicator color, smaller font). Remaining songs have no extra decoration.
+- **`.separated`**: Each song appears as its own sidebar row.
+- **`.combined`**: Current behavior — medley title with indented sub-songs, navigable as one unit. The first song has a small medley label above it (medley indicator color, smaller font). Remaining songs have no extra decoration.
 
 ## Navigation
 
@@ -72,7 +72,7 @@ Label: "Performance display".
 
 Unit tests on `Setlist.performanceItems`:
 
-- A setlist with a `.combined` medley emits one `.medley` item (existing behavior preserved).
 - A setlist with a `.separated` medley emits N `.song` items with correct titles.
+- A setlist with a `.combined` medley emits one `.medley` item (existing behavior preserved).
 - The first separated song has `medleyTitle` set; the rest have `nil`.
 - Item IDs are stable and unique across separated songs.
