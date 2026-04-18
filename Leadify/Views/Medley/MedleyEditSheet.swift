@@ -19,18 +19,31 @@ struct MedleyEditSheet: View {
                     TextField("e.g. Opening Set", text: $name)
                 }
 
-                Section("Performance display") {
-                    Picker("Display as", selection: $displayMode) {
-                        ForEach(MedleyDisplayMode.allCases, id: \.self) { mode in
-                            Text(mode.label).tag(mode)
+                Section {
+                    ForEach(MedleyDisplayMode.allCases, id: \.self) { mode in
+                        Button {
+                            displayMode = mode
+                        } label: {
+                            HStack(alignment: .top, spacing: 12) {
+                                Image(systemName: displayMode == mode ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(displayMode == mode ? Color.accentColor : Color.secondary)
+                                    .font(.title3)
+                                    .padding(.top, 2)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(mode.label)
+                                        .font(.body.weight(.semibold))
+                                        .foregroundStyle(.primary)
+                                    Text(mode.explanation)
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .contentShape(Rectangle())
                         }
+                        .buttonStyle(.plain)
                     }
-                    .pickerStyle(.inline)
-                    .listRowSeparator(.hidden)
-
-                    Text(displayMode.explanation)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Performance display")
                 }
             }
             .navigationTitle(isNew ? "New Medley" : "Edit Medley")

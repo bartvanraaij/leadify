@@ -30,6 +30,17 @@ struct PerformanceSetlistSidebar: View {
                         ForEach(Array(items.enumerated()), id: \.element.id) {
                             index,
                             item in
+
+                            if let medleyTitle = item.medleyTitle {
+                                Text(medleyTitle)
+                                    .font(.system(size: PerformanceTheme.sidebarMedleySongSize))
+                                    .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
+                                    .padding(.top, PerformanceTheme.sidebarSectionSpacing)
+                            }
+
                             sidebarRow(index: index, item: item)
                                 .opacity(index == activeIndex ? 1.0 : 0.5)
                                 .accessibilityIdentifier("sidebar-row-\(index)")
@@ -120,40 +131,28 @@ struct PerformanceSetlistSidebar: View {
             }
 
         case .song:
-            VStack(alignment: .leading, spacing: 0) {
-                if let medleyTitle = item.medleyTitle {
-                    Text(medleyTitle)
-                        .font(.system(size: PerformanceTheme.sidebarMedleySongSize))
-                        .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
-                        .padding(.bottom, PerformanceTheme.sidebarTightSpacing)
-                }
-
-                Button {
-                    onSelect(index)
-                } label: {
-                    Text(item.title)
-                        .font(.system(size: PerformanceTheme.sidebarSongSize))
-                        .foregroundStyle(PerformanceTheme.sidebarTextColor)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
-                        .padding(.vertical, PerformanceTheme.sidebarRowVerticalPadding)
-                        .background(
-                            RoundedRectangle(cornerRadius: PerformanceTheme.sidebarRowCornerRadius, style: .continuous)
-                                .fill(
-                                    isActive
-                                        ? PerformanceTheme.sidebarActiveColor
-                                        : .clear
-                                )
-                        )
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+            Button {
+                onSelect(index)
+            } label: {
+                Text(item.title)
+                    .font(.system(size: PerformanceTheme.sidebarSongSize))
+                    .foregroundStyle(PerformanceTheme.sidebarTextColor)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, PerformanceTheme.sidebarRowHorizontalPadding)
+                    .padding(.vertical, PerformanceTheme.sidebarRowVerticalPadding)
+                    .background(
+                        RoundedRectangle(cornerRadius: PerformanceTheme.sidebarRowCornerRadius, style: .continuous)
+                            .fill(
+                                isActive
+                                    ? PerformanceTheme.sidebarActiveColor
+                                    : .clear
+                            )
+                    )
+                    .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
         }
     }
 

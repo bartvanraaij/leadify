@@ -105,7 +105,7 @@ struct MedleyPerformanceBlock: View {
                 SongPerformanceContent(
                     song: entry.song,
                     titleTopPadding: PerformanceTheme.medleyInnerSongTitleTopPadding,
-                    titleBottomPadding: 0
+                    titleBottomPadding: PerformanceTheme.medleyInnerSongTitleTopPadding
                 )
             }
             
