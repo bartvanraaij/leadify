@@ -6,7 +6,7 @@ import UIKit
 /// Supports both light and dark mode.
 struct PerformanceTheme {
     // MARK: - Font sizes
-    static let songTitleSize: CGFloat = 28
+    static let songTitleSize: CGFloat = 32
     static let reminderSize: CGFloat = 17
     static let sectionHeaderSize: CGFloat = 22
     static let chordTextSize: CGFloat = 28
