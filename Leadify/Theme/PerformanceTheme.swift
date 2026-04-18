@@ -40,7 +40,7 @@ struct PerformanceTheme {
     // MARK: - Heading spacing (fraction of heading font size)
     static let headingLineSpacingFraction: CGFloat = 0.1
     static let headingTopPaddingFraction: CGFloat = 0
-    static let headingBottomPaddingFraction: CGFloat = 0.2
+    static let headingBottomPaddingFraction: CGFloat = 0.5
 
     // MARK: - Code block
     static let tabFontSize: CGFloat = 18
@@ -77,6 +77,7 @@ struct PerformanceTheme {
     static let medleyTitleSize: CGFloat = 24
     static let medleyTitleBottomPadding: CGFloat = 8
     static let medleyInnerSongTitleTopPadding: CGFloat = 16
+    static let contentIndent: CGFloat = 16
 
     // MARK: - Base colors
     static let primaryContentColor = Color(light: Color(white: 0.1), dark: Color(white: 0.95))

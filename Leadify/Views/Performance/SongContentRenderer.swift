@@ -63,6 +63,7 @@ struct SongContentRenderer: View {
 
         case .chordLine(let tokens):
             chordLineView(tokens)
+                .padding(.leading, PerformanceTheme.contentIndent)
 
         case .plainText(let text):
             Text(text)
@@ -73,6 +74,7 @@ struct SongContentRenderer: View {
                     )
                 )
                 .foregroundStyle(PerformanceTheme.chordTextColor)
+                .padding(.leading, PerformanceTheme.contentIndent)
 
         case .codeBlock(let text, _):
             let lines = trimmedCodeLines(from: text)
@@ -108,6 +110,7 @@ struct SongContentRenderer: View {
                 }
                 //.border(Color.purple, width: 1)
                 .padding(.bottom, extraBottomPadding + PerformanceTheme.codeBlockExtraBottomPadding)
+                .padding(.leading, PerformanceTheme.contentIndent)
         }
     }
 
