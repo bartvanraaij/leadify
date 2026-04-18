@@ -58,8 +58,8 @@ No changes to `PerformanceNavigator`. Separated medley songs are regular `.song`
 
 Add a `Picker` to `MedleyEditSheet`:
 
+- **Separated** — "Each song is displayed and navigated individually" (default, shown first)
 - **Combined** — "Displayed and navigated as one item"
-- **Separated** — "Each song is displayed and navigated individually"
 
 Label: "Performance display".
 
