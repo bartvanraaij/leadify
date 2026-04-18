@@ -1,10 +1,21 @@
 import SwiftData
 import Foundation
 
+enum MedleyDisplayMode: String, Codable, CaseIterable {
+    case separated
+    case combined
+}
+
 @Model
 final class Medley {
     var name: String
+    var displayModeRaw: String = MedleyDisplayMode.separated.rawValue
     var createdAt: Date = Date()
+
+    var displayMode: MedleyDisplayMode {
+        get { MedleyDisplayMode(rawValue: displayModeRaw) ?? .separated }
+        set { displayModeRaw = newValue.rawValue }
+    }
     @Relationship(deleteRule: .cascade, inverse: \MedleyEntry.medley) var entries: [MedleyEntry]
     @Relationship(deleteRule: .cascade, inverse: \SetlistEntry.medley)
     var setlistEntries: [SetlistEntry] = []
