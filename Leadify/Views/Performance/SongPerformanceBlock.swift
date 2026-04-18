@@ -1,17 +1,32 @@
 import SwiftUI
 
 /// The inner content of a song in performance mode (title, reminder, divider, chords).
-/// Used by both standalone SongPerformanceBlock and MedleyPerformanceBlock.
+/// Used by SongPerformanceBlock, MedleyPerformanceBlock, and song editor preview.
 struct SongPerformanceContent: View {
-    let song: Song
+    let title: String
+    let reminder: String?
+    let content: String
     var titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
     var titleBottomPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
 
+    init(song: Song, titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding, titleBottomPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding) {
+        self.title = song.title
+        self.reminder = song.reminder
+        self.content = song.content
+        self.titleTopPadding = titleTopPadding
+        self.titleBottomPadding = titleBottomPadding
+    }
+
+    init(title: String, reminder: String?, content: String) {
+        self.title = title
+        self.reminder = reminder
+        self.content = content
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Title and Reminder Header
             HStack(alignment: .firstTextBaseline, spacing: PerformanceTheme.titleReminderSpacing) {
-                Text(song.title)
+                Text(title)
                     .font(
                         .system(
                             size: PerformanceTheme.songTitleSize,
@@ -21,7 +36,7 @@ struct SongPerformanceContent: View {
                     )
                     .foregroundStyle(PerformanceTheme.songTitleColor)
 
-                if let reminder = song.reminder {
+                if let reminder, !reminder.isEmpty {
                     Text(reminder)
                         .font(.system(size: PerformanceTheme.reminderFontSize, weight: .semibold))
                         .foregroundStyle(Color.accentColor)
@@ -30,7 +45,7 @@ struct SongPerformanceContent: View {
             .padding(.top, titleTopPadding)
             .padding(.bottom, titleBottomPadding)
 
-            SongContentRenderer(content: song.content)
+            SongContentRenderer(content: content)
         }
     }
 }
