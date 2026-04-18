@@ -1,7 +1,7 @@
 import Foundation
 
 enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
-    case simpleNavigation
+    case screenNavigation
     case songNavigation
     case smartNavigation
 
@@ -12,7 +12,7 @@ enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .simpleNavigation: "Simple"
+        case .screenNavigation: "Screen"
         case .songNavigation: "Song"
         case .smartNavigation: "Smart"
         }
@@ -20,7 +20,7 @@ enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
 
     var explanation: String {
         switch self {
-        case .simpleNavigation:
+        case .screenNavigation:
             "Left tap scrolls up one screen, right tap scrolls down one screen."
         case .songNavigation:
             "Left tap goes to the previous song, right tap to the next. Chevrons scroll within the current song."
