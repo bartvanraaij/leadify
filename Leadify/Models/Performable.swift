@@ -21,6 +21,8 @@ struct PerformanceItem: Identifiable {
     let tacet: Tacet?
     /// Non-nil for medley items (the full medley, rendered as a single block).
     let medley: Medley?
+    /// Non-nil for the first song in a separated medley — carries the medley name for display.
+    let medleyTitle: String?
 
     enum Kind {
         case song
@@ -43,35 +45,56 @@ extension Setlist: Performable {
     var performanceTitle: String { name }
 
     var performanceItems: [PerformanceItem] {
-        sortedEntries.map { entry in
+        sortedEntries.flatMap { entry -> [PerformanceItem] in
             switch entry.itemType {
             case .song:
-                PerformanceItem(
+                return [PerformanceItem(
                     id: entry.persistentModelID.stableHash,
                     title: entry.song?.title ?? "Untitled",
                     kind: .song,
                     song: entry.song,
                     tacet: nil,
-                    medley: nil
-                )
+                    medley: nil,
+                    medleyTitle: nil
+                )]
             case .tacet:
-                PerformanceItem(
+                return [PerformanceItem(
                     id: entry.persistentModelID.stableHash,
                     title: entry.tacet?.label ?? "Tacet",
                     kind: .tacet,
                     song: nil,
                     tacet: entry.tacet,
-                    medley: nil
-                )
+                    medley: nil,
+                    medleyTitle: nil
+                )]
             case .medley:
-                PerformanceItem(
-                    id: entry.persistentModelID.stableHash,
-                    title: entry.medley?.name ?? "Medley",
-                    kind: .medley,
-                    song: nil,
-                    tacet: nil,
-                    medley: entry.medley
-                )
+                if let medley = entry.medley {
+                    switch medley.displayMode {
+                    case .separated:
+                        return medley.sortedEntries.enumerated().map { index, medleyEntry in
+                            PerformanceItem(
+                                id: medleyEntry.persistentModelID.stableHash,
+                                title: medleyEntry.song.title,
+                                kind: .song,
+                                song: medleyEntry.song,
+                                tacet: nil,
+                                medley: nil,
+                                medleyTitle: index == 0 ? medley.name : nil
+                            )
+                        }
+                    case .combined:
+                        return [PerformanceItem(
+                            id: entry.persistentModelID.stableHash,
+                            title: medley.name,
+                            kind: .medley,
+                            song: nil,
+                            tacet: nil,
+                            medley: medley,
+                            medleyTitle: nil
+                        )]
+                    }
+                }
+                return []
             }
         }
     }
@@ -90,7 +113,8 @@ struct SongCollection: Performable {
                 kind: .song,
                 song: song,
                 tacet: nil,
-                medley: nil
+                medley: nil,
+                medleyTitle: nil
             )
         }
     }
@@ -107,7 +131,8 @@ extension Medley: Performable {
                 kind: .song,
                 song: entry.song,
                 tacet: nil,
-                medley: nil
+                medley: nil,
+                medleyTitle: nil
             )
         }
     }
