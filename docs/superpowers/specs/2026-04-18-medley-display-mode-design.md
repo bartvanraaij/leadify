@@ -41,7 +41,7 @@ Each separated song's stable ID is derived from the `MedleyEntry`'s `persistentM
 
 `SongPerformanceBlock` gains an optional `medleyTitle: String?` parameter. When set, it renders the medley name above the song title using existing `PerformanceTheme.medleyTitleSize` and `medleyIndicatorColor` styling — same visual treatment as the `MedleyPerformanceBlock` header.
 
-`MedleyPerformanceBlock` remains unchanged for `.combined` mode.
+`MedleyPerformanceBlock` adds horizontal divider lines between songs within the block — same style as the dividers between standalone songs (`PerformanceTheme.dividerColor`, 1pt height). This visually separates songs while keeping them grouped under the medley title.
 
 `PerformanceView.itemView()` requires no changes — separated songs arrive as `.song` items and route through `SongPerformanceBlock` naturally.
 
