@@ -10,7 +10,7 @@ struct SongPerformanceContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Title and Reminder Header
-            HStack(alignment: .center, spacing: PerformanceTheme.titleReminderSpacing) {
+            HStack(alignment: .firstTextBaseline, spacing: PerformanceTheme.titleReminderSpacing) {
                 Text(song.title)
                     .font(
                         .system(
@@ -19,21 +19,11 @@ struct SongPerformanceContent: View {
                         )
                     )
                     .foregroundStyle(PerformanceTheme.songTitleColor)
-                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 if let reminder = song.reminder {
                     Text(reminder)
                         .font(.system(size: PerformanceTheme.reminderFontSize, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, PerformanceTheme.reminderHorizontalPadding)
-                        .padding(.vertical, PerformanceTheme.reminderVerticalPadding)
-                        .background(
-                            RoundedRectangle(
-                                cornerRadius: PerformanceTheme.reminderCornerRadius,
-                                style: .continuous
-                            )
-                            .fill(EditTheme.accentColor)
-                        )
+                        .foregroundStyle(Color.accentColor)
                 }
             }
             .padding(.top, titleTopPadding)
