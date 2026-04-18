@@ -243,6 +243,7 @@ enum UITestSeeder {
         medleyA.addEntry(MedleyEntry(song: songs[0]))  // Canal Morning
 
         let medleyB = Medley(name: "Evening Set")
+        medleyB.displayMode = .combined
         context.insert(medleyB)
         medleyB.addEntry(MedleyEntry(song: songs[7]))  // Paper Lanterns
         medleyB.addEntry(MedleyEntry(song: songs[5]))  // Velvet Dusk
