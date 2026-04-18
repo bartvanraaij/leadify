@@ -103,7 +103,7 @@ struct PerformanceTheme {
     static let tabColor = Color(light: Color(red: 0.3, green: 0.5, blue: 0.4), dark: Color(red: 0.5, green: 0.8, blue: 0.6))
 
     // MARK: - Neutral elements
-    static let dividerColor = dimmedContentColor
+    static let dividerColor = Color(light: Color(white: 0.8), dark: Color(white: 0.25))
     static let dividerHeight:CGFloat = 1
     // MARK: - Sidebar (wide mode)
     static let sidebarBackground = Color(light: Color(white: 0.94), dark: Color(white: 0.08))
