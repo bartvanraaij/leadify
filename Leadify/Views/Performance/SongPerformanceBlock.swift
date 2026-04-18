@@ -96,6 +96,12 @@ struct MedleyPerformanceBlock: View {
                 Array(medley.sortedEntries.enumerated()),
                 id: \.element.persistentModelID
             ) { index, entry in
+                if index > 0 {
+                    Rectangle()
+                        .fill(PerformanceTheme.dividerColor)
+                        .frame(height: PerformanceTheme.dividerHeight)
+                }
+
                 SongPerformanceContent(
                     song: entry.song,
                     titleTopPadding: PerformanceTheme.medleyInnerSongTitleTopPadding,
