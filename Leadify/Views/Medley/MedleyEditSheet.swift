@@ -8,6 +8,7 @@ struct MedleyEditSheet: View {
     var medley: Medley?
 
     @State private var name: String = ""
+    @State private var displayMode: MedleyDisplayMode = .separated
 
     private var isNew: Bool { medley == nil }
 
@@ -16,6 +17,20 @@ struct MedleyEditSheet: View {
             Form {
                 Section("Name") {
                     TextField("e.g. Opening Set", text: $name)
+                }
+
+                Section("Performance display") {
+                    Picker("Display as", selection: $displayMode) {
+                        ForEach(MedleyDisplayMode.allCases, id: \.self) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.inline)
+                    .listRowSeparator(.hidden)
+
+                    Text(displayMode.explanation)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle(isNew ? "New Medley" : "Edit Medley")
@@ -36,14 +51,17 @@ struct MedleyEditSheet: View {
     private func loadExistingValues() {
         guard let medley else { return }
         name = medley.name
+        displayMode = medley.displayMode
     }
 
     private func save() {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         if let medley {
             medley.name = trimmed
+            medley.displayMode = displayMode
         } else {
             let newMedley = Medley(name: trimmed)
+            newMedley.displayMode = displayMode
             context.insert(newMedley)
         }
         dismiss()
