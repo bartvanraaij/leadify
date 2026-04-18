@@ -47,9 +47,18 @@ struct SongPerformanceContent: View {
 /// A standalone song card with drop shadow, used for songs not in a medley.
 struct SongPerformanceBlock: View {
     let song: Song
+    var medleyTitle: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            if let medleyTitle {
+                Text(medleyTitle)
+                    .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold))
+                    .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
+                    .padding(.top, PerformanceTheme.itemInnerVerticalPadding)
+                    .padding(.bottom, PerformanceTheme.medleyTitleBottomPadding)
+            }
+
             SongPerformanceContent(song: song)
                 .padding(
                     .bottom,
