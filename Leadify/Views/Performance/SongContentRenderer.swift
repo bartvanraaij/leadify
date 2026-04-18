@@ -34,6 +34,65 @@ struct SongContentRenderer: View {
         return lines
     }
 
+    private static let gridCharacters: Set<Character> = ["─", "│", "┼", "┬", "┴", "├", "┤", "┌", "┐", "└", "┘", " "]
+
+    private static func coloredTabLine(_ line: String) -> AttributedString {
+        let chars = Array(line)
+        let firstGridIndex = chars.firstIndex(where: { gridCharacters.contains($0) || $0 == "─" }) ?? 0
+        var result = AttributedString()
+        for (i, ch) in chars.enumerated() {
+            var attr = AttributedString(String(ch))
+            if i < firstGridIndex || gridCharacters.contains(ch) {
+                attr.foregroundColor = PerformanceTheme.tabGridColor
+            } else {
+                attr.foregroundColor = PerformanceTheme.primaryContentColor
+                attr.font = .custom("Menlo-Bold", size: PerformanceTheme.tabFontSize)
+            }
+            result.append(attr)
+        }
+        return result
+    }
+
+    private static func replaceBoxDrawingCharacters(_ lines: [String]) -> [String] {
+        let grid = lines.map { Array($0) }
+        let rowCount = grid.count
+        let isTopRow = { (row: Int) in row == 0 }
+        let isBottomRow = { (row: Int) in row == rowCount - 1 }
+
+        func charAt(_ row: Int, _ col: Int) -> Character? {
+            guard row >= 0, row < rowCount, col >= 0, col < grid[row].count else { return nil }
+            return grid[row][col]
+        }
+
+        return grid.enumerated().map { row, chars in
+            String(chars.enumerated().map { col, ch -> Character in
+                switch ch {
+                case "-":
+                    return "─"
+                case "|":
+                    let hasLeft = charAt(row, col - 1) == "-"
+                    let hasRight = charAt(row, col + 1) == "-"
+                    let top = isTopRow(row)
+                    let bottom = isBottomRow(row)
+
+                    switch (hasLeft, hasRight, top, bottom) {
+                    // Left/right fretboard edges — drop the vertical, show as space
+                    case (false, true, _, _):          return " "
+                    case (true, false, _, _):          return " "
+                    // Interior (dash on both sides) — fret bar
+                    case (true, true, true, _):        return "┬"
+                    case (true, true, _, true):        return "┴"
+                    case (true, true, false, false):   return "┼"
+                    // Standalone vertical
+                    default:                           return "│"
+                    }
+                default:
+                    return ch
+                }
+            })
+        }
+    }
+
     @ViewBuilder
     private func blockView(_ block: ContentBlock) -> some View {
         switch block {
@@ -77,40 +136,18 @@ struct SongContentRenderer: View {
                 .padding(.leading, PerformanceTheme.contentIndent)
 
         case .codeBlock(let text, _):
-            let lines = trimmedCodeLines(from: text)
+            let lines = Self.replaceBoxDrawingCharacters(trimmedCodeLines(from: text))
 
-            // Approximate a reasonable line height for the monospace font (includes ascenders/descenders)
-            let approxLineHeight = PerformanceTheme.tabFontSize * 1.25
-            // Compression ratio - how much to compress the vertical spacing
-            let compression = (PerformanceTheme.tabFontSize / max(approxLineHeight, 1)) * PerformanceTheme.codeBlockLineCompressionMultiplier
-            let compressedLineSpacing = approxLineHeight * compression
-            
-            // Total height: first line's full height + remaining lines with compressed spacing
-            let totalHeight = approxLineHeight + CGFloat(max(lines.count - 1, 0)) * compressedLineSpacing
-
-            let normalHeight = approxLineHeight * CGFloat(lines.count)
-            let extraBottomPadding = max(0, normalHeight - totalHeight)
-
-            Color.clear
-                .frame(height: totalHeight)
-                .overlay(alignment: .topLeading) {
-                    ForEach(Array(lines.enumerated()), id: \.offset) { idx, line in
-                        Text(line)
-                            .font(
-                                .system(
-                                    size: PerformanceTheme.tabFontSize,
-                                    design: .monospaced
-                                )
-                            )
-                            .foregroundStyle(PerformanceTheme.tabColor)
-                            .tracking(PerformanceTheme.tabTracking)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .offset(y: CGFloat(idx) * compressedLineSpacing)
-                    }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                    Text(Self.coloredTabLine(line))
+                        .font(
+                            .custom("Menlo", size: PerformanceTheme.tabFontSize)
+                        )
                 }
-                //.border(Color.purple, width: 1)
-                .padding(.bottom, extraBottomPadding + PerformanceTheme.codeBlockExtraBottomPadding)
-                .padding(.leading, PerformanceTheme.contentIndent)
+            }
+            .padding(.bottom, PerformanceTheme.codeBlockVerticalPadding)
+            .padding(.leading, PerformanceTheme.contentIndent)
         }
     }
 
@@ -152,10 +189,7 @@ struct SongContentRenderer: View {
                 case .annotation(let text):
                     Text(text)
                         .font(
-                            .system(
-                                size: PerformanceTheme.annotationSize,
-                                weight: .regular
-                            )
+                            .custom("Menlo-Bold", size: PerformanceTheme.annotationSize)
                         )
                         .foregroundStyle(PerformanceTheme.annotationColor)
                         .padding(.leading, PerformanceTheme.annotationLeadingPadding)
