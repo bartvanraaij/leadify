@@ -29,6 +29,7 @@ struct PerformanceToolbar: View {
                 Spacer(minLength: 16)
 
                 Menu {
+                    Section("Navigation mode") {
                     ForEach(PerformanceNavigationMode.allCases) { mode in
                         Button {
                             storedMode = mode.rawValue
@@ -39,6 +40,7 @@ struct PerformanceToolbar: View {
                                 Text(mode.title)
                             }
                         }
+                    }
                     }
                 } label: {
                     Label(currentMode.title, systemImage: "hand.tap")

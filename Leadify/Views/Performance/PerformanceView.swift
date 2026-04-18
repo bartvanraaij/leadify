@@ -261,7 +261,7 @@ struct PerformanceView: View {
     // MARK: - Dimming
 
     private func opacityFor(index: Int) -> Double {
-        if navMode == .simpleNavigation { return 1.0 }
+        if navMode == .screenNavigation { return 1.0 }
         if index == activeIndex { return 1.0 }
         return PerformanceTheme.inactiveItemOpacity
     }
@@ -313,7 +313,7 @@ struct PerformanceView: View {
     /// so update `activeIndex` from scroll position to keep the sidebar highlight
     /// in sync with what's visible. Other modes manage `activeIndex` themselves.
     private func syncActiveIndexToViewportIfNeeded() {
-        guard navMode == .simpleNavigation else { return }
+        guard navMode == .screenNavigation else { return }
         let viewportTop = scrollOffset
         let viewportBottom = scrollOffset + viewportHeight
         let visible = entryFrames
@@ -344,7 +344,7 @@ struct PerformanceView: View {
 
     private func handleLeftTap() {
         switch navMode {
-        case .simpleNavigation: scrollViewportBy(direction: .backward)
+        case .screenNavigation: scrollViewportBy(direction: .backward)
         case .songNavigation: navigateToPrevious()
         case .smartNavigation: handleNavigatorTap(.backward)
         }
@@ -352,7 +352,7 @@ struct PerformanceView: View {
 
     private func handleRightTap() {
         switch navMode {
-        case .simpleNavigation: scrollViewportBy(direction: .forward)
+        case .screenNavigation: scrollViewportBy(direction: .forward)
         case .songNavigation: navigateToNext()
         case .smartNavigation: handleNavigatorTap(.forward)
         }
