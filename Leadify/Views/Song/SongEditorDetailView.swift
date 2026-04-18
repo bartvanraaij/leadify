@@ -128,7 +128,7 @@ struct SongEditorDetailView: View {
         .sheet(isPresented: $showPreview) {
             NavigationStack {
                 ScrollView {
-                    SongEditorPreview(title: title, reminder: reminder, content: content)
+                    SongPerformanceContent(title: title, reminder: reminder.isEmpty ? nil : reminder, content: content)
                         .padding(24)
                 }
                 .background(Color(.systemBackground))
@@ -172,33 +172,3 @@ struct SongEditorDetailView: View {
     }
 }
 
-// MARK: - Preview panel
-
-private struct SongEditorPreview: View {
-    let title: String
-    let reminder: String
-    let content: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center, spacing: 12) {
-                Text(title.isEmpty ? "Untitled" : title)
-                    .font(.system(size: PerformanceTheme.songTitleSize, weight: .bold))
-                    .foregroundStyle(PerformanceTheme.songTitleColor)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                if !reminder.isEmpty {
-                    Text(reminder)
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(EditTheme.accentColor))
-                }
-            }
-            .padding(.bottom, PerformanceTheme.itemInnerVerticalPadding)
-
-            SongContentPreview(content: content)
-        }
-    }
-}

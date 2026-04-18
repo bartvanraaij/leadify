@@ -17,26 +17,7 @@ struct SongDisplayView: View {
                 .ignoresSafeArea()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .center, spacing: 12) {
-                        Text(song.title.isEmpty ? "Untitled" : song.title)
-                            .font(.system(size: PerformanceTheme.songTitleSize, weight: .bold))
-                            .foregroundStyle(PerformanceTheme.songTitleColor)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                        if let reminder = song.reminder, !reminder.isEmpty {
-                            Text(reminder)
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(EditTheme.accentColor))
-                        }
-                    }
-                    .padding(.bottom, PerformanceTheme.itemInnerVerticalPadding)
-
-                    SongContentPreview(content: song.content)
-                }
+                SongPerformanceContent(song: song)
                 .padding(24)
             }
         }
