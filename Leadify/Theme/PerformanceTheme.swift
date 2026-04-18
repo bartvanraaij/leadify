@@ -33,8 +33,8 @@ struct PerformanceTheme {
     /// Top padding for annotations so their baseline aligns with chord text baseline.
     static let annotationBaselineOffset: CGFloat = {
         let chordFont = UIFont.systemFont(ofSize: chordTextSize, weight: .semibold)
-        let annotationFont = UIFont.systemFont(ofSize: annotationSize)
-        return chordFont.ascender - annotationFont.ascender
+        let annotationFont = UIFont(name: "Menlo-Bold", size: annotationSize) ?? UIFont.systemFont(ofSize: annotationSize)
+        return chordFont.ascender - annotationFont.ascender + 1
     }()
 
     // MARK: - Heading spacing (fraction of heading font size)
@@ -43,13 +43,8 @@ struct PerformanceTheme {
     static let headingBottomPaddingFraction: CGFloat = 0.5
 
     // MARK: - Code block
-    static let tabFontSize: CGFloat = 18
-    static let tabTracking: CGFloat = -2.2
-    static let codeBlockVerticalPadding: CGFloat = 4
-    /// Compression multiplier for tab/code block line spacing. Values closer to 1.0 = less compression = more spacing between lines.
-    static let codeBlockLineCompressionMultiplier: CGFloat = 1.0
-    /// Extra bottom padding added beneath overlapped code blocks to prevent adjacent content overlap.
-    static let codeBlockExtraBottomPadding: CGFloat = 24
+    static let tabFontSize: CGFloat = 20
+    static let codeBlockVerticalPadding: CGFloat = 24
 
     // MARK: - Animation durations
     static let navigationAnimationDuration: Double = 0.25
@@ -62,11 +57,8 @@ struct PerformanceTheme {
     // MARK: - Scroll chevrons
     static let chevronEdgePadding: CGFloat = 24
 
-    // MARK: - Reminder badge
+    // MARK: - Reminder
     static let reminderFontSize: CGFloat = 20
-    static let reminderHorizontalPadding: CGFloat = 16
-    static let reminderVerticalPadding: CGFloat = 8
-    static let reminderCornerRadius: CGFloat = 12
     static let titleReminderSpacing: CGFloat = 12
 
     // MARK: - Tacet
@@ -96,12 +88,8 @@ struct PerformanceTheme {
     static let tacetTextColor = dimmedContentColor
     static let medleyIndicatorColor = dimmedContentColor
 
-    // MARK: - Reminder badge
-    static let reminderTextColor = Color.accentColor
-    static let reminderBackgroundColor = Color(light: Color(white: 0.9), dark: Color(white: 0.18))
-
-    // MARK: - Accent colors
-    static let tabColor = Color(light: Color(red: 0.3, green: 0.5, blue: 0.4), dark: Color(red: 0.5, green: 0.8, blue: 0.6))
+    // MARK: - Tab grid
+    static let tabGridColor = Color(light: Color(white: 0.7), dark: Color(white: 0.3))
 
     // MARK: - Neutral elements
     static let dividerColor = Color(light: Color(white: 0.8), dark: Color(white: 0.25))
