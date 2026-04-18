@@ -95,8 +95,11 @@ struct PerformanceTheme {
     static let tacetTextColor = dimmedContentColor
     static let medleyIndicatorColor = dimmedContentColor
 
+    // MARK: - Reminder badge
+    static let reminderTextColor = Color.accentColor
+    static let reminderBackgroundColor = Color(light: Color(white: 0.9), dark: Color(white: 0.18))
+
     // MARK: - Accent colors
-    static let reminderColor = Color(red: 1.0, green: 0.6, blue: 0.0)
     static let tabColor = Color(light: Color(red: 0.3, green: 0.5, blue: 0.4), dark: Color(red: 0.5, green: 0.8, blue: 0.6))
 
     // MARK: - Neutral elements
