@@ -36,7 +36,6 @@ struct ContentView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var selectedMedley: Medley?
     @Query private var allMedleys: [Medley]
-    @State private var showSettings: Bool = false
 
     var sortedSetlists: [Setlist] {
         allSetlists.sorted { a, b in
@@ -60,20 +59,6 @@ struct ContentView: View {
             .listStyle(.sidebar)
             .navigationBarTitleDisplayMode(.inline)
             .navigationSplitViewColumnWidth(min: 160, ideal: 200, max: 240)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showSettings = true
-                    } label: {
-                        Image(systemName: "switch.2")
-                    }
-                    .accessibilityLabel("Preferences")
-                    .accessibilityIdentifier("open-settings")
-                }
-            }
-            .sheet(isPresented: $showSettings) {
-                SettingsSheet()
-            }
         } content: {
             Group {
                 switch selectedSidebarItem {
