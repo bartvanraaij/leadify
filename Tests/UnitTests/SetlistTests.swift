@@ -133,6 +133,102 @@ final class SetlistTests: XCTestCase {
                        medley.persistentModelID)
     }
 
+    // MARK: - Medley display mode
+
+    func test_performanceItems_separatedMedley_emitsSongItems() throws {
+        let s1 = Song(title: "Song A")
+        let s2 = Song(title: "Song B")
+        [s1, s2].forEach { context.insert($0) }
+
+        let medley = Medley(name: "Rock Set")
+        medley.displayMode = .separated
+        context.insert(medley)
+        let me1 = MedleyEntry(song: s1)
+        let me2 = MedleyEntry(song: s2)
+        [me1, me2].forEach { context.insert($0) }
+        medley.addEntry(me1)
+        medley.addEntry(me2)
+
+        let setlist = Setlist(name: "Gig")
+        context.insert(setlist)
+        let entry = SetlistEntry(medley: medley)
+        context.insert(entry)
+        setlist.addEntry(entry)
+        try context.save()
+
+        let items = setlist.performanceItems
+        XCTAssertEqual(items.count, 2)
+        XCTAssertEqual(items[0].kind, .song)
+        XCTAssertEqual(items[0].title, "Song A")
+        XCTAssertEqual(items[0].medleyTitle, "Rock Set")
+        XCTAssertEqual(items[1].kind, .song)
+        XCTAssertEqual(items[1].title, "Song B")
+        XCTAssertNil(items[1].medleyTitle)
+    }
+
+    func test_performanceItems_combinedMedley_emitsSingleMedleyItem() throws {
+        let s1 = Song(title: "Song A")
+        let s2 = Song(title: "Song B")
+        [s1, s2].forEach { context.insert($0) }
+
+        let medley = Medley(name: "Rock Set")
+        medley.displayMode = .combined
+        context.insert(medley)
+        let me1 = MedleyEntry(song: s1)
+        let me2 = MedleyEntry(song: s2)
+        [me1, me2].forEach { context.insert($0) }
+        medley.addEntry(me1)
+        medley.addEntry(me2)
+
+        let setlist = Setlist(name: "Gig")
+        context.insert(setlist)
+        let entry = SetlistEntry(medley: medley)
+        context.insert(entry)
+        setlist.addEntry(entry)
+        try context.save()
+
+        let items = setlist.performanceItems
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].kind, .medley)
+        XCTAssertEqual(items[0].title, "Rock Set")
+        XCTAssertNil(items[0].medleyTitle)
+    }
+
+    func test_performanceItems_separatedMedleyInMixedSetlist() throws {
+        let song = Song(title: "Standalone")
+        let s1 = Song(title: "Medley A")
+        let s2 = Song(title: "Medley B")
+        [song, s1, s2].forEach { context.insert($0) }
+
+        let medley = Medley(name: "Rock Set")
+        medley.displayMode = .separated
+        context.insert(medley)
+        let me1 = MedleyEntry(song: s1)
+        let me2 = MedleyEntry(song: s2)
+        [me1, me2].forEach { context.insert($0) }
+        medley.addEntry(me1)
+        medley.addEntry(me2)
+
+        let setlist = Setlist(name: "Gig")
+        context.insert(setlist)
+        let songEntry = SetlistEntry(song: song)
+        context.insert(songEntry)
+        setlist.addEntry(songEntry)
+        let medleyEntry = SetlistEntry(medley: medley)
+        context.insert(medleyEntry)
+        setlist.addEntry(medleyEntry)
+        try context.save()
+
+        let items = setlist.performanceItems
+        XCTAssertEqual(items.count, 3)
+        XCTAssertEqual(items[0].title, "Standalone")
+        XCTAssertNil(items[0].medleyTitle)
+        XCTAssertEqual(items[1].title, "Medley A")
+        XCTAssertEqual(items[1].medleyTitle, "Rock Set")
+        XCTAssertEqual(items[2].title, "Medley B")
+        XCTAssertNil(items[2].medleyTitle)
+    }
+
     // MARK: - formattedDate
 
     func test_formattedDate_nilWhenNoDate() {
