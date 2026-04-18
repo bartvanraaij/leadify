@@ -4,6 +4,20 @@ import Foundation
 enum MedleyDisplayMode: String, Codable, CaseIterable {
     case separated
     case combined
+
+    var label: String {
+        switch self {
+        case .separated: "Separated"
+        case .combined: "Combined"
+        }
+    }
+
+    var explanation: String {
+        switch self {
+        case .separated: "Each song is displayed and navigated individually"
+        case .combined: "Displayed and navigated as one item"
+        }
+    }
 }
 
 @Model
