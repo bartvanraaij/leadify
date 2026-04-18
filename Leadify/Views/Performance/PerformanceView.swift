@@ -245,7 +245,7 @@ struct PerformanceView: View {
         switch item.kind {
         case .song:
             if let song = item.song {
-                SongPerformanceBlock(song: song)
+                SongPerformanceBlock(song: song, medleyTitle: item.medleyTitle)
             }
         case .tacet:
             if let tacet = item.tacet {
