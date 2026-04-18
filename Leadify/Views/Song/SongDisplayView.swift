@@ -33,12 +33,6 @@ struct SongDisplayView: View {
                                 .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(EditTheme.accentColor))
                         }
                     }
-                    .padding(.bottom, 28)
-
-                    Rectangle()
-                        .fill(PerformanceTheme.dividerColor)
-                        .frame(height: PerformanceTheme.dividerHeight)
-                        .padding(.bottom, 28)
 
                     SongContentPreview(content: song.content)
                 }

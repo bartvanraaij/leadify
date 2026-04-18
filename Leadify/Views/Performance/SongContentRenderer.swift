@@ -18,6 +18,22 @@ struct SongContentRenderer: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    /// Trim leading and trailing empty/whitespace-only lines from code block content.
+    private func trimmedCodeLines(from text: String) -> [String] {
+        var lines = text.components(separatedBy: .newlines)
+        // Trim leading and trailing empty/whitespace-only lines to avoid alignment issues
+        while let first = lines.first, first.trimmingCharacters(in: .whitespaces).isEmpty { 
+            lines.removeFirst() 
+        }
+        while let last = lines.last, last.trimmingCharacters(in: .whitespaces).isEmpty { 
+            lines.removeLast() 
+        }
+        if lines.isEmpty { 
+            lines = [""] 
+        }
+        return lines
+    }
+
     @ViewBuilder
     private func blockView(_ block: ContentBlock) -> some View {
         switch block {
@@ -58,16 +74,39 @@ struct SongContentRenderer: View {
                 .foregroundStyle(PerformanceTheme.chordTextColor)
 
         case .codeBlock(let text, _):
-            Text(text)
-                .font(
-                    .system(
-                        size: PerformanceTheme.tabFontSize,
-                        design: .monospaced
-                    )
-                )
-                .foregroundStyle(PerformanceTheme.tabColor)
-                .tracking(PerformanceTheme.tabTracking)
-                .padding(.vertical, PerformanceTheme.codeBlockVerticalPadding)
+            let lines = trimmedCodeLines(from: text)
+
+            // Approximate a reasonable line height for the monospace font (includes ascenders/descenders)
+            let approxLineHeight = PerformanceTheme.tabFontSize * 1.25
+            // Compression ratio - how much to compress the vertical spacing
+            let compression = (PerformanceTheme.tabFontSize / max(approxLineHeight, 1)) * PerformanceTheme.codeBlockLineCompressionMultiplier
+            let compressedLineSpacing = approxLineHeight * compression
+            
+            // Total height: first line's full height + remaining lines with compressed spacing
+            let totalHeight = approxLineHeight + CGFloat(max(lines.count - 1, 0)) * compressedLineSpacing
+
+            let normalHeight = approxLineHeight * CGFloat(lines.count)
+            let extraBottomPadding = max(0, normalHeight - totalHeight)
+
+            Color.clear
+                .frame(height: totalHeight)
+                .overlay(alignment: .topLeading) {
+                    ForEach(Array(lines.enumerated()), id: \.offset) { idx, line in
+                        Text(line)
+                            .font(
+                                .system(
+                                    size: PerformanceTheme.tabFontSize,
+                                    design: .monospaced
+                                )
+                            )
+                            .foregroundStyle(PerformanceTheme.tabColor)
+                            .tracking(PerformanceTheme.tabTracking)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .offset(y: CGFloat(idx) * compressedLineSpacing)
+                    }
+                }
+                //.border(Color.purple, width: 1)
+                .padding(.bottom, extraBottomPadding + PerformanceTheme.codeBlockExtraBottomPadding)
         }
     }
 
@@ -316,3 +355,4 @@ extension SongContentRenderer {
         return blocks
     }
 }
+
