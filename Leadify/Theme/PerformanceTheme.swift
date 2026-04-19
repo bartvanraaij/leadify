@@ -76,6 +76,7 @@ struct PerformanceTheme {
     static let primaryContentColor = Color(light: Color(white: 0.1), dark: Color(white: 0.95))
     static let dimmedContentColor = Color(light: Color(white: 0.45), dark: Color(white: 0.55))
     static let background = Color(light: Color(white: 0.98), dark: Color(white: 0.05))
+    static let toolbarScrimColor = Color(light: .black.opacity(0.15), dark: .white.opacity(0.08))
 
     // MARK: - Semantic color aliases — primary content
     static let songTitleColor = primaryContentColor
