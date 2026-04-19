@@ -15,44 +15,41 @@ struct SongEditorSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 12) {
-                    VStack(spacing: 0) {
-                        TextField("Title", text: $title)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
+            VStack(spacing: 12) {
+                VStack(spacing: 0) {
+                    TextField("Title", text: $title)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
 
-                        Divider().padding(.leading, 16)
+                    Divider().padding(.leading, 16)
 
-                        TextField("Reminder", text: $reminder)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                    }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                    VStack(spacing: 0) {
-                        Text("Content")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .textCase(.uppercase)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 16)
-                            .padding(.top, 8)
-                            .padding(.bottom, 4)
-
-                        TextEditor(text: $content)
-                            .font(.system(size: 15, design: .monospaced))
-                            .frame(minHeight: 200)
-                            .scrollContentBackground(.hidden)
-                            .padding(.horizontal, 12)
-                            .padding(.bottom, 8)
-                    }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    TextField("Reminder", text: $reminder)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                 }
-                .padding(16)
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                VStack(spacing: 0) {
+                    Text("Content")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
+
+                    TextEditor(text: $content)
+                        .font(.system(size: 15, design: .monospaced))
+                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 8)
+                }
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
+            .padding(16)
             .background(Color(.systemGroupedBackground))
             .navigationTitle(song == nil ? "New Song" : "Edit Song")
             .navigationBarTitleDisplayMode(.inline)
