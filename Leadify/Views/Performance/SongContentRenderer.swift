@@ -134,6 +134,7 @@ struct SongContentRenderer: View {
                 )
                 .foregroundStyle(PerformanceTheme.chordTextColor)
                 .padding(.leading, PerformanceTheme.contentIndent)
+                .padding(.bottom, PerformanceTheme.plainTextBottomPadding)
 
         case .codeBlock(let text, _):
             let lines = Self.replaceBoxDrawingCharacters(trimmedCodeLines(from: text))
@@ -144,6 +145,7 @@ struct SongContentRenderer: View {
                         .font(
                             .custom("Menlo", size: PerformanceTheme.tabFontSize)
                         )
+                        .lineLimit(1)
                 }
             }
             .padding(.bottom, PerformanceTheme.codeBlockVerticalPadding)

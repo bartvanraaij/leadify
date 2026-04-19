@@ -70,6 +70,7 @@ struct PerformanceTheme {
     static let medleyTitleBottomPadding: CGFloat = 8
     static let medleyInnerSongTitleTopPadding: CGFloat = 16
     static let contentIndent: CGFloat = 16
+    static let plainTextBottomPadding: CGFloat = 24
 
     // MARK: - Base colors
     static let primaryContentColor = Color(light: Color(white: 0.1), dark: Color(white: 0.95))

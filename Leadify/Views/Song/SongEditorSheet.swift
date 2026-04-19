@@ -15,10 +15,8 @@ struct SongEditorSheet: View {
 
     var body: some View {
         NavigationStack {
-
             ScrollView {
                 VStack(spacing: 12) {
-                    // MARK: - Title & Reminder fields
                     VStack(spacing: 0) {
                         TextField("Title", text: $title)
                             .padding(.horizontal, 16)
@@ -33,42 +31,22 @@ struct SongEditorSheet: View {
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
-                    // MARK: - Content Editor/Preview
                     VStack(spacing: 0) {
-                        HStack {
-                            Text("Content")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .textCase(.uppercase)
+                        Text("Content")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 8)
+                            .padding(.bottom, 4)
 
-                            Spacer()
-
-                            Picker("", selection: $showPreview) {
-                                Text("Edit").tag(false)
-                                Text("Preview").tag(true)
-                            }
-                            .pickerStyle(.segmented)
-                            .frame(width: 150)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                        .padding(.bottom, 4)
-
-                        if showPreview {
-                            ScrollView {
-                                SongContentPreview(content: content)
-                                    .padding(16)
-                            }
-                            .background(Color(.secondarySystemGroupedBackground))
-                            .frame(maxWidth: .infinity, minHeight: 200)
-                        } else {
-                            TextEditor(text: $content)
-                                .font(.system(size: 15, design: .monospaced))
-                                .frame(minHeight: 200)
-                                .scrollContentBackground(.hidden)
-                                .padding(.horizontal, 12)
-                                .padding(.bottom, 8)
-                        }
+                        TextEditor(text: $content)
+                            .font(.system(size: 15, design: .monospaced))
+                            .frame(minHeight: 200)
+                            .scrollContentBackground(.hidden)
+                            .padding(.horizontal, 12)
+                            .padding(.bottom, 8)
                     }
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -82,18 +60,24 @@ struct SongEditorSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        save()
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showPreview = true } label: {
+                        Image(systemName: "eye")
                     }
-                    .fontWeight(.semibold)
-                    .buttonStyle(.borderedProminent)
-                    .disabled(
-                        title.trimmingCharacters(in: .whitespaces).isEmpty
-                    )
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { save() }
+                        .fontWeight(.semibold)
+                        .buttonStyle(.borderedProminent)
+                        .disabled(
+                            title.trimmingCharacters(in: .whitespaces).isEmpty
+                        )
                 }
             }
             .onAppear { loadExistingValues() }
+            .sheet(isPresented: $showPreview) {
+                SongPreviewSheet(title: title, reminder: reminder.isEmpty ? nil : reminder, content: content)
+            }
         }
     }
 
@@ -127,13 +111,4 @@ struct SongEditorSheet: View {
     }
 }
 
-// MARK: - Markdown preview
-
-struct SongContentPreview: View {
-    let content: String
-
-    var body: some View {
-        SongContentRenderer(content: content)
-    }
-}
 
