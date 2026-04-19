@@ -25,6 +25,7 @@ struct PerformanceView: View {
     @State var safeAreaInsets: EdgeInsets = .init()
     @AppStorage(PerformanceNavigationMode.storageKey) private var storedNavMode: String = PerformanceNavigationMode.defaultMode.rawValue
     @State private var showToolbar: Bool = false
+    @FocusState private var isFocused: Bool
 
     private var navMode: PerformanceNavigationMode {
         PerformanceNavigationMode(rawValue: storedNavMode) ?? .defaultMode
@@ -118,6 +119,12 @@ struct PerformanceView: View {
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
+        .focusable()
+        .focused($isFocused)
+        .focusEffectDisabled()
+        .onAppear { isFocused = true }
+        .onKeyPress(.downArrow) { handleRightTap(); return .handled }
+        .onKeyPress(.upArrow) { handleLeftTap(); return .handled }
     }
 
     // MARK: - Scroll content
