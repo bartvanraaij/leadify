@@ -3,52 +3,17 @@
 ## Project layout
 
 ```
-/Users/bartvanraaij/Dev/leadify/          ← git root (also Claude's working dir, also Xcode project folder)
-├── Leadify.xcodeproj/
-├── Leadify/                         ← Swift source root
-│       ├── LeadifyApp.swift
-│       ├── ContentView.swift
-│       ├── Models/                      Song, Tacet, SetlistEntry, Setlist, Medley, MedleyEntry,
-│       │                                Performable (protocol + PerformanceItem),
-│       │                                SongFileParser, SongImporter
-│       ├── Theme/                       EditTheme, PerformanceTheme
-│       └── Views/                       domain-based grouping (see naming conventions below)
-│           ├── Song/                    SongDisplayView, SongEditorSheet, SongEditorDetailView,
-│           │                            SongLibrarySheet, SongLibrarySidebarView,
-│           │                            SongContentRenderer
-│           ├── Tacet/                   TacetEditSheet
-│           ├── Setlist/                 SetlistDetailView, SetlistSidebarView, SetlistSidebarRow,
-│           │                            SetlistEditSheet, SetlistAddEntrySection,
-│           │                            SongSetlistRow, TacetSetlistRow,
-│           │                            MedleySetlistGroup, MedleyLibrarySheet
-│           ├── Medley/                  MedleySidebarView, MedleySidebarRow, MedleyEditSheet,
-│           │                            MedleyDetailView, MedleySongRow, MedleySongLibrarySheet
-│           └── Performance/             PerformanceView, PerformanceTapOverlay,
-│                                        PerformanceSetlistSidebar, PerformanceNavigator,
-│                                        PerformanceScrollCalculator,
-│                                        SongPerformanceBlock, TacetPerformanceBlock
-├── Leadify.xctestplan                   test plan (at project root, referenced by scheme)
-├── Tests/
-│   ├── UnitTests/                       SetlistTests, SongTests, MedleyTests,
-│   │                                    PerformanceNavigationTests, PerformanceScrollCalculatorTests,
-│   │                                    SongFileParserTests, SongContentRendererTests,
-│   │                                    SongImporterTests, TestHelpers
-│   └── UITests/                         PerformanceUITests (black-box, size-agnostic),
-│                                        PerformanceIntegrationTest (full user session)
-├── docs/superpowers/
-│   ├── specs/2026-03-28-leadify-design.md
-│   ├── specs/2026-03-30-markdown-import-design.md
-│   ├── specs/2026-03-30-song-library-design.md
-│   ├── specs/2026-03-31-medley-design.md
-│   ├── specs/2026-03-31-performance-view-redesign.md
-│   ├── plans/2026-03-28-leadify-plan-1-foundation-ordering.md
-│   ├── plans/2026-03-28-leadify-plan-2-performance-mode.md
-│   ├── plans/2026-03-29-ui-polish-plan-3.md
-│   ├── plans/2026-03-30-markdown-import-plan.md
-│   ├── plans/2026-03-30-song-library-plan.md
-│   ├── plans/2026-03-31-medley-plan.md
-│   └── plans/2026-03-31-performance-view-redesign-plan.md
-└── .claude/projects/.../memory/         persistent memory across sessions
+Leadify/
+├── Models/              Data models, protocols (Performable), importers
+├── Theme/               PerformanceTheme, EditTheme
+├── Views/
+│   ├── Song/            Song editing, preview, library
+│   ├── Tacet/           Tacet editing
+│   ├── Setlist/         Setlist editing, sidebar, rows
+│   ├── Medley/          Medley editing, sidebar, rows
+│   └── Performance/     Performance mode UI, navigation, toolbar
+Tests/UnitTests/         Unit tests
+docs/superpowers/        Design specs and implementation plans
 ```
 
 ## Build & test commands
@@ -65,18 +30,6 @@ xcodebuild build -scheme Leadify \
 xcodebuild test -scheme Leadify \
   -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5' \
   -only-testing:LeadifyTests
-
-# Run UI tests (single device)
-xcodebuild test -scheme Leadify \
-  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5' \
-  -only-testing:LeadifyUITests
-
-# Run UI tests on multiple iPad sizes (parallel)
-xcodebuild test -scheme Leadify \
-  -destination 'platform=iOS Simulator,name=iPad mini (A17 Pro)' \
-  -destination 'platform=iOS Simulator,name=iPad Air 11-inch (M3)' \
-  -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M5)' \
-  -only-testing:LeadifyUITests
 
 # Run on simulator with seeded data (must terminate → install → launch; launch alone uses stale binary)
 xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify 2>/dev/null
@@ -100,18 +53,16 @@ The physical iPad is named "iPad (2)". After changes, deploy to **both** simulat
 
 New `.swift` files created in the project directory are automatically included in the Xcode build target. No manual "Add Files" step is needed — just build directly after creating files.
 
-## UI testing (XCUITest)
+## SwiftData enum properties
 
-Black-box UI tests in `Tests/UITests/` test the Performance view without coupling to implementation. Key patterns:
-
-- **Test data seeding:** `--uitesting` launch arg → `UITestSeeder.seed()` with in-memory ModelContainer (behind `#if DEBUG`)
-- **Size-agnostic tap zones:** Tap coordinates derived from `performance-content-area` accessibility landmark (a `Color.clear` overlay sized to `geo.size`). Never use screen-relative coordinates.
-- **Element lookup:** Always use `app.descendants(matching: .any).matching(identifier:).firstMatch` — SwiftUI element types are unpredictable across contexts (buttons in inspector sidebar may not be found via `app.buttons`).
-- **Sidebar detection:** Use `ensureSidebarOpen()` pattern — check if sidebar exists before toggling, since it auto-shows at wide widths.
-- **Identifier propagation:** Parent `.accessibilityIdentifier()` propagates to all children in SwiftUI. Put identifiers on `.background()` views to avoid conflicts with child button identifiers.
-- **Async labels:** SwiftUI accessibility label updates are async — poll with a deadline instead of asserting immediately.
-- **Viewport-dependent tests:** Use `try XCTSkipUnless()` for features that depend on content exceeding viewport (e.g., chevron scrolling). At small window sizes the content may fit.
-- **Multi-device:** Run with multiple `-destination` flags on `xcodebuild test` for parallel testing across iPad sizes.
+SwiftData's `@Model` macro can't handle enum default values inline. Use a `String` backing property with a computed getter/setter:
+```swift
+var displayModeRaw: String = MedleyDisplayMode.separated.rawValue
+var displayMode: MedleyDisplayMode {
+    get { MedleyDisplayMode(rawValue: displayModeRaw) ?? .separated }
+    set { displayModeRaw = newValue.rawValue }
+}
+```
 
 ## SwiftData ordering — always use `sortedEntries` / `addEntry`
 
@@ -130,8 +81,6 @@ All sizes and colors live in two structs:
 - `Theme/EditTheme.swift` — edit/ordering mode and song editor
 
 Never use literal `CGFloat` sizes or `Color(...)` values in view files. Add tokens to the theme structs instead.
-
-The custom MarkdownUI theme (`.leadifyPerformance`) is defined in `Theme/MarkdownTheme.swift`.
 
 ## View naming conventions
 
@@ -152,14 +101,14 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - `Song` — shared across setlists and medleys by reference. Editing a song updates it everywhere.
 - `Tacet` — owned by its `SetlistEntry` (cascade delete). Must be deep-copied when duplicating a setlist.
 - `SetlistEntry` — join object holding a `Song?`, `Tacet?`, or `Medley?`. `itemType` (.song/.tacet/.medley) is derived from which is non-nil.
-- `Medley` — a fixed group of songs in a specific order. Shared across setlists by reference (like Song). Has `sortedEntries`, `addEntry()`, and `duplicate(in:)`.
+- `Medley` — a fixed group of songs in a specific order. Shared across setlists by reference (like Song). Has `sortedEntries`, `addEntry()`, `duplicate(in:)`, and `displayMode` (`.separated`/`.combined`) controlling how it renders in performance mode.
 - `MedleyEntry` — join object with a non-optional `Song` reference and `order: Int`. Same ordering pattern as `SetlistEntry`.
 - `Setlist.duplicate(in:)` — shares song and medley references, deep-copies tacets, preserves order.
 - `Performable` — protocol conforming types (`Setlist`, `Medley`) provide `performanceTitle` and `performanceItems: [PerformanceItem]`. `PerformanceView` accepts `any Performable`, so both setlists and medleys share the same performance UI.
-- `PerformanceItem` — lightweight value struct with `kind` (.song/.tacet/.medley), `title`, and optional model refs. `isSkippable` returns true for tacets (skipped during next/prev navigation).
+- `PerformanceItem` — lightweight value struct with `kind` (.song/.tacet/.medley), `title`, `medleyTitle` (for first song in a separated medley), and optional model refs. `isSkippable` returns true for tacets (skipped during next/prev navigation).
 - `ModelContainer` is initialised without `.none` to keep the CloudKit migration path open.
 
-## Current status (as of 2026-04-01)
+## Current status (as of 2026-04-19)
 
 ### Done
 - Plan 1: All data models, themes, setlist editing/ordering UI, unit tests ✅
@@ -171,17 +120,24 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - Song library: SongLibrarySheet, SongLibrarySidebarView for browsing/managing songs ✅
 - UI polish (plan 3) ✅
 - Sidebar: three sections — Setlists / Songs / Medleys ✅
+- Medley display mode: per-medley setting (separated/combined) for performance view ✅
+- Performance typography: rounded font for titles/headings, lowercase section headers, content indent ✅
+- Tab rendering: box-drawing characters, Menlo font, dual-color (grey grid, primary notation), fretboard-aware corners ✅
+- Reminder badge: inline accent-colored text after song title (replaced filled pill) ✅
+- SongPerformanceContent: unified component used by performance view and editor previews ✅
+- SongPreviewSheet: shared preview sheet for both song editors ✅
+- Performance toolbar: fog gradient backdrop, navigation mode menu with section header ✅
+- Settings sheet removed — nav mode accessible from performance toolbar only ✅
+- Font size / layout tuning on real hardware ✅
+- UI tests removed — visual validation done on device, behavior covered by unit tests ✅
 - Tests: all passing ✅
 
 ### Known UI issues / next refinements
-- Performance view tap zone sizes and scroll fractions may need tuning after real-device testing
-- Song editor form height (260) — may still need adjustment depending on Dynamic Type settings
-- Tap-to-edit on rows works, but there's no visual affordance (no chevron/indicator)
-- Medley grouped display in setlist uses approach A (header + flat songs) — may iterate to B (bracket) or C (collapsed) based on testing
+- Code blocks (tabs) clip when too wide for the view — horizontal scrolling not yet solved
+- TextEditor doesn't support disabling word wrap natively
 
 ### Not yet started
 - CloudKit sync (mentioned as future work in design spec)
-- Font size / layout tuning after testing on real hardware
 
 ## User background
 
