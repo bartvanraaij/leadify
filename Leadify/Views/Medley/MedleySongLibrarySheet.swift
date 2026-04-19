@@ -9,7 +9,6 @@ struct MedleySongLibrarySheet: View {
 
     @Query(sort: \Song.title) private var allSongs: [Song]
     @State private var searchText = ""
-    @State private var showNewSongEditor = false
 
     private var filteredSongs: [Song] {
         let base: [Song]
@@ -54,18 +53,6 @@ struct MedleySongLibrarySheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showNewSongEditor = true
-                    } label: {
-                        Label("New Song", systemImage: "plus")
-                    }
-                }
-            }
-            .sheet(isPresented: $showNewSongEditor) {
-                SongEditorSheet(song: nil, onSave: { newSong in
-                    addSong(newSong)
-                })
             }
         }
     }
