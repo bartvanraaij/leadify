@@ -15,7 +15,8 @@ final class PerformanceNavigationTests: XCTestCase {
         )
         XCTAssertEqual(result.newActiveIndex, 0)
         XCTAssertNotNil(result.scrollTarget)
-        XCTAssertEqual(result.scrollTarget!, 360, accuracy: 1)
+        let expectedLastSnap = 800 - PerformanceTheme.dividerHeight - 600
+        XCTAssertEqual(result.scrollTarget!, expectedLastSnap, accuracy: 1)
     }
 
     func test_rightTap_activeEntryFullyVisible_advancesToNext() {
@@ -55,23 +56,27 @@ final class PerformanceNavigationTests: XCTestCase {
         )
         XCTAssertEqual(result.newActiveIndex, 2)
         XCTAssertNotNil(result.scrollTarget)
-        XCTAssertEqual(result.scrollTarget!, 360, accuracy: 1)
+        let expectedLastSnap = 800 - PerformanceTheme.dividerHeight - 600
+        XCTAssertEqual(result.scrollTarget!, expectedLastSnap, accuracy: 1)
     }
 
     // MARK: - Left tap (backward)
 
     func test_leftTap_activeEntryExtendsAbove_scrollsWithinEntry() {
+        // Entry at y=0, height 1800 — tall enough for multiple snaps.
+        // Scrolled to 600 (one viewport down), so top is above viewport.
+        let frame = CGRect(x: 0, y: 0, width: 700, height: 1800)
         let result = PerformanceNavigator.handleTap(
             direction: .backward,
             activeIndex: 1,
             entryCount: 3,
-            activeEntryFrame: CGRect(x: 0, y: -200, width: 700, height: 800),
-            scrollOffset: 500,
+            activeEntryFrame: frame,
+            scrollOffset: 600,
             viewportHeight: 600
         )
         XCTAssertEqual(result.newActiveIndex, 1)
         XCTAssertNotNil(result.scrollTarget)
-        XCTAssertEqual(result.scrollTarget!, 140, accuracy: 1)
+        XCTAssertEqual(result.scrollTarget!, 0, accuracy: 1)
     }
 
     func test_leftTap_activeEntryTopVisible_goesToPrevious() {
