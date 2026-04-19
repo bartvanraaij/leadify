@@ -43,8 +43,6 @@
 		F23ED3A02F7FD05800769CFF /* Exceptions for "Tests" folder in "Leadify" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				UITests/PerformanceIntegrationTest.swift,
-				UITests/PerformanceUITests.swift,
 				UnitTests/LeadifyTests.swift,
 				UnitTests/MedleyTests.swift,
 				UnitTests/PerformanceNavigationTests.swift,
@@ -74,14 +72,6 @@
 			);
 			target = F2AB3D2B2F78122A0021186D /* LeadifyTests */;
 		};
-		F23ED3A72F7FD05A00769CFF /* Exceptions for "Tests" folder in "LeadifyUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				UITests/PerformanceIntegrationTest.swift,
-				UITests/PerformanceUITests.swift,
-			);
-			target = F2215D782F7E9A8200D9D77C /* LeadifyUITests */;
-		};
 		F28B5C912F7AAD4600D152FE /* Exceptions for "Leadify" folder in "Leadify" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -97,7 +87,6 @@
 			exceptions = (
 				F23ED3A02F7FD05800769CFF /* Exceptions for "Tests" folder in "Leadify" target */,
 				F23ED3A12F7FD05800769CFF /* Exceptions for "Tests" folder in "LeadifyTests" target */,
-				F23ED3A72F7FD05A00769CFF /* Exceptions for "Tests" folder in "LeadifyUITests" target */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
