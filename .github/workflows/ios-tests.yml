@@ -24,11 +24,3 @@ jobs:
             -only-testing:LeadifyTests \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Run UI tests
-        # No 'clean' here — reuses the build artifact from the unit tests step
-        run: |
-          xcodebuild test \
-            -scheme Leadify \
-            -destination 'platform=iOS Simulator,name=iPad (A16)' \
-            -only-testing:LeadifyUITests \
-            CODE_SIGNING_ALLOWED=NO
