@@ -26,4 +26,4 @@ jobs:
             ${{ runner.os }}-deriveddata-
 
       - name: Run unit tests
-        run: xcodebuild test -scheme Leadify -destination 'platform=iOS Simulator,name=iPad (A16)' -only-testing:LeadifyTests -skip-testing:LeadifyUITests CODE_SIGNING_ALLOWED=NO
+        run: xcodebuild test -scheme Leadify -destination 'platform=iOS Simulator,name=iPad (A16)' -only-testing:LeadifyTests CODE_SIGNING_ALLOWED=NO

@@ -46,17 +46,6 @@
                ReferencedContainer = "container:Leadify.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F2215D782F7E9A8200D9D77C"
-               BuildableName = "LeadifyUITests.xctest"
-               BlueprintName = "LeadifyUITests"
-               ReferencedContainer = "container:Leadify.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
