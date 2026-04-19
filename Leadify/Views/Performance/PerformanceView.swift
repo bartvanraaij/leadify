@@ -102,7 +102,6 @@ struct PerformanceView: View {
         }
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
-
         .persistentSystemOverlays(.hidden)
     }
 

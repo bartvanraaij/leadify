@@ -10,7 +10,8 @@ struct SongPreviewSheet: View {
         NavigationStack {
             ScrollView {
                 SongPerformanceContent(title: title, reminder: reminder, content: content)
-                    .padding(24)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
             }
             .background(Color(.systemBackground))
             .navigationTitle("Preview")
