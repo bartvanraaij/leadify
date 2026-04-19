@@ -40,6 +40,21 @@ struct PerformanceView: View {
 
                 .overlay { scrollIndicators }
                 .overlay(alignment: .top) {
+                    LinearGradient(
+                        stops: [
+                            .init(color: PerformanceTheme.background.opacity(0.85), location: 0),
+                            .init(color: PerformanceTheme.background.opacity(0.6), location: 0.3),
+                            .init(color: PerformanceTheme.background.opacity(0), location: 1),
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 240)
+                    .allowsHitTesting(false)
+                    .opacity(showToolbar ? 1 : 0)
+                    .animation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration), value: showToolbar)
+                }
+                .overlay(alignment: .top) {
                     if showToolbar {
                         PerformanceToolbar(
                             onExit: { dismiss() },
