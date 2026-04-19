@@ -24,14 +24,6 @@
         "identifier" : "F2AB3D2B2F78122A0021186D",
         "name" : "LeadifyTests"
       }
-    },
-    {
-      "parallelizable" : true,
-      "target" : {
-        "containerPath" : "container:Leadify.xcodeproj",
-        "identifier" : "F2215D782F7E9A8200D9D77C",
-        "name" : "LeadifyUITests"
-      }
     }
   ],
   "version" : 1
