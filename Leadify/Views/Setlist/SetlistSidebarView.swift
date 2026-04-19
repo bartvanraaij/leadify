@@ -63,7 +63,9 @@ struct SetlistSidebarView: View {
             }
         }
         .sheet(isPresented: $showNewSetlistSheet) {
-            SetlistEditSheet(setlist: nil)
+            SetlistEditSheet(setlist: nil) { newSetlist in
+                selectedSetlist = newSetlist
+            }
         }
     }
 

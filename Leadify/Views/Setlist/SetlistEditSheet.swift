@@ -6,6 +6,7 @@ struct SetlistEditSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var setlist: Setlist?
+    var onCreate: ((Setlist) -> Void)?
 
     @State private var name: String = ""
     @State private var date: Date = Date()
@@ -61,6 +62,7 @@ struct SetlistEditSheet: View {
         } else {
             let new = Setlist(name: trimmed, date: hasDate ? date : nil)
             context.insert(new)
+            onCreate?(new)
         }
         dismiss()
     }

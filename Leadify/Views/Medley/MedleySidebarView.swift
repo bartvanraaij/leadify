@@ -46,7 +46,9 @@ struct MedleySidebarView: View {
             }
         }
         .sheet(isPresented: $showNewMedleySheet) {
-            MedleyEditSheet(medley: nil)
+            MedleyEditSheet(medley: nil) { newMedley in
+                selectedMedley = newMedley
+            }
         }
     }
 }

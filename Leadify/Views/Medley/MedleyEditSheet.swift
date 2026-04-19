@@ -6,6 +6,7 @@ struct MedleyEditSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var medley: Medley?
+    var onCreate: ((Medley) -> Void)?
 
     @State private var name: String = ""
     @State private var displayMode: MedleyDisplayMode = .separated
@@ -76,6 +77,7 @@ struct MedleyEditSheet: View {
             let newMedley = Medley(name: trimmed)
             newMedley.displayMode = displayMode
             context.insert(newMedley)
+            onCreate?(newMedley)
         }
         dismiss()
     }
