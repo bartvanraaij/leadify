@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct MedleySidebarView: View {
     @Query private var allMedleys: [Medley]

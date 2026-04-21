@@ -1,7 +1,7 @@
 import CoreGraphics
 
-enum ScreenNavigator {
-    static func handleTap(
+public enum ScreenNavigator {
+    public static func handleTap(
         direction: TapDirection,
         scrollOffset: CGFloat,
         viewportHeight: CGFloat

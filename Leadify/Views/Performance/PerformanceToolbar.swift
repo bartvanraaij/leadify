@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 /// On-demand floating capsule shown in the performance view.
 /// Exposes Exit (left), Mode picker (center), Sidebar toggle (right).

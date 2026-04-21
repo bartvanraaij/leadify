@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 @main
 struct LeadifyApp: App {

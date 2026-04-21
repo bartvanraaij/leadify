@@ -7,3 +7,5 @@ xcuserdata/
 .claude/skills
 .claude/settings.local.json
 tmp
+.build/
+LeadifyCore/.build/

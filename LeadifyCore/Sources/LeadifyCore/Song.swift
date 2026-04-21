@@ -2,23 +2,23 @@ import SwiftData
 import Foundation
 
 @Model
-final class Song {
-    var title: String
-    var content: String
-    var reminder: String?
-    var createdAt: Date = Date()
+public final class Song {
+    public var title: String
+    public var content: String
+    public var reminder: String?
+    public var createdAt: Date = Date()
     @Relationship(deleteRule: .cascade, inverse: \SetlistEntry.song)
-    var entries: [SetlistEntry] = []
+    public var entries: [SetlistEntry] = []
     @Relationship(deleteRule: .cascade, inverse: \MedleyEntry.song)
-    var medleyEntries: [MedleyEntry] = []
+    public var medleyEntries: [MedleyEntry] = []
 
-    init(title: String, content: String = "", reminder: String? = nil) {
+    public init(title: String, content: String = "", reminder: String? = nil) {
         self.title = title
         self.content = content
         self.reminder = reminder
     }
 
-    func duplicate(in context: ModelContext) -> Song {
+    public func duplicate(in context: ModelContext) -> Song {
         let copy = Song(title: "\(title) (copy)", content: content, reminder: reminder)
         context.insert(copy)
         return copy

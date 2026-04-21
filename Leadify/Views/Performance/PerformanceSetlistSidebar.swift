@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 /// Compact overview for performance mode. Shows item titles with active highlight.
 struct PerformanceSetlistSidebar: View {

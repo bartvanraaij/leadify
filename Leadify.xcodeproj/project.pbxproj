@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F20AD2AA2F86CF84000A38C0 /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */; };
+		F268984E2F97A5E3007E6B3B /* LeadifyCore in Frameworks */ = {isa = PBXBuildFile; productRef = F268984D2F97A5E3007E6B3B /* LeadifyCore */; };
 		F2AB3DE92F7972BC0021186D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE82F7972BC0021186D /* README.md */; };
 		F2AB3DEA2F7972BC0021186D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE72F7972BC0021186D /* CLAUDE.md */; };
 /* End PBXBuildFile section */
@@ -31,38 +32,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F23ED3A02F7FD05800769CFF /* Exceptions for "Tests" folder in "Leadify" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				UnitTests/LeadifyTests.swift,
-				UnitTests/MedleyTests.swift,
-				UnitTests/PerformanceNavigationTests.swift,
-				UnitTests/PerformanceScrollCalculatorTests.swift,
-				UnitTests/SetlistTests.swift,
-				UnitTests/SongContentRendererTests.swift,
-				UnitTests/SongFileParserTests.swift,
-				UnitTests/SongImporterTests.swift,
-				UnitTests/SongTests.swift,
-				UnitTests/TestHelpers.swift,
-			);
-			target = F2AB3D172F7811B50021186D /* Leadify */;
-		};
-		F23ED3A12F7FD05800769CFF /* Exceptions for "Tests" folder in "LeadifyTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				UnitTests/LeadifyTests.swift,
-				UnitTests/MedleyTests.swift,
-				UnitTests/PerformanceNavigationTests.swift,
-				UnitTests/PerformanceScrollCalculatorTests.swift,
-				UnitTests/SetlistTests.swift,
-				UnitTests/SongContentRendererTests.swift,
-				UnitTests/SongFileParserTests.swift,
-				UnitTests/SongImporterTests.swift,
-				UnitTests/SongTests.swift,
-				UnitTests/TestHelpers.swift,
-			);
-			target = F2AB3D2B2F78122A0021186D /* LeadifyTests */;
-		};
 		F28B5C912F7AAD4600D152FE /* Exceptions for "Leadify" folder in "Leadify" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -75,10 +44,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F23ED38C2F7FCFEC00769CFF /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				F23ED3A02F7FD05800769CFF /* Exceptions for "Tests" folder in "Leadify" target */,
-				F23ED3A12F7FD05800769CFF /* Exceptions for "Tests" folder in "LeadifyTests" target */,
-			);
 			path = Tests;
 			sourceTree = "<group>";
 		};
@@ -97,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F268984E2F97A5E3007E6B3B /* LeadifyCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +118,7 @@
 			);
 			name = Leadify;
 			packageProductDependencies = (
+				F268984D2F97A5E3007E6B3B /* LeadifyCore */,
 			);
 			productName = Leadify;
 			productReference = F2AB3D182F7811B50021186D /* Leadify.app */;
@@ -206,6 +173,7 @@
 			mainGroup = F2AB3D0F2F7811B50021186D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				F268984C2F97A5E3007E6B3B /* XCLocalSwiftPackageReference "LeadifyCore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F2AB3D192F7811B50021186D /* Products */;
@@ -522,6 +490,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		F268984C2F97A5E3007E6B3B /* XCLocalSwiftPackageReference "LeadifyCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = LeadifyCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F268984D2F97A5E3007E6B3B /* LeadifyCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LeadifyCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F2AB3D102F7811B50021186D /* Project object */;
 }

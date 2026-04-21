@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 struct TacetPerformanceBlock: View {
     let tacet: Tacet

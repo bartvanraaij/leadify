@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct SongLibrarySheet: View {
     @Environment(\.modelContext) private var context

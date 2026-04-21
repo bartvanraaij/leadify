@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct SetlistDetailView: View {
     @Bindable var setlist: Setlist

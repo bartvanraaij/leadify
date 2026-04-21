@@ -1,6 +1,6 @@
 import XCTest
 import SwiftData
-@testable import Leadify
+@testable import LeadifyCore
 
 @MainActor
 final class SongTests: XCTestCase {

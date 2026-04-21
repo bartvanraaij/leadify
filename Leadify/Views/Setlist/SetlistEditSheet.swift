@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct SetlistEditSheet: View {
     @Environment(\.modelContext) private var context

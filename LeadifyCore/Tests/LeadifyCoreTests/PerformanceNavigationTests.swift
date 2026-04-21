@@ -1,5 +1,5 @@
 import XCTest
-@testable import Leadify
+@testable import LeadifyCore
 
 // MARK: - ScreenNavigator
 
@@ -46,7 +46,7 @@ final class SongNavigatorTests: XCTestCase {
         )
         XCTAssertEqual(result.newActiveIndex, 0)
         XCTAssertNotNil(result.scrollTarget)
-        let expectedLastSnap = 800 - PerformanceTheme.dividerHeight - 600
+        let expectedLastSnap = 800 - 1.0 - 600
         XCTAssertEqual(result.scrollTarget!, expectedLastSnap, accuracy: 1)
     }
 
@@ -87,7 +87,7 @@ final class SongNavigatorTests: XCTestCase {
         )
         XCTAssertEqual(result.newActiveIndex, 2)
         XCTAssertNotNil(result.scrollTarget)
-        let expectedLastSnap = 800 - PerformanceTheme.dividerHeight - 600
+        let expectedLastSnap = 800 - 1.0 - 600
         XCTAssertEqual(result.scrollTarget!, expectedLastSnap, accuracy: 1)
     }
 

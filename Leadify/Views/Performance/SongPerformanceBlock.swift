@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 /// The inner content of a song in performance mode (title, reminder, divider, chords).
 /// Used by SongPerformanceBlock, MedleyPerformanceBlock, and song editor preview.

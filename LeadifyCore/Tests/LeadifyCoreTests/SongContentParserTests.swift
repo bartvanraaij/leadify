@@ -1,12 +1,12 @@
 import XCTest
-@testable import Leadify
+@testable import LeadifyCore
 
-final class SongContentRendererTests: XCTestCase {
+final class SongContentParserTests: XCTestCase {
 
     // MARK: - Chord line detection
 
     func test_simpleChordLine_parsedAsChordLine() {
-        let blocks = SongContentRenderer.parse("Am F C G")
+        let blocks = SongContentParser.parse("Am F C G")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine, got \(String(describing: blocks.first))")
         }
@@ -18,7 +18,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_chordLineWithDivider_parsedCorrectly() {
-        let blocks = SongContentRenderer.parse("Am F / C G")
+        let blocks = SongContentParser.parse("Am F / C G")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -31,7 +31,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_chordLineWithAnnotation_parsedCorrectly() {
-        let blocks = SongContentRenderer.parse("Bm G D A (x4, building)")
+        let blocks = SongContentParser.parse("Bm G D A (x4, building)")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -44,7 +44,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_chordLineWithDividerAndAnnotation() {
-        let blocks = SongContentRenderer.parse("Eb Bb / Cm Ab (x8)")
+        let blocks = SongContentParser.parse("Eb Bb / Cm Ab (x8)")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -60,7 +60,7 @@ final class SongContentRendererTests: XCTestCase {
     // MARK: - Chord varieties
 
     func test_sharpsAndFlats_detectedAsChords() {
-        let blocks = SongContentRenderer.parse("C#7 Bb F#m7 Eb")
+        let blocks = SongContentParser.parse("C#7 Bb F#m7 Eb")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -72,7 +72,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_longChords_detectedAsChords() {
-        let blocks = SongContentRenderer.parse("Bmaj7 Cmaj7#5 Gsus4 Asus4")
+        let blocks = SongContentParser.parse("Bmaj7 Cmaj7#5 Gsus4 Asus4")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -84,7 +84,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_slashChords_detectedAsChords() {
-        let blocks = SongContentRenderer.parse("Am/G D/F# BbM7/E")
+        let blocks = SongContentParser.parse("Am/G D/F# BbM7/E")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -95,7 +95,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_slashChordWithStandaloneDivider() {
-        let blocks = SongContentRenderer.parse("Am/G D/F# / Em C")
+        let blocks = SongContentParser.parse("Am/G D/F# / Em C")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -108,7 +108,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_augmentedAndDiminished_detectedAsChords() {
-        let blocks = SongContentRenderer.parse("Cdim7 Eaug Fdim")
+        let blocks = SongContentParser.parse("Cdim7 Eaug Fdim")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -119,7 +119,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_addChords_detectedAsChords() {
-        let blocks = SongContentRenderer.parse("Cadd9 Gadd11")
+        let blocks = SongContentParser.parse("Cadd9 Gadd11")
         guard case .chordLine(let tokens) = blocks.first else {
             return XCTFail("Expected .chordLine")
         }
@@ -132,7 +132,7 @@ final class SongContentRendererTests: XCTestCase {
 
     func test_englishWords_notDetectedAsChords() {
         for word in ["Dark night", "Bridge section", "End of song", "Great finale", "Feel the beat"] {
-            let blocks = SongContentRenderer.parse(word)
+            let blocks = SongContentParser.parse(word)
             guard case .plainText = blocks.first else {
                 return XCTFail("Expected .plainText for \"\(word)\", got \(String(describing: blocks.first))")
             }
@@ -140,7 +140,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_parenthesizedText_isPlainText() {
-        let blocks = SongContentRenderer.parse("(over Chorus chords x2)")
+        let blocks = SongContentParser.parse("(over Chorus chords x2)")
         guard case .plainText(let text) = blocks.first else {
             return XCTFail("Expected .plainText")
         }
@@ -148,7 +148,7 @@ final class SongContentRendererTests: XCTestCase {
     }
 
     func test_standaloneStageDirection_isPlainText() {
-        let blocks = SongContentRenderer.parse("(hold, fade)")
+        let blocks = SongContentParser.parse("(hold, fade)")
         guard case .plainText(let text) = blocks.first else {
             return XCTFail("Expected .plainText")
         }
@@ -158,14 +158,14 @@ final class SongContentRendererTests: XCTestCase {
     // MARK: - Edge cases
 
     func test_lineStartingWithSlash_isPlainText() {
-        let blocks = SongContentRenderer.parse("/ Am G")
+        let blocks = SongContentParser.parse("/ Am G")
         guard case .plainText = blocks.first else {
             return XCTFail("Expected .plainText for line starting with /")
         }
     }
 
     func test_emptyContent_parsesToEmptyBlocks() {
-        let blocks = SongContentRenderer.parse("")
+        let blocks = SongContentParser.parse("")
         XCTAssertTrue(blocks.isEmpty)
     }
 
@@ -179,7 +179,7 @@ final class SongContentRendererTests: XCTestCase {
         ## Chorus
         C G / Am F
         """
-        let blocks = SongContentRenderer.parse(input)
+        let blocks = SongContentParser.parse(input)
         XCTAssertEqual(blocks.count, 5)
 
         guard case .heading2(let h) = blocks[0] else { return XCTFail("Expected heading2") }
@@ -201,7 +201,7 @@ final class SongContentRendererTests: XCTestCase {
     // MARK: - Existing block types still work
 
     func test_headingsStillWork() {
-        let blocks = SongContentRenderer.parse("# Title\n## Section")
+        let blocks = SongContentParser.parse("# Title\n## Section")
         guard case .heading1(let h1) = blocks[0] else { return XCTFail("Expected heading1") }
         XCTAssertEqual(h1, "Title")
         guard case .heading2(let h2) = blocks[1] else { return XCTFail("Expected heading2") }
@@ -210,7 +210,7 @@ final class SongContentRendererTests: XCTestCase {
 
     func test_codeBlocksStillWork() {
         let input = "```\ne|---0---|\n```"
-        let blocks = SongContentRenderer.parse(input)
+        let blocks = SongContentParser.parse(input)
         guard case .codeBlock(let code, _) = blocks.first else { return XCTFail("Expected codeBlock") }
         XCTAssertEqual(code, "e|---0---|")
     }

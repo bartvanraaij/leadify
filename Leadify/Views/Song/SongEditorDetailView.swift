@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct SongEditorDetailView: View {
     let song: Song

@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import LeadifyCore
 
 /// All visual constants for Performance Mode.
 /// Modern, professional design optimized for stage performance.

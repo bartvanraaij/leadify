@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 /// A Section containing "Add Song" and "Add Tacet" rows.
 /// Drop this directly inside a `List` – it renders as its own section.

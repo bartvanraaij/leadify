@@ -2,49 +2,48 @@ import Foundation
 import SwiftData
 
 extension PersistentIdentifier {
-    /// Stable string representation suitable for use as an Identifiable id.
-    /// Unlike hashValue, this is consistent across app launches and unique per entry.
-    var stableHash: String {
+    public var stableHash: String {
         "\(self)"
     }
 }
 
-/// A lightweight value type representing one item in a performance.
-/// Used by PerformanceView to render and navigate without knowing about SetlistEntry or MedleyEntry.
-struct PerformanceItem: Identifiable {
-    let id: String
-    let title: String
-    let kind: Kind
-    /// Non-nil for song and medley items.
-    let song: Song?
-    /// Non-nil for tacet items.
-    let tacet: Tacet?
-    /// Non-nil for medley items (the full medley, rendered as a single block).
-    let medley: Medley?
-    /// Non-nil for the first song in a separated medley — carries the medley name for display.
-    let medleyTitle: String?
+public struct PerformanceItem: Identifiable {
+    public let id: String
+    public let title: String
+    public let kind: Kind
+    public let song: Song?
+    public let tacet: Tacet?
+    public let medley: Medley?
+    public let medleyTitle: String?
 
-    enum Kind {
+    public enum Kind {
         case song
         case tacet
         case medley
     }
 
-    /// Whether this item should be skipped during next/prev navigation.
-    var isSkippable: Bool { kind == .tacet }
+    public var isSkippable: Bool { kind == .tacet }
+
+    public init(id: String, title: String, kind: Kind, song: Song?, tacet: Tacet?, medley: Medley?, medleyTitle: String?) {
+        self.id = id
+        self.title = title
+        self.kind = kind
+        self.song = song
+        self.tacet = tacet
+        self.medley = medley
+        self.medleyTitle = medleyTitle
+    }
 }
 
-/// Anything that can be performed — provides a title and a list of performance items.
-/// Conformers: Setlist (songs, tacets, medleys) and Medley (individual songs).
-protocol Performable {
+public protocol Performable {
     var performanceTitle: String { get }
     var performanceItems: [PerformanceItem] { get }
 }
 
 extension Setlist: Performable {
-    var performanceTitle: String { name }
+    public var performanceTitle: String { name }
 
-    var performanceItems: [PerformanceItem] {
+    public var performanceItems: [PerformanceItem] {
         sortedEntries.flatMap { entry -> [PerformanceItem] in
             switch entry.itemType {
             case .song:
@@ -100,12 +99,16 @@ extension Setlist: Performable {
     }
 }
 
-/// Ad-hoc performable for playing all songs (e.g. from the song library).
-struct SongCollection: Performable {
-    let performanceTitle: String
-    let songs: [Song]
+public struct SongCollection: Performable {
+    public let performanceTitle: String
+    public let songs: [Song]
 
-    var performanceItems: [PerformanceItem] {
+    public init(performanceTitle: String, songs: [Song]) {
+        self.performanceTitle = performanceTitle
+        self.songs = songs
+    }
+
+    public var performanceItems: [PerformanceItem] {
         songs.map { song in
             PerformanceItem(
                 id: song.persistentModelID.stableHash,
@@ -121,9 +124,9 @@ struct SongCollection: Performable {
 }
 
 extension Medley: Performable {
-    var performanceTitle: String { name }
+    public var performanceTitle: String { name }
 
-    var performanceItems: [PerformanceItem] {
+    public var performanceItems: [PerformanceItem] {
         sortedEntries.map { entry in
             PerformanceItem(
                 id: entry.persistentModelID.stableHash,
