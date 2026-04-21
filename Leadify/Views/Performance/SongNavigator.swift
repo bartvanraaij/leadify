@@ -7,7 +7,6 @@ enum TapDirection {
 
 struct NavigationResult {
     let newActiveIndex: Int
-    /// If non-nil, scroll to this absolute Y offset. If nil, scroll to the new active entry's anchor.
     let scrollTarget: CGFloat?
 }
 
@@ -17,7 +16,7 @@ struct NavigationResult {
 /// `PerformanceScrollCalculator`). Phase 1 (scroll-within) is delegated to the
 /// calculator so tap steps match chevron steps exactly, including the
 /// `dividerHeight` trim on `frame.maxY` and sub-pixel tolerances.
-enum PerformanceNavigator {
+enum SongNavigator {
     static func handleTap(
         direction: TapDirection,
         activeIndex: Int,
@@ -56,7 +55,6 @@ enum PerformanceNavigator {
         viewportHeight: CGFloat,
         overlap: CGFloat
     ) -> NavigationResult {
-        // Phase 1: entry extends below viewport — scroll within, matching chevron snap.
         if PerformanceScrollCalculator.canScrollDown(
             activeEntryFrame: activeEntryFrame,
             scrollOffset: scrollOffset,
@@ -72,7 +70,6 @@ enum PerformanceNavigator {
             return NavigationResult(newActiveIndex: activeIndex, scrollTarget: target)
         }
 
-        // Phase 2: entry bottom visible — advance to next (if not last).
         if activeIndex < entryCount - 1 {
             return NavigationResult(newActiveIndex: activeIndex + 1, scrollTarget: nil)
         }
@@ -87,7 +84,6 @@ enum PerformanceNavigator {
         viewportHeight: CGFloat,
         overlap: CGFloat
     ) -> NavigationResult {
-        // Phase 1: entry extends above viewport — scroll within, matching chevron snap.
         if PerformanceScrollCalculator.canScrollUp(
             activeEntryFrame: activeEntryFrame,
             scrollOffset: scrollOffset,
@@ -103,7 +99,6 @@ enum PerformanceNavigator {
             return NavigationResult(newActiveIndex: activeIndex, scrollTarget: target)
         }
 
-        // Phase 2: entry top visible — go to previous (if not first).
         if activeIndex > 0 {
             return NavigationResult(newActiveIndex: activeIndex - 1, scrollTarget: nil)
         }

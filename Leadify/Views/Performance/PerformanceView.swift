@@ -25,8 +25,7 @@ struct PerformanceView: View {
     @State var safeAreaInsets: EdgeInsets = .init()
     @AppStorage(PerformanceNavigationMode.storageKey) private var storedNavMode: String = PerformanceNavigationMode.defaultMode.rawValue
     @State private var showToolbar: Bool = false
-    @State private var smartNextTargetIndex: Int? = nil
-    @State private var smartBackStack: [Int] = []
+    @State private var smartState = SmartNavigationState()
     @FocusState private var isFocused: Bool
 
     private var navMode: PerformanceNavigationMode {
@@ -114,7 +113,7 @@ struct PerformanceView: View {
                 activeIndex: activeIndex,
                 showsActiveHighlight: navMode != .screenNavigation,
                 onSelect: { index in
-                    smartBackStack = []
+                    smartState.backStack = []
                     navigateTo(index: index)
                     computeSmartNextTarget()
                 },
@@ -162,7 +161,7 @@ struct PerformanceView: View {
                             }
                     }
                     .animation(.easeInOut(duration: 0.2), value: activeIndex)
-                    .animation(.easeInOut(duration: 0.2), value: smartNextTargetIndex)
+                    .animation(.easeInOut(duration: 0.2), value: smartState.nextTargetIndex)
                         .accessibilityElement(children: .combine)
                         .accessibilityIdentifier("performance-entry-\(index)")
                         .accessibilityLabel(
@@ -211,7 +210,7 @@ struct PerformanceView: View {
             syncActiveIndexToViewportIfNeeded()
         }
         .onChange(of: storedNavMode) {
-            smartBackStack = []
+            smartState.backStack = []
             computeSmartNextTarget()
         }
     }
@@ -430,26 +429,27 @@ struct PerformanceView: View {
     }
 
     private func scrollViewportBy(direction: TapDirection) {
-        let step = viewportHeight
-        let delta = direction == .forward ? step : -step
-        let target = max(0, scrollOffset + delta)
+        let target = ScreenNavigator.handleTap(
+            direction: direction,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight
+        )
         withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
             scrollPosition.scrollTo(y: target)
         }
     }
 
-    // MARK: - Two-phase tap navigation (PerformanceNavigator)
+    // MARK: - Two-phase tap navigation (SongNavigator)
 
     private func handleNavigatorTap(_ direction: TapDirection) {
         guard let frame = entryFrames[activeIndex] else {
-            // Fall back to simple entry navigation if frame not yet measured.
             direction == .forward ? navigateToNext() : navigateToPrevious()
             return
         }
 
         let overlap = direction == .forward ? safeAreaInsets.top : safeAreaInsets.bottom
 
-        let result = PerformanceNavigator.handleTap(
+        let result = SongNavigator.handleTap(
             direction: direction,
             activeIndex: activeIndex,
             entryCount: items.count,
@@ -494,90 +494,77 @@ struct PerformanceView: View {
 
     private func computeSmartNextTarget() {
         guard navMode == .smartNavigation else {
-            smartNextTargetIndex = nil
+            smartState.nextTargetIndex = nil
             return
         }
-        guard let activeFrame = entryFrames[activeIndex] else {
-            smartNextTargetIndex = nil
-            return
-        }
-        let viewportBottom = activeFrame.minY + viewportHeight
-        var i = activeIndex + 1
-        while i < items.count {
-            if !items[i].isSkippable {
-                if let frame = entryFrames[i], frame.maxY > viewportBottom + 1 {
-                    smartNextTargetIndex = i
-                    return
-                }
-            }
-            i += 1
-        }
-        smartNextTargetIndex = nil
+        smartState.nextTargetIndex = SmartNavigator.computeNextTarget(
+            activeIndex: activeIndex,
+            entryFrames: entryFrames,
+            entryCount: items.count,
+            isSkippable: { items[$0].isSkippable },
+            viewportHeight: viewportHeight
+        )
     }
 
     private func handleSmartForward() {
         guard let frame = entryFrames[activeIndex] else { return }
-        let overlap = safeAreaInsets.top
 
-        if PerformanceScrollCalculator.canScrollDown(
+        let result = SmartNavigator.handleForward(
+            state: &smartState,
+            activeIndex: activeIndex,
             activeEntryFrame: frame,
             scrollOffset: scrollOffset,
             viewportHeight: viewportHeight,
-            overlap: overlap
-        ),
-            let snapTarget = PerformanceScrollCalculator.nextSnapDown(
-                activeEntryFrame: frame,
-                scrollOffset: scrollOffset,
-                viewportHeight: viewportHeight
-            )
-        {
-            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
-                scrollPosition.scrollTo(y: max(0, snapTarget))
-            }
-            return
-        }
+            overlap: safeAreaInsets.top
+        )
 
-        guard let target = smartNextTargetIndex else { return }
-        smartBackStack.append(activeIndex)
-        navigateTo(index: target)
-        computeSmartNextTarget()
+        switch result {
+        case .scrollWithin(let target):
+            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                scrollPosition.scrollTo(y: max(0, target))
+            }
+        case .jumpTo(let index):
+            navigateTo(index: index)
+            computeSmartNextTarget()
+        case .none:
+            break
+        }
     }
 
     private func handleSmartBack() {
         guard let frame = entryFrames[activeIndex] else { return }
-        let overlap = safeAreaInsets.bottom
 
-        if PerformanceScrollCalculator.canScrollUp(
+        let result = SmartNavigator.handleBack(
+            state: &smartState,
+            activeIndex: activeIndex,
             activeEntryFrame: frame,
             scrollOffset: scrollOffset,
             viewportHeight: viewportHeight,
-            overlap: overlap
-        ),
-            let snapTarget = PerformanceScrollCalculator.nextSnapUp(
-                activeEntryFrame: frame,
-                scrollOffset: scrollOffset,
-                viewportHeight: viewportHeight
-            )
-        {
-            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
-                scrollPosition.scrollTo(y: max(0, snapTarget))
-            }
-            return
-        }
+            overlap: safeAreaInsets.bottom,
+            previousNavigableIndex: previousNavigableIndex(before: activeIndex)
+        )
 
-        guard let previous = smartBackStack.popLast() ?? previousNavigableIndex(before: activeIndex) else { return }
-        activeIndex = previous
-        if let prevFrame = entryFrames[previous] {
-            let snaps = PerformanceScrollCalculator.inEntrySnaps(
-                for: prevFrame,
-                viewportHeight: viewportHeight
-            )
-            let target = snaps.last ?? prevFrame.minY
+        switch result {
+        case .scrollWithin(let target):
             withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
                 scrollPosition.scrollTo(y: max(0, target))
             }
+        case .jumpTo(let index):
+            activeIndex = index
+            if let prevFrame = entryFrames[index] {
+                let snaps = PerformanceScrollCalculator.inEntrySnaps(
+                    for: prevFrame,
+                    viewportHeight: viewportHeight
+                )
+                let target = snaps.last ?? prevFrame.minY
+                withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                    scrollPosition.scrollTo(y: max(0, target))
+                }
+            }
+            computeSmartNextTarget()
+        case .none:
+            break
         }
-        computeSmartNextTarget()
     }
 
     // MARK: - Toolbar
