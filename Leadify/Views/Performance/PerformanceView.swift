@@ -565,7 +565,7 @@ struct PerformanceView: View {
             return
         }
 
-        guard let previous = smartBackStack.popLast() else { return }
+        guard let previous = smartBackStack.popLast() ?? previousNavigableIndex(before: activeIndex) else { return }
         activeIndex = previous
         if let prevFrame = entryFrames[previous] {
             let snaps = PerformanceScrollCalculator.inEntrySnaps(
