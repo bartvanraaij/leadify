@@ -138,11 +138,19 @@ struct PerformanceView: View {
                     item in
                     itemView(item: item)
                         .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
-                        .opacity(opacityFor(index: index))
-                        .animation(
-                            .easeInOut(duration: PerformanceTheme.dimmingAnimationDuration),
-                            value: activeIndex
-                        )
+                        .overlay(alignment: .topLeading) {
+                            if index == activeIndex {
+                                Image(systemName: "triangle.fill")
+                                    .font(.system(size: PerformanceTheme.activeIndicatorSize))
+                                    .foregroundStyle(PerformanceTheme.activeIndicatorColor)
+                                    .rotationEffect(.degrees(90))
+                                    .offset(
+                                        x: PerformanceTheme.activeIndicatorLeadingOffset,
+                                        y: PerformanceTheme.activeIndicatorTopPadding
+                                    )
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.2), value: activeIndex)
                         .accessibilityElement(children: .combine)
                         .accessibilityIdentifier("performance-entry-\(index)")
                         .accessibilityLabel(
@@ -279,13 +287,7 @@ struct PerformanceView: View {
         }
     }
 
-    // MARK: - Dimming
-
-    private func opacityFor(index: Int) -> Double {
-        if navMode == .screenNavigation { return 1.0 }
-        if index == activeIndex { return 1.0 }
-        return PerformanceTheme.inactiveItemOpacity
-    }
+    // MARK: - Active indicator
 
     // MARK: - Entry navigation (left/right taps)
 

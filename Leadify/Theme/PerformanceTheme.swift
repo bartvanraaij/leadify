@@ -48,11 +48,13 @@ struct PerformanceTheme {
 
     // MARK: - Animation durations
     static let navigationAnimationDuration: Double = 0.25
-    static let dimmingAnimationDuration: Double = 0.3
     static let chevronFadeAnimationDuration: Double = 0.2
 
-    // MARK: - Dimming
-    static let inactiveItemOpacity: Double = 0.6
+    // MARK: - Active indicator
+    static let activeIndicatorSize: CGFloat = 12
+    static let activeIndicatorTopPadding: CGFloat = 44
+    static let activeIndicatorLeadingOffset: CGFloat = 12
+    static let activeIndicatorColor = Color.purple
 
     // MARK: - Scroll chevrons
     static let chevronEdgePadding: CGFloat = 24

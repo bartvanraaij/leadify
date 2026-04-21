@@ -42,7 +42,7 @@ struct PerformanceSetlistSidebar: View {
                             }
 
                             sidebarRow(index: index, item: item)
-                                .opacity(index == activeIndex ? 1.0 : 0.5)
+                                .opacity(1.0)
                                 .accessibilityIdentifier("sidebar-row-\(index)")
                                 .id(index)
                         }
