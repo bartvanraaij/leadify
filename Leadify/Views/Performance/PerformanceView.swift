@@ -136,21 +136,33 @@ struct PerformanceView: View {
                 ForEach(Array(items.enumerated()), id: \.element.id) {
                     index,
                     item in
-                    itemView(item: item)
-                        .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
-                        .overlay(alignment: .topLeading) {
-                            if index == activeIndex {
-                                Image(systemName: "triangle.fill")
-                                    .font(.system(size: PerformanceTheme.activeIndicatorSize))
-                                    .foregroundStyle(PerformanceTheme.activeIndicatorColor)
-                                    .rotationEffect(.degrees(90))
-                                    .offset(
-                                        x: PerformanceTheme.activeIndicatorLeadingOffset,
-                                        y: PerformanceTheme.activeIndicatorTopPadding
-                                    )
-                            }
+                    VStack(alignment: .leading, spacing: 0) {
+                        if let medleyTitle = item.medleyTitle {
+                            Text(medleyTitle)
+                                .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold, design: .rounded))
+                                .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
+                                .padding(.top, PerformanceTheme.itemInnerVerticalPadding)
+                                .padding(.bottom, PerformanceTheme.medleyTitleBottomPadding)
+                                .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
                         }
-                        .animation(.easeInOut(duration: 0.2), value: activeIndex)
+
+                        itemView(item: item)
+                            .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
+                            .overlay(alignment: .topLeading) {
+                                if index == activeIndex {
+                                    Image(systemName: "triangle.fill")
+                                        .font(.system(size: PerformanceTheme.activeIndicatorSize))
+                                        .foregroundStyle(PerformanceTheme.activeIndicatorColor)
+                                        .rotationEffect(.degrees(90))
+                                        .offset(
+                                            x: PerformanceTheme.activeIndicatorLeadingOffset,
+                                            y: PerformanceTheme.activeIndicatorTopPadding
+                                                + (item.kind == .medley ? -4 : 0)
+                                        )
+                                }
+                            }
+                    }
+                    .animation(.easeInOut(duration: 0.2), value: activeIndex)
                         .accessibilityElement(children: .combine)
                         .accessibilityIdentifier("performance-entry-\(index)")
                         .accessibilityLabel(
@@ -274,7 +286,7 @@ struct PerformanceView: View {
         switch item.kind {
         case .song:
             if let song = item.song {
-                SongPerformanceBlock(song: song, medleyTitle: item.medleyTitle)
+                SongPerformanceBlock(song: song)
             }
         case .tacet:
             if let tacet = item.tacet {
