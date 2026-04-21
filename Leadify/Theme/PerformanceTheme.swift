@@ -55,6 +55,7 @@ struct PerformanceTheme {
     static let activeIndicatorTopPadding: CGFloat = 44
     static let activeIndicatorLeadingOffset: CGFloat = 12
     static let activeIndicatorColor = Color.purple
+    static let nextIndicatorColor = Color.gray
 
     // MARK: - Scroll chevrons
     static let chevronEdgePadding: CGFloat = 24

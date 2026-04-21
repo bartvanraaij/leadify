@@ -25,6 +25,8 @@ struct PerformanceView: View {
     @State var safeAreaInsets: EdgeInsets = .init()
     @AppStorage(PerformanceNavigationMode.storageKey) private var storedNavMode: String = PerformanceNavigationMode.defaultMode.rawValue
     @State private var showToolbar: Bool = false
+    @State private var smartNextTargetIndex: Int? = nil
+    @State private var smartBackStack: [Int] = []
     @FocusState private var isFocused: Bool
 
     private var navMode: PerformanceNavigationMode {
@@ -110,7 +112,11 @@ struct PerformanceView: View {
                 title: source.performanceTitle,
                 items: items,
                 activeIndex: activeIndex,
-                onSelect: { index in navigateTo(index: index) },
+                onSelect: { index in
+                    smartBackStack = []
+                    navigateTo(index: index)
+                    computeSmartNextTarget()
+                },
                 onPrevious: { navigateToPrevious() },
                 onNext: { navigateToNext() }
             )
@@ -149,20 +155,13 @@ struct PerformanceView: View {
                         itemView(item: item)
                             .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
                             .overlay(alignment: .topLeading) {
-                                if index == activeIndex {
-                                    Image(systemName: "triangle.fill")
-                                        .font(.system(size: PerformanceTheme.activeIndicatorSize))
-                                        .foregroundStyle(PerformanceTheme.activeIndicatorColor)
-                                        .rotationEffect(.degrees(90))
-                                        .offset(
-                                            x: PerformanceTheme.activeIndicatorLeadingOffset,
-                                            y: PerformanceTheme.activeIndicatorTopPadding
-                                                + (item.kind == .medley ? -4 : 0)
-                                        )
+                                if index == activeIndex, navMode != .smartNavigation {
+                                    activeIndicator(item: item)
                                 }
                             }
                     }
                     .animation(.easeInOut(duration: 0.2), value: activeIndex)
+                    .animation(.easeInOut(duration: 0.2), value: smartNextTargetIndex)
                         .accessibilityElement(children: .combine)
                         .accessibilityIdentifier("performance-entry-\(index)")
                         .accessibilityLabel(
@@ -199,12 +198,19 @@ struct PerformanceView: View {
 
         //
         .scrollPosition($scrollPosition)
-        .onPreferenceChange(EntryFrameKey.self) { entryFrames = $0 }
+        .onPreferenceChange(EntryFrameKey.self) {
+            entryFrames = $0
+            computeSmartNextTarget()
+        }
         .onScrollGeometryChange(for: CGFloat.self, of: { $0.contentOffset.y }) {
             _,
             y in
             scrollOffset = y + safeAreaInsets.top
             syncActiveIndexToViewportIfNeeded()
+        }
+        .onChange(of: storedNavMode) {
+            smartBackStack = []
+            computeSmartNextTarget()
         }
     }
 
@@ -301,6 +307,32 @@ struct PerformanceView: View {
 
     // MARK: - Active indicator
 
+    @ViewBuilder
+    private func activeIndicator(item: PerformanceItem) -> some View {
+        Image(systemName: "triangle.fill")
+            .font(.system(size: PerformanceTheme.activeIndicatorSize))
+            .foregroundStyle(PerformanceTheme.activeIndicatorColor)
+            .rotationEffect(.degrees(90))
+            .offset(
+                x: PerformanceTheme.activeIndicatorLeadingOffset,
+                y: PerformanceTheme.activeIndicatorTopPadding
+                    + (item.kind == .medley ? -4 : 0)
+            )
+    }
+
+    @ViewBuilder
+    private func nextTargetIndicator(item: PerformanceItem) -> some View {
+        Image(systemName: "triangle.fill")
+            .font(.system(size: PerformanceTheme.activeIndicatorSize))
+            .foregroundStyle(PerformanceTheme.nextIndicatorColor)
+            .rotationEffect(.degrees(90))
+            .offset(
+                x: PerformanceTheme.activeIndicatorLeadingOffset,
+                y: PerformanceTheme.activeIndicatorTopPadding
+                    + (item.kind == .medley ? -4 : 0)
+            )
+    }
+
     // MARK: - Entry navigation (left/right taps)
 
     private func nextNavigableIndex(after index: Int) -> Int? {
@@ -380,16 +412,18 @@ struct PerformanceView: View {
     private func handleLeftTap() {
         switch navMode {
         case .screenNavigation: scrollViewportBy(direction: .backward)
-        case .songNavigation: navigateToPrevious()
-        case .smartNavigation: handleNavigatorTap(.backward)
+        case .chevronNavigation: navigateToPrevious()
+        case .songNavigation: handleNavigatorTap(.backward)
+        case .smartNavigation: handleSmartBack()
         }
     }
 
     private func handleRightTap() {
         switch navMode {
         case .screenNavigation: scrollViewportBy(direction: .forward)
-        case .songNavigation: navigateToNext()
-        case .smartNavigation: handleNavigatorTap(.forward)
+        case .chevronNavigation: navigateToNext()
+        case .songNavigation: handleNavigatorTap(.forward)
+        case .smartNavigation: handleSmartForward()
         }
     }
 
@@ -452,6 +486,96 @@ struct PerformanceView: View {
                 scrollPosition.scrollTo(y: max(0, target))
             }
         }
+    }
+
+    // MARK: - Smart navigation
+
+    private func computeSmartNextTarget() {
+        guard navMode == .smartNavigation else {
+            smartNextTargetIndex = nil
+            return
+        }
+        guard let activeFrame = entryFrames[activeIndex] else {
+            smartNextTargetIndex = nil
+            return
+        }
+        let viewportBottom = activeFrame.minY + viewportHeight
+        var i = activeIndex + 1
+        while i < items.count {
+            if !items[i].isSkippable {
+                if let frame = entryFrames[i], frame.maxY > viewportBottom + 1 {
+                    smartNextTargetIndex = i
+                    return
+                }
+            }
+            i += 1
+        }
+        smartNextTargetIndex = nil
+    }
+
+    private func handleSmartForward() {
+        guard let frame = entryFrames[activeIndex] else { return }
+        let overlap = safeAreaInsets.top
+
+        if PerformanceScrollCalculator.canScrollDown(
+            activeEntryFrame: frame,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight,
+            overlap: overlap
+        ),
+            let snapTarget = PerformanceScrollCalculator.nextSnapDown(
+                activeEntryFrame: frame,
+                scrollOffset: scrollOffset,
+                viewportHeight: viewportHeight
+            )
+        {
+            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                scrollPosition.scrollTo(y: max(0, snapTarget))
+            }
+            return
+        }
+
+        guard let target = smartNextTargetIndex else { return }
+        smartBackStack.append(activeIndex)
+        navigateTo(index: target)
+        computeSmartNextTarget()
+    }
+
+    private func handleSmartBack() {
+        guard let frame = entryFrames[activeIndex] else { return }
+        let overlap = safeAreaInsets.bottom
+
+        if PerformanceScrollCalculator.canScrollUp(
+            activeEntryFrame: frame,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight,
+            overlap: overlap
+        ),
+            let snapTarget = PerformanceScrollCalculator.nextSnapUp(
+                activeEntryFrame: frame,
+                scrollOffset: scrollOffset,
+                viewportHeight: viewportHeight
+            )
+        {
+            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                scrollPosition.scrollTo(y: max(0, snapTarget))
+            }
+            return
+        }
+
+        guard let previous = smartBackStack.popLast() else { return }
+        activeIndex = previous
+        if let prevFrame = entryFrames[previous] {
+            let snaps = PerformanceScrollCalculator.inEntrySnaps(
+                for: prevFrame,
+                viewportHeight: viewportHeight
+            )
+            let target = snaps.last ?? prevFrame.minY
+            withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+                scrollPosition.scrollTo(y: max(0, target))
+            }
+        }
+        computeSmartNextTarget()
     }
 
     // MARK: - Toolbar

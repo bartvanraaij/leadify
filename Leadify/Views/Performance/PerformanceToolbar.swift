@@ -30,7 +30,7 @@ struct PerformanceToolbar: View {
 
                 Menu {
                     Section("Navigation mode") {
-                    ForEach(PerformanceNavigationMode.allCases) { mode in
+                    ForEach(PerformanceNavigationMode.pickerCases) { mode in
                         Button {
                             storedMode = mode.rawValue
                         } label: {
