@@ -112,6 +112,7 @@ struct PerformanceView: View {
                 title: source.performanceTitle,
                 items: items,
                 activeIndex: activeIndex,
+                showsActiveHighlight: navMode != .screenNavigation,
                 onSelect: { index in
                     smartBackStack = []
                     navigateTo(index: index)
@@ -155,7 +156,7 @@ struct PerformanceView: View {
                         itemView(item: item)
                             .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
                             .overlay(alignment: .topLeading) {
-                                if index == activeIndex, navMode != .smartNavigation {
+                                if index == activeIndex, navMode != .smartNavigation, navMode != .screenNavigation {
                                     activeIndicator(item: item)
                                 }
                             }
@@ -206,6 +207,7 @@ struct PerformanceView: View {
             _,
             y in
             scrollOffset = y + safeAreaInsets.top
+            dismissToolbar()
             syncActiveIndexToViewportIfNeeded()
         }
         .onChange(of: storedNavMode) {
@@ -583,6 +585,13 @@ struct PerformanceView: View {
     private func toggleToolbar() {
         withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
             showToolbar.toggle()
+        }
+    }
+
+    private func dismissToolbar() {
+        guard showToolbar else { return }
+        withAnimation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration)) {
+            showToolbar = false
         }
     }
 

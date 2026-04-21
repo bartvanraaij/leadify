@@ -5,6 +5,7 @@ struct PerformanceSetlistSidebar: View {
     let title: String
     let items: [PerformanceItem]
     let activeIndex: Int
+    var showsActiveHighlight: Bool = true
     var onSelect: (Int) -> Void
     var onPrevious: () -> Void
     var onNext: () -> Void
@@ -74,7 +75,7 @@ struct PerformanceSetlistSidebar: View {
 
     @ViewBuilder
     private func sidebarRow(index: Int, item: PerformanceItem) -> some View {
-        let isActive = index == activeIndex
+        let isActive = showsActiveHighlight && index == activeIndex
 
         switch item.kind {
         case .tacet:
