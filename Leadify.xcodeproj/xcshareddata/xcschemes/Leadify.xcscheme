@@ -51,7 +51,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F22A42802F98C0A9008DEE37"
+               BlueprintIdentifier = "F22A59ED2F98C3D9008DEE37"
                BuildableName = "LeadifyCoreTests.xctest"
                BlueprintName = "LeadifyCoreTests"
                ReferencedContainer = "container:Leadify.xcodeproj">

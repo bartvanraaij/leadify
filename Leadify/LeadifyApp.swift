@@ -9,7 +9,23 @@ struct LeadifyApp: App {
 
     init() {
         do {
-            container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self)
+            #if DEBUG
+            let isSeededRun = ProcessInfo.processInfo.arguments.contains("--seeded")
+            #else
+            let isSeededRun = false
+            #endif
+            
+            let config = ModelConfiguration(isStoredInMemoryOnly: isSeededRun)
+    
+            container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self,
+                                           configurations: config
+            )
+            
+            if(isSeededRun) {
+                print("[Seeded Run] Using in-memory store and seeding test data.")
+                UITestSeeder.seed(in: container.mainContext)
+            }
+            
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -22,14 +38,6 @@ struct LeadifyApp: App {
                 .onOpenURL { url in
                     songImporter.importFile(url: url, context: container.mainContext)
                 }
-                #if DEBUG
-                .onAppear {
-                    if ProcessInfo.processInfo.arguments.contains("--uitesting") {
-                        UITestSeeder.seed(in: container.mainContext)
-
-                    }
-                }
-                #endif
         }
         .modelContainer(container)
     }
