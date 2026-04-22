@@ -108,22 +108,20 @@ struct PerformanceView: View {
                     }
                 }
         }
-        .inspector(isPresented: $showSidebar) {
-            PerformanceSetlistSidebar(
-                title: source.performanceTitle,
-                items: items,
-                activeIndex: activeIndex,
-                showsActiveHighlight: navMode != .screenNavigation,
-                onSelect: { index in
-                    smartState.backStack = []
-                    navigateTo(index: index)
-                    computeSmartNextTarget()
-                },
-                onPrevious: { navigateToPrevious() },
-                onNext: { navigateToNext() }
-            )
-            .inspectorColumnWidth(min: PerformanceTheme.inspectorColumnWidthMin, ideal: PerformanceTheme.inspectorColumnWidthIdeal, max: PerformanceTheme.inspectorColumnWidthMax)
-        }
+        .modifier(PerformanceSidebarPresentation(
+            isPresented: $showSidebar,
+            title: source.performanceTitle,
+            items: items,
+            activeIndex: activeIndex,
+            showsActiveHighlight: navMode != .screenNavigation,
+            onSelect: { index in
+                smartState.backStack = []
+                navigateTo(index: index)
+                computeSmartNextTarget()
+            },
+            onPrevious: { navigateToPrevious() },
+            onNext: { navigateToNext() }
+        ))
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -623,4 +621,61 @@ struct PerformanceView: View {
         }
     }
 
+}
+
+private struct PerformanceSidebarPresentation: ViewModifier {
+    @Binding var isPresented: Bool
+    let title: String
+    let items: [PerformanceItem]
+    let activeIndex: Int
+    let showsActiveHighlight: Bool
+    let onSelect: (Int) -> Void
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    func body(content: Content) -> some View {
+        if horizontalSizeClass == .compact {
+            content
+                .sheet(isPresented: $isPresented) {
+                    NavigationStack {
+                        PerformanceSetlistSidebar(
+                            title: title,
+                            items: items,
+                            activeIndex: activeIndex,
+                            showsActiveHighlight: showsActiveHighlight,
+                            onSelect: onSelect,
+                            onPrevious: onPrevious,
+                            onNext: onNext,
+                            showNavigationButtons: false,
+                            showTitle: false
+                        )
+                        .navigationTitle(title)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") { isPresented = false }
+                            }
+                        }
+                    }
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+                }
+        } else {
+            content
+                .inspector(isPresented: $isPresented) {
+                    PerformanceSetlistSidebar(
+                        title: title,
+                        items: items,
+                        activeIndex: activeIndex,
+                        showsActiveHighlight: showsActiveHighlight,
+                        onSelect: onSelect,
+                        onPrevious: onPrevious,
+                        onNext: onNext
+                    )
+                    .inspectorColumnWidth(min: PerformanceTheme.inspectorColumnWidthMin, ideal: PerformanceTheme.inspectorColumnWidthIdeal, max: PerformanceTheme.inspectorColumnWidthMax)
+                }
+        }
+    }
 }

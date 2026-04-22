@@ -10,22 +10,26 @@ struct PerformanceSetlistSidebar: View {
     var onSelect: (Int) -> Void
     var onPrevious: () -> Void
     var onNext: () -> Void
+    var showNavigationButtons: Bool = true
+    var showTitle: Bool = true
 
     var body: some View {
         ScrollViewReader { proxy in
             VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(PerformanceTheme.sidebarTextColor)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .padding(.horizontal, PerformanceTheme.sidebarTitleHorizontalPadding)
-                    .padding(.top, PerformanceTheme.sidebarSectionSpacing)
-                    .padding(.bottom, PerformanceTheme.sidebarSectionSpacing)
+                if showTitle {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(PerformanceTheme.sidebarTextColor)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .padding(.horizontal, PerformanceTheme.sidebarTitleHorizontalPadding)
+                        .padding(.top, PerformanceTheme.sidebarSectionSpacing)
+                        .padding(.bottom, PerformanceTheme.sidebarSectionSpacing)
 
-                Divider()
-                    .padding(.horizontal, PerformanceTheme.sidebarDividerHorizontalPadding)
-                    .padding(.bottom, PerformanceTheme.sidebarSmallSpacing)
+                    Divider()
+                        .padding(.horizontal, PerformanceTheme.sidebarDividerHorizontalPadding)
+                        .padding(.bottom, PerformanceTheme.sidebarSmallSpacing)
+                }
 
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: PerformanceTheme.sidebarTightSpacing) {
@@ -58,12 +62,14 @@ struct PerformanceSetlistSidebar: View {
                     }
                 }
 
-                Divider()
-                    .padding(.horizontal, PerformanceTheme.sidebarDividerHorizontalPadding)
+                if showNavigationButtons {
+                    Divider()
+                        .padding(.horizontal, PerformanceTheme.sidebarDividerHorizontalPadding)
 
-                navigationButtons
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, PerformanceTheme.sidebarSectionSpacing)
+                    navigationButtons
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, PerformanceTheme.sidebarSectionSpacing)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
