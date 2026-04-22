@@ -10,7 +10,6 @@
 		F28C94272F98C9B000F50668 /* LeadifyCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F22A42792F98C0A8008DEE37 /* LeadifyCore.framework */; };
 		F28C94282F98C9B000F50668 /* LeadifyCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F22A42792F98C0A8008DEE37 /* LeadifyCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F28C942A2F98CB0B00F50668 /* LeadifyCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F22A42792F98C0A8008DEE37 /* LeadifyCore.framework */; };
-		F28C942B2F98CB0B00F50668 /* LeadifyCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F22A42792F98C0A8008DEE37 /* LeadifyCore.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,17 +37,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				F28C94282F98C9B000F50668 /* LeadifyCore.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F28C942C2F98CB0B00F50668 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				F28C942B2F98CB0B00F50668 /* LeadifyCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -184,7 +172,6 @@
 				F22A59EA2F98C3D9008DEE37 /* Sources */,
 				F22A59EB2F98C3D9008DEE37 /* Frameworks */,
 				F22A59EC2F98C3D9008DEE37 /* Resources */,
-				F28C942C2F98CB0B00F50668 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
