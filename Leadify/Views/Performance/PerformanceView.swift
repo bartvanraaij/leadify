@@ -28,6 +28,7 @@ struct PerformanceView: View {
     @State private var showToolbar: Bool = false
     @State private var smartState = SmartNavigationState()
     @FocusState private var isFocused: Bool
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var navMode: PerformanceNavigationMode {
         PerformanceNavigationMode(rawValue: storedNavMode) ?? .defaultMode
@@ -145,16 +146,17 @@ struct PerformanceView: View {
                     item in
                     VStack(alignment: .leading, spacing: 0) {
                         if let medleyTitle = item.medleyTitle {
+                            let m = PerformanceTheme.metrics(for: horizontalSizeClass)
                             Text(medleyTitle)
-                                .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold, design: .rounded))
+                                .font(.system(size: m.medleyTitleSize, weight: .semibold, design: .rounded))
                                 .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
-                                .padding(.top, PerformanceTheme.itemInnerVerticalPadding)
+                                .padding(.top, m.itemInnerVerticalPadding)
                                 .padding(.bottom, PerformanceTheme.medleyTitleBottomPadding)
-                                .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
+                                .padding(.horizontal, m.itemHorizontalPadding)
                         }
 
                         itemView(item: item)
-                            .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
+                            .padding(.horizontal, PerformanceTheme.metrics(for: horizontalSizeClass).itemHorizontalPadding)
                             .overlay(alignment: .topLeading) {
                                 if index == activeIndex, navMode != .smartNavigation, navMode != .screenNavigation {
                                     activeIndicator(item: item)
