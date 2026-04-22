@@ -1,18 +1,24 @@
 import Foundation
 
-struct SongFileParser {
+public struct SongFileParser {
 
-    struct ParsedSong {
-        let title: String
-        let reminder: String?
-        let content: String
+    public struct ParsedSong {
+        public let title: String
+        public let reminder: String?
+        public let content: String
+
+        public init(title: String, reminder: String?, content: String) {
+            self.title = title
+            self.reminder = reminder
+            self.content = content
+        }
     }
 
-    enum ParseError: LocalizedError {
+    public enum ParseError: LocalizedError {
         case noFrontmatter
         case missingTitle
 
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .noFrontmatter: "File does not contain valid frontmatter (expected --- delimiters)."
             case .missingTitle: "Frontmatter is missing a 'title' field."
@@ -20,10 +26,9 @@ struct SongFileParser {
         }
     }
 
-    static func parse(_ text: String) throws -> ParsedSong {
+    public static func parse(_ text: String) throws -> ParsedSong {
         let lines = text.components(separatedBy: .newlines)
 
-        // Find the two --- delimiters
         var delimiterIndices: [Int] = []
         for (index, line) in lines.enumerated() {
             if line.trimmingCharacters(in: .whitespaces) == "---" {
@@ -36,7 +41,6 @@ struct SongFileParser {
             throw ParseError.noFrontmatter
         }
 
-        // Parse frontmatter key-value pairs
         let frontmatterLines = Array(lines[(delimiterIndices[0] + 1)..<delimiterIndices[1]])
         var fields: [String: String] = [:]
         for line in frontmatterLines {
@@ -52,7 +56,6 @@ struct SongFileParser {
             throw ParseError.missingTitle
         }
 
-        // Everything after the second delimiter is the body
         let bodyLines = Array(lines[(delimiterIndices[1] + 1)...])
         let content = bodyLines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
 

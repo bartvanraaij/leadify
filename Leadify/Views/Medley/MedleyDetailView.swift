@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct MedleyDetailView: View {
     @Bindable var medley: Medley

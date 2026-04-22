@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import LeadifyCore
 
 /// Attaches left/right/center tap gesture recognizers to the parent UIScrollView.
 /// By adding the gesture directly to the scroll view (instead of overlaying a UIView on top),

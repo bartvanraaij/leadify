@@ -1,23 +1,22 @@
 import CoreGraphics
 
-enum TapDirection {
+public enum TapDirection {
     case forward
     case backward
 }
 
-struct NavigationResult {
-    let newActiveIndex: Int
-    let scrollTarget: CGFloat?
+public struct NavigationResult {
+    public let newActiveIndex: Int
+    public let scrollTarget: CGFloat?
+
+    public init(newActiveIndex: Int, scrollTarget: CGFloat?) {
+        self.newActiveIndex = newActiveIndex
+        self.scrollTarget = scrollTarget
+    }
 }
 
-/// Pure-logic helper for the two-phase ForScore-style tap navigation.
-///
-/// Frames are in absolute scroll-content coordinates (same convention as
-/// `PerformanceScrollCalculator`). Phase 1 (scroll-within) is delegated to the
-/// calculator so tap steps match chevron steps exactly, including the
-/// `dividerHeight` trim on `frame.maxY` and sub-pixel tolerances.
-enum SongNavigator {
-    static func handleTap(
+public enum SongNavigator {
+    public static func handleTap(
         direction: TapDirection,
         activeIndex: Int,
         entryCount: Int,

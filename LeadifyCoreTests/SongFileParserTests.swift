@@ -1,5 +1,5 @@
 import XCTest
-@testable import Leadify
+@testable import LeadifyCore
 
 final class SongFileParserTests: XCTestCase {
 

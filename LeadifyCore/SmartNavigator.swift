@@ -1,12 +1,14 @@
 import CoreGraphics
 
-struct SmartNavigationState {
-    var backStack: [Int] = []
-    var nextTargetIndex: Int? = nil
+public struct SmartNavigationState {
+    public var backStack: [Int] = []
+    public var nextTargetIndex: Int? = nil
+
+    public init() {}
 }
 
-enum SmartNavigator {
-    static func computeNextTarget(
+public enum SmartNavigator {
+    public static func computeNextTarget(
         activeIndex: Int,
         entryFrames: [Int: CGRect],
         entryCount: Int,
@@ -27,7 +29,7 @@ enum SmartNavigator {
         return nil
     }
 
-    static func handleForward(
+    public static func handleForward(
         state: inout SmartNavigationState,
         activeIndex: Int,
         activeEntryFrame: CGRect,
@@ -55,7 +57,7 @@ enum SmartNavigator {
         return .jumpTo(index: target)
     }
 
-    static func handleBack(
+    public static func handleBack(
         state: inout SmartNavigationState,
         activeIndex: Int,
         activeEntryFrame: CGRect,
@@ -86,13 +88,13 @@ enum SmartNavigator {
     }
 }
 
-enum SmartForwardResult: Equatable {
+public enum SmartForwardResult: Equatable {
     case scrollWithin(target: CGFloat)
     case jumpTo(index: Int)
     case none
 }
 
-enum SmartBackResult: Equatable {
+public enum SmartBackResult: Equatable {
     case scrollWithin(target: CGFloat)
     case jumpTo(index: Int)
     case none

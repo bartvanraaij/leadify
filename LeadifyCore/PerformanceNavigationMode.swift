@@ -1,21 +1,21 @@
 import Foundation
 
-enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
+public enum PerformanceNavigationMode: String, CaseIterable, Identifiable, Sendable {
     case screenNavigation
     case chevronNavigation
     case songNavigation
     case smartNavigation
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    static let storageKey = "performanceNavigationMode"
-    static let defaultMode: PerformanceNavigationMode = .smartNavigation
+    public static let storageKey = "performanceNavigationMode"
+    public static let defaultMode: PerformanceNavigationMode = .smartNavigation
 
-    static var pickerCases: [PerformanceNavigationMode] {
+    public static var pickerCases: [PerformanceNavigationMode] {
         [.screenNavigation, .songNavigation, .smartNavigation]
     }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .screenNavigation: "Screen"
         case .chevronNavigation: "Chevron"
@@ -24,7 +24,7 @@ enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var explanation: String {
+    public var explanation: String {
         switch self {
         case .screenNavigation:
             "Left tap scrolls up one screen, right tap scrolls down one screen."
@@ -37,7 +37,7 @@ enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var showsChevrons: Bool {
+    public var showsChevrons: Bool {
         self == .chevronNavigation
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 struct SongSetlistRow: View {
     let entry: SetlistEntry

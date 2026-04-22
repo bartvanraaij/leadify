@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 /// Preference key to collect entry frames in the scroll content's own coordinate space.
 /// Frames are stable absolute content positions — they do not change as the user scrolls.

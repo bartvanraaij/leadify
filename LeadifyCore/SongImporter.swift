@@ -1,7 +1,8 @@
-import SwiftUI
+import Foundation
+import Observation
 import SwiftData
 
-enum ConflictResolution {
+public enum ConflictResolution {
     case overwrite
     case skip
     case keepBoth
@@ -10,20 +11,18 @@ enum ConflictResolution {
 }
 
 @Observable
-class SongImporter {
-    var showConflictDialog = false
-    var showErrorAlert = false
-    var errorMessage = ""
-    var showImportSummary = false
-    var importSummaryMessage = ""
+public class SongImporter {
+    public var showConflictDialog = false
+    public var showErrorAlert = false
+    public var errorMessage = ""
+    public var showImportSummary = false
+    public var importSummaryMessage = ""
 
-    // Stored during conflict so resolveConflict can act on them
-    private(set) var conflictParsedSong: SongFileParser.ParsedSong?
-    private(set) var conflictExistingSong: Song?
+    public private(set) var conflictParsedSong: SongFileParser.ParsedSong?
+    public private(set) var conflictExistingSong: Song?
 
-    var hasRemainingConflicts: Bool { !pendingConflicts.isEmpty }
+    public var hasRemainingConflicts: Bool { !pendingConflicts.isEmpty }
 
-    // Queue for batch imports
     private var pendingConflicts: [(parsed: SongFileParser.ParsedSong, existing: Song)] = []
     private var importedCount = 0
     private var skippedCount = 0
@@ -31,8 +30,9 @@ class SongImporter {
     private var failedCount = 0
     private var isBatchImport = false
 
-    /// Import a markdown file from a URL. Handles security-scoped access.
-    func importFile(url: URL, context: ModelContext) {
+    public init() {}
+
+    public func importFile(url: URL, context: ModelContext) {
         let didStartAccessing = url.startAccessingSecurityScopedResource()
         defer {
             if didStartAccessing { url.stopAccessingSecurityScopedResource() }
@@ -48,8 +48,7 @@ class SongImporter {
         }
     }
 
-    /// Import multiple markdown files from URLs.
-    func importFiles(urls: [URL], context: ModelContext) {
+    public func importFiles(urls: [URL], context: ModelContext) {
         guard !urls.isEmpty else { return }
 
         if urls.count == 1 {
@@ -94,8 +93,7 @@ class SongImporter {
         }
     }
 
-    /// Import a parsed song, checking for duplicates.
-    func importParsedSong(_ parsed: SongFileParser.ParsedSong, context: ModelContext) {
+    public func importParsedSong(_ parsed: SongFileParser.ParsedSong, context: ModelContext) {
         let existingSong = findExistingSong(title: parsed.title, context: context)
 
         if let existingSong {
@@ -108,8 +106,7 @@ class SongImporter {
         }
     }
 
-    /// Resolve a duplicate conflict.
-    func resolveConflict(_ resolution: ConflictResolution, context: ModelContext) {
+    public func resolveConflict(_ resolution: ConflictResolution, context: ModelContext) {
         guard let parsed = conflictParsedSong else { return }
 
         switch resolution {

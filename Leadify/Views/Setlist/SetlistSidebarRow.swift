@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 struct SetlistSidebarRow: View {
     let setlist: Setlist

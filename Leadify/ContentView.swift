@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import LeadifyCore
 
 enum SidebarItem: String, CaseIterable, Identifiable {
     case setlists

@@ -1,5 +1,6 @@
 #if DEBUG
 import SwiftData
+import LeadifyCore
 
 /// Seeds deterministic test data when the app is launched with --uitesting.
 /// All song names are fictional. Content uses chord-chart format (sections + chords, no lyrics).

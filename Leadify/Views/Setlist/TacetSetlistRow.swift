@@ -1,4 +1,5 @@
 import SwiftUI
+import LeadifyCore
 
 struct TacetSetlistRow: View {
     let entry: SetlistEntry
