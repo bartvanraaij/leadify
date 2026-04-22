@@ -33,7 +33,7 @@ xcodebuild test -scheme LeadifyCoreTests -destination 'platform=macOS'
 xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify 2>/dev/null
 xcrun simctl install B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 \
   ~/Library/Developer/Xcode/DerivedData/Leadify-dcfskxmsfskcybdoxvrgstsbknvm/Build/Products/Debug-iphonesimulator/Leadify.app
-xcrun simctl launch B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify --uitesting
+xcrun simctl launch B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify --seeded
 
 # Run on physical iPad (release build)
 xcodebuild build -scheme "Leadify (Release)" -destination 'platform=iOS,name=iPad (2)'
@@ -44,8 +44,9 @@ xcrun devicectl device process launch --terminate-existing --device 'iPad (2)' d
 
 Bundle ID is `dev.bartvanraaij.leadify`.
 
-The simulator ID `B05E0EF4-...` is "iPad (A16)" running iOS 26.3. If it disappears, find a replacement with `xcrun simctl list devices available | grep iPad`.
-The physical iPad is named "iPad (2)". After changes, deploy to **both** simulator (with `--uitesting` for seeded data) and physical iPad (release build) before asking for feedback.
+The iPad simulator ID `B05E0EF4-...` is "iPad (A16)" running iOS 26.3. If it disappears, find a replacement with `xcrun simctl list devices available | grep iPad`.
+The iPhone simulator ID `DC9A3E5F-...` is for testing compact layout. Find a replacement with `xcrun simctl list devices available | grep iPhone`.
+The physical iPad is named "iPad (2)". After changes, deploy to **both** simulators (with `--seeded` for seeded data) and physical iPad (release build) before asking for feedback.
 
 ## Adding new Swift files
 

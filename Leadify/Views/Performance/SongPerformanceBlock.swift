@@ -10,6 +10,8 @@ struct SongPerformanceContent: View {
     var titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
     var titleBottomPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     init(song: Song, titleTopPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding, titleBottomPadding: CGFloat = PerformanceTheme.itemInnerVerticalPadding) {
         self.title = song.title
         self.reminder = song.reminder
@@ -26,6 +28,35 @@ struct SongPerformanceContent: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            titleAndReminder
+                .padding(.top, titleTopPadding)
+                .padding(.bottom, titleBottomPadding)
+
+            SongContentRenderer(content: content)
+        }
+    }
+
+    @ViewBuilder
+    private var titleAndReminder: some View {
+        if horizontalSizeClass == .compact {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(
+                        .system(
+                            size: PerformanceTheme.songTitleSize,
+                            weight: .bold,
+                            design: .rounded
+                        )
+                    )
+                    .foregroundStyle(PerformanceTheme.songTitleColor)
+
+                if let reminder, !reminder.isEmpty {
+                    Text(reminder)
+                        .font(.system(size: PerformanceTheme.reminderFontSize, weight: .semibold))
+                        .foregroundStyle(Color.accentColor)
+                }
+            }
+        } else {
             HStack(alignment: .firstTextBaseline, spacing: PerformanceTheme.titleReminderSpacing) {
                 Text(title)
                     .font(
@@ -43,10 +74,6 @@ struct SongPerformanceContent: View {
                         .foregroundStyle(Color.accentColor)
                 }
             }
-            .padding(.top, titleTopPadding)
-            .padding(.bottom, titleBottomPadding)
-
-            SongContentRenderer(content: content)
         }
     }
 }
