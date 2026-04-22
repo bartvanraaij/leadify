@@ -142,6 +142,8 @@ struct SongContentRenderer: View {
             }
             .padding(.bottom, PerformanceTheme.codeBlockVerticalPadding)
             .padding(.leading, PerformanceTheme.contentIndent)
+        @unknown default:
+            EmptyView()
         }
     }
 
@@ -191,6 +193,8 @@ struct SongContentRenderer: View {
                             .top,
                             PerformanceTheme.annotationBaselineOffset
                         )
+                @unknown default:
+                    EmptyView()
                 }
             }
         }

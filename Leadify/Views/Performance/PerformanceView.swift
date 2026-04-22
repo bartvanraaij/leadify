@@ -304,6 +304,8 @@ struct PerformanceView: View {
             if let medley = item.medley {
                 MedleyPerformanceBlock(medley: medley)
             }
+        @unknown default:
+            EmptyView()
         }
     }
 
@@ -417,6 +419,7 @@ struct PerformanceView: View {
         case .chevronNavigation: navigateToPrevious()
         case .songNavigation: handleNavigatorTap(.backward)
         case .smartNavigation: handleSmartBack()
+        @unknown default: break
         }
     }
 
@@ -426,6 +429,7 @@ struct PerformanceView: View {
         case .chevronNavigation: navigateToNext()
         case .songNavigation: handleNavigatorTap(.forward)
         case .smartNavigation: handleSmartForward()
+        @unknown default: break
         }
     }
 
@@ -529,6 +533,8 @@ struct PerformanceView: View {
             computeSmartNextTarget()
         case .none:
             break
+        @unknown default:
+            break
         }
     }
 
@@ -564,6 +570,8 @@ struct PerformanceView: View {
             }
             computeSmartNextTarget()
         case .none:
+            break
+        @unknown default:
             break
         }
     }

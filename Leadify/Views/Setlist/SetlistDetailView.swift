@@ -73,7 +73,9 @@ struct SetlistDetailView: View {
             case .tacet:
                 TacetEditSheet(entry: entry, setlist: setlist)
             case .medley:
-                EmptyView() // Medley entries are not individually editable from setlist
+                EmptyView()
+            @unknown default:
+                EmptyView()
             }
         }
         .fullScreenCover(isPresented: $showPerformance) {
@@ -147,6 +149,8 @@ struct SetlistDetailView: View {
                 MedleySetlistGroup(entry: entry) { song in
                     editingSongFromMedley = song
                 }
+            @unknown default:
+                EmptyView()
             }
         }
     }

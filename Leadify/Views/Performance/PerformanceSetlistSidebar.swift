@@ -162,6 +162,8 @@ struct PerformanceSetlistSidebar: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+        @unknown default:
+            EmptyView()
         }
     }
 
