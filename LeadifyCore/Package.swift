@@ -10,12 +10,12 @@ let package = Package(
     targets: [
         .target(
             name: "LeadifyCore",
-            swiftSettings: [.swiftLanguageMode(.v5)]
+            swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(
             name: "LeadifyCoreTests",
             dependencies: ["LeadifyCore"],
-            swiftSettings: [.swiftLanguageMode(.v5)]
+            swiftSettings: [.swiftLanguageMode(.v6)]
         ),
     ]
 )

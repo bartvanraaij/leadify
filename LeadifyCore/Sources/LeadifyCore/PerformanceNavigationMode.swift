@@ -1,6 +1,6 @@
 import Foundation
 
-public enum PerformanceNavigationMode: String, CaseIterable, Identifiable {
+public enum PerformanceNavigationMode: String, CaseIterable, Identifiable, Sendable {
     case screenNavigation
     case chevronNavigation
     case songNavigation
