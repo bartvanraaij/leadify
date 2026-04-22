@@ -3,9 +3,8 @@
 ## Project layout
 
 ```
-LeadifyCore/                     Local Swift package (pure logic, no SwiftUI)
-├── Sources/LeadifyCore/         Models, navigators, parsers, calculators
-└── Tests/LeadifyCoreTests/      Unit tests (run on macOS via swift test)
+LeadifyCore/             Framework target — models, navigators, parsers, calculators (no SwiftUI)
+LeadifyCoreTests/        Unit tests for LeadifyCore (runs on macOS natively)
 Leadify/
 ├── Theme/               PerformanceTheme, EditTheme
 ├── Views/
@@ -28,7 +27,7 @@ xcodebuild build -project Leadify.xcodeproj -scheme Leadify \
   -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
 
 # Run all unit tests (on macOS, no simulator needed)
-cd LeadifyCore && swift test
+xcodebuild test -scheme LeadifyCoreTests -destination 'platform=macOS'
 
 # Run on simulator with seeded data (must terminate → install → launch; launch alone uses stale binary)
 xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify 2>/dev/null
@@ -50,18 +49,18 @@ The physical iPad is named "iPad (2)". After changes, deploy to **both** simulat
 
 ## Adding new Swift files
 
-New `.swift` files created in `Leadify/` are automatically included in the Xcode build target. New files in `LeadifyCore/Sources/LeadifyCore/` are automatically included in the Swift package. No manual "Add Files" step is needed — just build directly after creating files.
+New `.swift` files created in `Leadify/`, `LeadifyCore/`, or `LeadifyCoreTests/` are automatically included in their respective Xcode targets. No manual "Add Files" step is needed — just build directly after creating files.
 
-## LeadifyCore package
+## LeadifyCore framework
 
-All data models, navigators, parsers, and calculators live in the `LeadifyCore` local Swift package. This package has no SwiftUI/UIKit dependencies, so tests run on macOS via `swift test` (~0.1s) without a simulator.
+All data models, navigators, parsers, and calculators live in the `LeadifyCore` framework target. This framework has no SwiftUI/UIKit dependencies and supports both iOS and native macOS destinations, so tests run on macOS without a simulator.
 
 **Rules:**
-- New model or pure-logic files go in `LeadifyCore/Sources/LeadifyCore/` — not in `Leadify/`
-- Types in the package must be marked `public` for the app to use them
-- New tests go in `LeadifyCore/Tests/LeadifyCoreTests/` with `@testable import LeadifyCore`
-- View files in the app need `import LeadifyCore` to access package types
-- `SongContentParser` (Foundation, in package) handles parsing; `SongContentRenderer` (SwiftUI, in app) handles rendering
+- New model or pure-logic files go in `LeadifyCore/` — not in `Leadify/`
+- Types in the framework must be marked `public` for the app to use them
+- New tests go in `LeadifyCoreTests/` with `@testable import LeadifyCore`
+- View files in the app need `import LeadifyCore` to access framework types
+- `SongContentParser` (Foundation, in LeadifyCore) handles parsing; `SongContentRenderer` (SwiftUI, in Leadify) handles rendering
 - `PerformanceScrollCalculator` takes `dividerHeight` as a parameter (default `1`) instead of reading `PerformanceTheme` directly
 
 ## SwiftData enum properties
@@ -141,7 +140,7 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - Settings sheet removed — nav mode accessible from performance toolbar only ✅
 - Font size / layout tuning on real hardware ✅
 - UI tests removed — visual validation done on device, behavior covered by unit tests ✅
-- LeadifyCore package: models, navigators, parsers extracted into local Swift package; 95 tests run on macOS via `swift test` without simulator ✅
+- LeadifyCore framework: models, navigators, parsers extracted into framework target; 95 tests run on macOS natively without simulator ✅
 - GitHub Actions CI: runs `swift test` on PRs and pushes to main ✅
 - Tests: all passing ✅
 

@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "DACB0D62-13F2-40F4-950D-4CEF772A85B1",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Leadify.xcodeproj",
+        "identifier" : "F22A59ED2F98C3D9008DEE37",
+        "name" : "LeadifyCoreTests"
+      }
+    }
+  ],
+  "version" : 1
+}
