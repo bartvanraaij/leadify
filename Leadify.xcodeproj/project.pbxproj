@@ -7,10 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F20AD2AA2F86CF84000A38C0 /* Leadify.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */; };
 		F268984E2F97A5E3007E6B3B /* LeadifyCore in Frameworks */ = {isa = PBXBuildFile; productRef = F268984D2F97A5E3007E6B3B /* LeadifyCore */; };
-		F2AB3DE92F7972BC0021186D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE82F7972BC0021186D /* README.md */; };
-		F2AB3DEA2F7972BC0021186D /* CLAUDE.md in Resources */ = {isa = PBXBuildFile; fileRef = F2AB3DE72F7972BC0021186D /* CLAUDE.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,11 +21,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Leadify.xctestplan; sourceTree = "<group>"; };
+		F234BE972F98A98E00F66FD4 /* LeadifyCore.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; name = LeadifyCore.xctestplan; path = LeadifyCore/LeadifyCore.xctestplan; sourceTree = "<group>"; };
 		F2AB3D182F7811B50021186D /* Leadify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Leadify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2AB3D2C2F78122A0021186D /* LeadifyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeadifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F2AB3DE72F7972BC0021186D /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
-		F2AB3DE82F7972BC0021186D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -42,11 +37,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F23ED38C2F7FCFEC00769CFF /* Tests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Tests;
-			sourceTree = "<group>";
-		};
 		F2AB3D1A2F7811B50021186D /* Leadify */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -79,11 +69,8 @@
 		F2AB3D0F2F7811B50021186D = {
 			isa = PBXGroup;
 			children = (
-				F20AD2A82F86CF84000A38C0 /* Leadify.xctestplan */,
+				F234BE972F98A98E00F66FD4 /* LeadifyCore.xctestplan */,
 				F2AB3D1A2F7811B50021186D /* Leadify */,
-				F23ED38C2F7FCFEC00769CFF /* Tests */,
-				F2AB3DE72F7972BC0021186D /* CLAUDE.md */,
-				F2AB3DE82F7972BC0021186D /* README.md */,
 				F2AB3D192F7811B50021186D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,7 +100,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F23ED38C2F7FCFEC00769CFF /* Tests */,
 				F2AB3D1A2F7811B50021186D /* Leadify */,
 			);
 			name = Leadify;
@@ -159,7 +145,6 @@
 					};
 					F2AB3D2B2F78122A0021186D = {
 						CreatedOnToolsVersion = 26.2;
-						TestTargetID = F2AB3D172F7811B50021186D;
 					};
 				};
 			};
@@ -191,8 +176,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2AB3DE92F7972BC0021186D /* README.md in Resources */,
-				F2AB3DEA2F7972BC0021186D /* CLAUDE.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +183,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F20AD2AA2F86CF84000A38C0 /* Leadify.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,42 +402,48 @@
 		F2AB3D332F78122A0021186D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = A93BR4R72A;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.bartvanraaij.leadify.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Leadify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Leadify";
 			};
 			name = Debug;
 		};
 		F2AB3D342F78122A0021186D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = A93BR4R72A;
 				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.bartvanraaij.leadify.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Leadify.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Leadify";
 			};
 			name = Release;
 		};
