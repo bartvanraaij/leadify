@@ -3,16 +3,17 @@
 ## Project layout
 
 ```
+LeadifyCore/                     Local Swift package (pure logic, no SwiftUI)
+├── Sources/LeadifyCore/         Models, navigators, parsers, calculators
+└── Tests/LeadifyCoreTests/      Unit tests (run on macOS via swift test)
 Leadify/
-├── Models/              Data models, protocols (Performable), importers
 ├── Theme/               PerformanceTheme, EditTheme
 ├── Views/
 │   ├── Song/            Song editing, preview, library
 │   ├── Tacet/           Tacet editing
 │   ├── Setlist/         Setlist editing, sidebar, rows
 │   ├── Medley/          Medley editing, sidebar, rows
-│   └── Performance/     Performance mode UI, navigation, toolbar
-Tests/UnitTests/         Unit tests
+│   └── Performance/     Performance mode UI, rendering, toolbar
 docs/superpowers/        Design specs and implementation plans
 ```
 
@@ -23,13 +24,11 @@ docs/superpowers/        Design specs and implementation plans
 xcrun simctl list devices available | grep -i ipad
 
 # Build (use a 26.x simulator)
-xcodebuild build -scheme Leadify \
+xcodebuild build -project Leadify.xcodeproj -scheme Leadify \
   -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5'
 
-# Run all unit tests
-xcodebuild test -scheme Leadify \
-  -destination 'platform=iOS Simulator,id=B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5' \
-  -only-testing:LeadifyTests
+# Run all unit tests (on macOS, no simulator needed)
+cd LeadifyCore && swift test
 
 # Run on simulator with seeded data (must terminate → install → launch; launch alone uses stale binary)
 xcrun simctl terminate B05E0EF4-11D8-4C5A-AD11-FCA80684DEC5 dev.bartvanraaij.leadify 2>/dev/null
@@ -51,7 +50,19 @@ The physical iPad is named "iPad (2)". After changes, deploy to **both** simulat
 
 ## Adding new Swift files
 
-New `.swift` files created in the project directory are automatically included in the Xcode build target. No manual "Add Files" step is needed — just build directly after creating files.
+New `.swift` files created in `Leadify/` are automatically included in the Xcode build target. New files in `LeadifyCore/Sources/LeadifyCore/` are automatically included in the Swift package. No manual "Add Files" step is needed — just build directly after creating files.
+
+## LeadifyCore package
+
+All data models, navigators, parsers, and calculators live in the `LeadifyCore` local Swift package. This package has no SwiftUI/UIKit dependencies, so tests run on macOS via `swift test` (~0.1s) without a simulator.
+
+**Rules:**
+- New model or pure-logic files go in `LeadifyCore/Sources/LeadifyCore/` — not in `Leadify/`
+- Types in the package must be marked `public` for the app to use them
+- New tests go in `LeadifyCore/Tests/LeadifyCoreTests/` with `@testable import LeadifyCore`
+- View files in the app need `import LeadifyCore` to access package types
+- `SongContentParser` (Foundation, in package) handles parsing; `SongContentRenderer` (SwiftUI, in app) handles rendering
+- `PerformanceScrollCalculator` takes `dividerHeight` as a parameter (default `1`) instead of reading `PerformanceTheme` directly
 
 ## SwiftData enum properties
 
@@ -108,7 +119,7 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - `PerformanceItem` — lightweight value struct with `kind` (.song/.tacet/.medley), `title`, `medleyTitle` (for first song in a separated medley), and optional model refs. `isSkippable` returns true for tacets (skipped during next/prev navigation).
 - `ModelContainer` is initialised without `.none` to keep the CloudKit migration path open.
 
-## Current status (as of 2026-04-19)
+## Current status (as of 2026-04-22)
 
 ### Done
 - Plan 1: All data models, themes, setlist editing/ordering UI, unit tests ✅
@@ -130,6 +141,8 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 - Settings sheet removed — nav mode accessible from performance toolbar only ✅
 - Font size / layout tuning on real hardware ✅
 - UI tests removed — visual validation done on device, behavior covered by unit tests ✅
+- LeadifyCore package: models, navigators, parsers extracted into local Swift package; 95 tests run on macOS via `swift test` without simulator ✅
+- GitHub Actions CI: runs `swift test` on PRs and pushes to main ✅
 - Tests: all passing ✅
 
 ### Known UI issues / next refinements
