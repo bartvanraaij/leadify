@@ -195,7 +195,7 @@ struct SongContentRenderer: View {
                         .padding(.leading, PerformanceTheme.annotationLeadingPadding)
                         .padding(
                             .top,
-                            PerformanceTheme.annotationBaselineOffset
+                            m.annotationBaselineOffset
                         )
                 @unknown default:
                     EmptyView()

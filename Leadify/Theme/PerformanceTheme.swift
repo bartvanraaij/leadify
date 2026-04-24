@@ -28,6 +28,12 @@ struct PerformanceTheme {
 
         var chordRowHeight: CGFloat { chordTextSize * chordLineSpacing }
 
+        var annotationBaselineOffset: CGFloat {
+            let chordFont = UIFont.systemFont(ofSize: chordTextSize, weight: .semibold)
+            let annotationFont = UIFont(name: "Menlo-Bold", size: annotationSize) ?? UIFont.systemFont(ofSize: annotationSize)
+            return chordFont.ascender - annotationFont.ascender
+        }
+
         static let regular = Metrics(
             songTitleSize: 32,
             sectionHeaderSize: 22,
@@ -75,11 +81,6 @@ struct PerformanceTheme {
     static let chordMinimumScaleFactor: CGFloat = 0.5
     static let annotationLeadingPadding: CGFloat = 8
 
-    static let annotationBaselineOffset: CGFloat = {
-        let chordFont = UIFont.systemFont(ofSize: Metrics.regular.chordTextSize, weight: .semibold)
-        let annotationFont = UIFont(name: "Menlo-Bold", size: Metrics.regular.annotationSize) ?? UIFont.systemFont(ofSize: Metrics.regular.annotationSize)
-        return chordFont.ascender - annotationFont.ascender + 1
-    }()
 
     // MARK: - Layout
     static let itemTopMargin: CGFloat = 0
