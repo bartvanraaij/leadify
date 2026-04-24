@@ -53,7 +53,8 @@ struct PerformanceView: View {
                         startPoint: .top,
                         endPoint: .bottom
                     )
-                    .frame(height: 240)
+                    .frame(height: 240 + safeAreaInsets.top)
+                    .ignoresSafeArea(edges: .top)
                     .allowsHitTesting(false)
                     .opacity(showToolbar ? 1 : 0)
                     .animation(.easeInOut(duration: PerformanceTheme.navigationAnimationDuration), value: showToolbar)
@@ -66,7 +67,7 @@ struct PerformanceView: View {
                                 withAnimation { showSidebar.toggle() }
                             }
                         )
-                        .padding(.top, 16)
+                        .padding(.top, horizontalSizeClass == .compact ? 8 : 16)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
