@@ -124,12 +124,10 @@ struct PerformanceView: View {
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
-        .focusable(horizontalSizeClass != .compact)
+        .focusable()
         .focused($isFocused)
         .focusEffectDisabled()
-        .onAppear {
-            if horizontalSizeClass != .compact { isFocused = true }
-        }
+        .onAppear { isFocused = true }
         .onKeyPress(.downArrow) { handleRightTap(); return .handled }
         .onKeyPress(.upArrow) { handleLeftTap(); return .handled }
     }
