@@ -66,7 +66,6 @@ struct PerformanceView: View {
                                 withAnimation { showSidebar.toggle() }
                             }
                         )
-                        .padding(.horizontal, 24)
                         .padding(.top, 16)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -125,10 +124,12 @@ struct PerformanceView: View {
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
-        .focusable()
+        .focusable(horizontalSizeClass != .compact)
         .focused($isFocused)
         .focusEffectDisabled()
-        .onAppear { isFocused = true }
+        .onAppear {
+            if horizontalSizeClass != .compact { isFocused = true }
+        }
         .onKeyPress(.downArrow) { handleRightTap(); return .handled }
         .onKeyPress(.upArrow) { handleLeftTap(); return .handled }
     }
