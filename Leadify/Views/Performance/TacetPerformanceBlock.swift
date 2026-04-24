@@ -4,6 +4,8 @@ import LeadifyCore
 struct TacetPerformanceBlock: View {
     let tacet: Tacet
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     private var displayLabel: String {
         if let label = tacet.label, !label.isEmpty {
             return label.uppercased()
@@ -12,6 +14,8 @@ struct TacetPerformanceBlock: View {
     }
 
     var body: some View {
+        let m = PerformanceTheme.metrics(for: horizontalSizeClass)
+
         HStack(spacing: PerformanceTheme.tacetSpacing) {
             Rectangle()
                 .fill(PerformanceTheme.dividerColor)
@@ -20,7 +24,7 @@ struct TacetPerformanceBlock: View {
             Text(displayLabel)
                 .font(
                     .system(
-                        size: PerformanceTheme.sectionHeaderSize,
+                        size: m.sectionHeaderSize,
                         weight: .semibold
                     )
                 )
@@ -31,7 +35,7 @@ struct TacetPerformanceBlock: View {
                 .fill(PerformanceTheme.dividerColor)
                 .frame(height: 1)
         }
-        .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
-        .padding(.vertical, PerformanceTheme.itemInnerVerticalPadding)
+        .padding(.horizontal, m.itemHorizontalPadding)
+        .padding(.vertical, m.itemInnerVerticalPadding)
     }
 }

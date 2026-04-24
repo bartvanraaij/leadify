@@ -11,20 +11,22 @@ struct LeadifyApp: App {
         do {
             #if DEBUG
             let isSeededRun = ProcessInfo.processInfo.arguments.contains("--seeded")
-            #else
-            let isSeededRun = false
-            #endif
-            
             let config = ModelConfiguration(isStoredInMemoryOnly: isSeededRun)
-    
-            container = try ModelContainer(for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self,
-                                           configurations: config
+            
+            container = try ModelContainer(
+                for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self,
+                configurations: config
             )
             
-            if(isSeededRun) {
+            if isSeededRun {
                 print("[Seeded Run] Using in-memory store and seeding test data.")
                 UITestSeeder.seed(in: container.mainContext)
             }
+            #else
+            container = try ModelContainer(
+                for: Song.self, Tacet.self, SetlistEntry.self, Setlist.self, Medley.self, MedleyEntry.self
+            )
+            #endif
             
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")

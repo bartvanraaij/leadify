@@ -11,6 +11,8 @@ struct PerformanceToolbar: View {
     @AppStorage(PerformanceNavigationMode.storageKey)
     private var storedMode: String = PerformanceNavigationMode.defaultMode.rawValue
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     private var currentMode: PerformanceNavigationMode {
         PerformanceNavigationMode(rawValue: storedMode) ?? .defaultMode
     }
@@ -63,6 +65,7 @@ struct PerformanceToolbar: View {
             }
             .fontWeight(.semibold)
         }
+        .padding(.horizontal, horizontalSizeClass == .compact ? 12 : 24)
         .accessibilityIdentifier("performance-toolbar")
     }
 }

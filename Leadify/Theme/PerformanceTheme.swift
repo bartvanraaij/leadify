@@ -6,15 +6,83 @@ import LeadifyCore
 /// Modern, professional design optimized for stage performance.
 /// Supports both light and dark mode.
 struct PerformanceTheme {
-    // MARK: - Font sizes
-    static let songTitleSize: CGFloat = 32
-    static let reminderSize: CGFloat = 17
-    static let sectionHeaderSize: CGFloat = 22
-    static let chordTextSize: CGFloat = 28
+    // MARK: - Adaptive metrics (font sizes, spacing that varies by size class)
+
+    struct Metrics {
+        let songTitleSize: CGFloat
+        let sectionHeaderSize: CGFloat
+        let chordTextSize: CGFloat
+        let reminderFontSize: CGFloat
+        let annotationSize: CGFloat
+        let tabFontSize: CGFloat
+        let medleyTitleSize: CGFloat
+        let chordCellWidth: CGFloat
+        let itemHorizontalPadding: CGFloat
+        let itemInnerVerticalPadding: CGFloat
+        let contentIndent: CGFloat
+        let plainTextBottomPadding: CGFloat
+
+        let activeIndicatorSize: CGFloat
+        let activeIndicatorLeadingOffset: CGFloat
+        let activeIndicatorTopPadding: CGFloat
+
+        var chordRowHeight: CGFloat { chordTextSize * chordLineSpacing }
+
+        var annotationBaselineOffset: CGFloat {
+            let chordFont = UIFont.systemFont(ofSize: chordTextSize, weight: .semibold)
+            let annotationFont = UIFont(name: "Menlo-Bold", size: annotationSize) ?? UIFont.systemFont(ofSize: annotationSize)
+            return chordFont.ascender - annotationFont.ascender
+        }
+
+        static let regular = Metrics(
+            songTitleSize: 32,
+            sectionHeaderSize: 22,
+            chordTextSize: 28,
+            reminderFontSize: 20,
+            annotationSize: 22,
+            tabFontSize: 20,
+            medleyTitleSize: 24,
+            chordCellWidth: 88,
+            itemHorizontalPadding: 32,
+            itemInnerVerticalPadding: 32,
+            contentIndent: 16,
+            plainTextBottomPadding: 24,
+            activeIndicatorSize: 12,
+            activeIndicatorLeadingOffset: 12,
+            activeIndicatorTopPadding: 44
+        )
+
+        static let compact = Metrics(
+            songTitleSize: 25,
+            sectionHeaderSize: 18,
+            chordTextSize: 22,
+            reminderFontSize: 16,
+            annotationSize: 18,
+            tabFontSize: 16,
+            medleyTitleSize: 20,
+            chordCellWidth: 64,
+            itemHorizontalPadding: 16,
+            itemInnerVerticalPadding: 24,
+            contentIndent: 12,
+            plainTextBottomPadding: 16,
+            activeIndicatorSize: 10,
+            activeIndicatorLeadingOffset: 3,
+            activeIndicatorTopPadding: 34
+        )
+    }
+
+    static func metrics(for sizeClass: UserInterfaceSizeClass?) -> Metrics {
+        sizeClass == .compact ? .compact : .regular
+    }
+
+    // MARK: - Non-adaptive constants
+
+    static let chordLineSpacing: CGFloat = 2.0
+    static let chordMinimumScaleFactor: CGFloat = 0.5
+    static let annotationLeadingPadding: CGFloat = 8
+
 
     // MARK: - Layout
-    static let itemHorizontalPadding: CGFloat = 32
-    static let itemInnerVerticalPadding: CGFloat = 32
     static let itemTopMargin: CGFloat = 0
     static let autoSidebarThreshold: CGFloat = 900
 
@@ -23,28 +91,12 @@ struct PerformanceTheme {
     static let inspectorColumnWidthIdeal: CGFloat = 280
     static let inspectorColumnWidthMax: CGFloat = 380
 
-    // MARK: - Chord cell layout
-    static let chordCellWidth: CGFloat = 88
-    static let annotationSize: CGFloat = 22
-    static let chordLineSpacing: CGFloat = 2.0
-    static let chordRowHeight: CGFloat = chordTextSize * chordLineSpacing
-    static let chordMinimumScaleFactor: CGFloat = 0.5
-    static let annotationLeadingPadding: CGFloat = 8
-
-    /// Top padding for annotations so their baseline aligns with chord text baseline.
-    static let annotationBaselineOffset: CGFloat = {
-        let chordFont = UIFont.systemFont(ofSize: chordTextSize, weight: .semibold)
-        let annotationFont = UIFont(name: "Menlo-Bold", size: annotationSize) ?? UIFont.systemFont(ofSize: annotationSize)
-        return chordFont.ascender - annotationFont.ascender + 1
-    }()
-
     // MARK: - Heading spacing (fraction of heading font size)
     static let headingLineSpacingFraction: CGFloat = 0.1
     static let headingTopPaddingFraction: CGFloat = 0
     static let headingBottomPaddingFraction: CGFloat = 0.5
 
     // MARK: - Code block
-    static let tabFontSize: CGFloat = 20
     static let codeBlockVerticalPadding: CGFloat = 24
 
     // MARK: - Animation durations
@@ -52,9 +104,6 @@ struct PerformanceTheme {
     static let chevronFadeAnimationDuration: Double = 0.2
 
     // MARK: - Active indicator
-    static let activeIndicatorSize: CGFloat = 12
-    static let activeIndicatorTopPadding: CGFloat = 44
-    static let activeIndicatorLeadingOffset: CGFloat = 12
     static let activeIndicatorColor = Color.purple
     static let nextIndicatorColor = Color.gray
 
@@ -62,7 +111,6 @@ struct PerformanceTheme {
     static let chevronEdgePadding: CGFloat = 24
 
     // MARK: - Reminder
-    static let reminderFontSize: CGFloat = 20
     static let titleReminderSpacing: CGFloat = 12
 
     // MARK: - Tacet
@@ -70,11 +118,8 @@ struct PerformanceTheme {
     static let tacetTracking: CGFloat = 2
 
     // MARK: - Medley
-    static let medleyTitleSize: CGFloat = 24
     static let medleyTitleBottomPadding: CGFloat = 8
     static let medleyInnerSongTitleTopPadding: CGFloat = 16
-    static let contentIndent: CGFloat = 16
-    static let plainTextBottomPadding: CGFloat = 24
 
     // MARK: - Base colors
     static let primaryContentColor = Color(light: Color(white: 0.1), dark: Color(white: 0.95))

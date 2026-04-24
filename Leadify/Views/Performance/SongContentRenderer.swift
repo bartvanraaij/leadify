@@ -4,12 +4,16 @@ import LeadifyCore
 struct SongContentRenderer: View {
     let content: String
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     var body: some View {
+        let m = PerformanceTheme.metrics(for: horizontalSizeClass)
+
         VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(SongContentParser.parse(content).enumerated()), id: \.offset) {
                 _,
                 block in
-                blockView(block)
+                blockView(block, m)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -31,7 +35,7 @@ struct SongContentRenderer: View {
 
     private static let gridCharacters: Set<Character> = ["─", "│", "┼", "┬", "┴", "├", "┤", "┌", "┐", "└", "┘", " "]
 
-    private static func coloredTabLine(_ line: String) -> AttributedString {
+    private static func coloredTabLine(_ line: String, tabFontSize: CGFloat) -> AttributedString {
         let chars = Array(line)
         let firstGridIndex = chars.firstIndex(where: { gridCharacters.contains($0) || $0 == "─" }) ?? 0
         var result = AttributedString()
@@ -41,7 +45,7 @@ struct SongContentRenderer: View {
                 attr.foregroundColor = PerformanceTheme.tabGridColor
             } else {
                 attr.foregroundColor = PerformanceTheme.primaryContentColor
-                attr.font = .custom("Menlo-Bold", size: PerformanceTheme.tabFontSize)
+                attr.font = .custom("Menlo-Bold", size: tabFontSize)
             }
             result.append(attr)
         }
@@ -86,77 +90,77 @@ struct SongContentRenderer: View {
     }
 
     @ViewBuilder
-    private func blockView(_ block: SongContentParser.ContentBlock) -> some View {
+    private func blockView(_ block: SongContentParser.ContentBlock, _ m: PerformanceTheme.Metrics) -> some View {
         switch block {
         case .heading1(let text):
             Text(text)
                 .font(
-                    .system(size: PerformanceTheme.songTitleSize, weight: .bold, design: .rounded)
+                    .system(size: m.songTitleSize, weight: .bold, design: .rounded)
                 )
                 .foregroundStyle(PerformanceTheme.songTitleColor)
-                .lineSpacing(PerformanceTheme.songTitleSize * PerformanceTheme.headingLineSpacingFraction)
-                .padding(.top, PerformanceTheme.songTitleSize * PerformanceTheme.headingTopPaddingFraction)
-                .padding(.bottom, PerformanceTheme.songTitleSize * PerformanceTheme.headingBottomPaddingFraction)
+                .lineSpacing(m.songTitleSize * PerformanceTheme.headingLineSpacingFraction)
+                .padding(.top, m.songTitleSize * PerformanceTheme.headingTopPaddingFraction)
+                .padding(.bottom, m.songTitleSize * PerformanceTheme.headingBottomPaddingFraction)
 
         case .heading2(let text):
             Text(text.lowercased())
                 .font(
                     .system(
-                        size: PerformanceTheme.sectionHeaderSize,
+                        size: m.sectionHeaderSize,
                         weight: .semibold,
                         design: .rounded
                     )
                 )
                 .foregroundStyle(PerformanceTheme.sectionHeaderColor)
-                .lineSpacing(PerformanceTheme.sectionHeaderSize * PerformanceTheme.headingLineSpacingFraction)
-                .padding(.top, PerformanceTheme.sectionHeaderSize * PerformanceTheme.headingTopPaddingFraction)
-                .padding(.bottom, PerformanceTheme.sectionHeaderSize * PerformanceTheme.headingBottomPaddingFraction)
+                .lineSpacing(m.sectionHeaderSize * PerformanceTheme.headingLineSpacingFraction)
+                .padding(.top, m.sectionHeaderSize * PerformanceTheme.headingTopPaddingFraction)
+                .padding(.bottom, m.sectionHeaderSize * PerformanceTheme.headingBottomPaddingFraction)
 
         case .chordLine(let tokens):
-            chordLineView(tokens)
-                .padding(.leading, PerformanceTheme.contentIndent)
+            chordLineView(tokens, m)
+                .padding(.leading, m.contentIndent)
 
         case .plainText(let text):
             Text(text)
                 .font(
                     .system(
-                        size: PerformanceTheme.chordTextSize,
+                        size: m.chordTextSize,
                         weight: .semibold
                     )
                 )
                 .foregroundStyle(PerformanceTheme.chordTextColor)
-                .padding(.leading, PerformanceTheme.contentIndent)
-                .padding(.bottom, PerformanceTheme.plainTextBottomPadding)
+                .padding(.leading, m.contentIndent)
+                .padding(.bottom, m.plainTextBottomPadding)
 
         case .codeBlock(let text, _):
             let lines = Self.replaceBoxDrawingCharacters(trimmedCodeLines(from: text))
 
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
-                    Text(Self.coloredTabLine(line))
+                    Text(Self.coloredTabLine(line, tabFontSize: m.tabFontSize))
                         .font(
-                            .custom("Menlo", size: PerformanceTheme.tabFontSize)
+                            .custom("Menlo", size: m.tabFontSize)
                         )
                         .lineLimit(1)
                 }
             }
             .padding(.bottom, PerformanceTheme.codeBlockVerticalPadding)
-            .padding(.leading, PerformanceTheme.contentIndent)
+            .padding(.leading, m.contentIndent)
         @unknown default:
             EmptyView()
         }
     }
 
     @ViewBuilder
-    private func chordLineView(_ tokens: [SongContentParser.ChordToken]) -> some View {
-        ChordFlowLayout(rowHeight: PerformanceTheme.chordRowHeight) {
+    private func chordLineView(_ tokens: [SongContentParser.ChordToken], _ m: PerformanceTheme.Metrics) -> some View {
+        ChordFlowLayout(rowHeight: m.chordRowHeight) {
             ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
                 switch token {
                 case .chord(let name):
                     Text(name)
                         .font(
                             .system(
-                                size: PerformanceTheme.chordTextSize,
+                                size: m.chordTextSize,
                                 weight: .semibold
                             )
                         )
@@ -164,7 +168,7 @@ struct SongContentRenderer: View {
                         .minimumScaleFactor(PerformanceTheme.chordMinimumScaleFactor)
                         .lineLimit(1)
                         .frame(
-                            width: PerformanceTheme.chordCellWidth,
+                            width: m.chordCellWidth,
                             alignment: .leading
                         )
 
@@ -172,26 +176,26 @@ struct SongContentRenderer: View {
                     Text("/")
                         .font(
                             .system(
-                                size: PerformanceTheme.chordTextSize,
+                                size: m.chordTextSize,
                                 weight: .regular
                             )
                         )
                         .foregroundStyle(PerformanceTheme.chordDividerColor)
                         .frame(
-                            width: PerformanceTheme.chordCellWidth,
+                            width: m.chordCellWidth,
                             alignment: .center
                         )
 
                 case .annotation(let text):
                     Text(text)
                         .font(
-                            .custom("Menlo-Bold", size: PerformanceTheme.annotationSize)
+                            .custom("Menlo-Bold", size: m.annotationSize)
                         )
                         .foregroundStyle(PerformanceTheme.annotationColor)
                         .padding(.leading, PerformanceTheme.annotationLeadingPadding)
                         .padding(
                             .top,
-                            PerformanceTheme.annotationBaselineOffset
+                            m.annotationBaselineOffset
                         )
                 @unknown default:
                     EmptyView()

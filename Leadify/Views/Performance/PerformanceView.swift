@@ -28,6 +28,7 @@ struct PerformanceView: View {
     @State private var showToolbar: Bool = false
     @State private var smartState = SmartNavigationState()
     @FocusState private var isFocused: Bool
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var navMode: PerformanceNavigationMode {
         PerformanceNavigationMode(rawValue: storedNavMode) ?? .defaultMode
@@ -65,7 +66,6 @@ struct PerformanceView: View {
                                 withAnimation { showSidebar.toggle() }
                             }
                         )
-                        .padding(.horizontal, 24)
                         .padding(.top, 16)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -107,22 +107,20 @@ struct PerformanceView: View {
                     }
                 }
         }
-        .inspector(isPresented: $showSidebar) {
-            PerformanceSetlistSidebar(
-                title: source.performanceTitle,
-                items: items,
-                activeIndex: activeIndex,
-                showsActiveHighlight: navMode != .screenNavigation,
-                onSelect: { index in
-                    smartState.backStack = []
-                    navigateTo(index: index)
-                    computeSmartNextTarget()
-                },
-                onPrevious: { navigateToPrevious() },
-                onNext: { navigateToNext() }
-            )
-            .inspectorColumnWidth(min: PerformanceTheme.inspectorColumnWidthMin, ideal: PerformanceTheme.inspectorColumnWidthIdeal, max: PerformanceTheme.inspectorColumnWidthMax)
-        }
+        .modifier(PerformanceSidebarPresentation(
+            isPresented: $showSidebar,
+            title: source.performanceTitle,
+            items: items,
+            activeIndex: activeIndex,
+            showsActiveHighlight: navMode != .screenNavigation,
+            onSelect: { index in
+                smartState.backStack = []
+                navigateTo(index: index)
+                computeSmartNextTarget()
+            },
+            onPrevious: { navigateToPrevious() },
+            onNext: { navigateToNext() }
+        ))
         .background(PerformanceTheme.background)
         .statusBarHidden(true)
         .persistentSystemOverlays(.hidden)
@@ -145,16 +143,17 @@ struct PerformanceView: View {
                     item in
                     VStack(alignment: .leading, spacing: 0) {
                         if let medleyTitle = item.medleyTitle {
+                            let m = PerformanceTheme.metrics(for: horizontalSizeClass)
                             Text(medleyTitle)
-                                .font(.system(size: PerformanceTheme.medleyTitleSize, weight: .semibold, design: .rounded))
+                                .font(.system(size: m.medleyTitleSize, weight: .semibold, design: .rounded))
                                 .foregroundStyle(PerformanceTheme.medleyIndicatorColor)
-                                .padding(.top, PerformanceTheme.itemInnerVerticalPadding)
+                                .padding(.top, m.itemInnerVerticalPadding)
                                 .padding(.bottom, PerformanceTheme.medleyTitleBottomPadding)
-                                .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
+                                .padding(.horizontal, m.itemHorizontalPadding)
                         }
 
                         itemView(item: item)
-                            .padding(.horizontal, PerformanceTheme.itemHorizontalPadding)
+                            .padding(.horizontal, PerformanceTheme.metrics(for: horizontalSizeClass).itemHorizontalPadding)
                             .overlay(alignment: .topLeading) {
                                 if index == activeIndex, navMode != .smartNavigation, navMode != .screenNavigation {
                                     activeIndicator(item: item)
@@ -313,26 +312,28 @@ struct PerformanceView: View {
 
     @ViewBuilder
     private func activeIndicator(item: PerformanceItem) -> some View {
+        let m = PerformanceTheme.metrics(for: horizontalSizeClass)
         Image(systemName: "triangle.fill")
-            .font(.system(size: PerformanceTheme.activeIndicatorSize))
+            .font(.system(size: m.activeIndicatorSize))
             .foregroundStyle(PerformanceTheme.activeIndicatorColor)
             .rotationEffect(.degrees(90))
             .offset(
-                x: PerformanceTheme.activeIndicatorLeadingOffset,
-                y: PerformanceTheme.activeIndicatorTopPadding
+                x: m.activeIndicatorLeadingOffset,
+                y: m.activeIndicatorTopPadding
                     + (item.kind == .medley ? -4 : 0)
             )
     }
 
     @ViewBuilder
     private func nextTargetIndicator(item: PerformanceItem) -> some View {
+        let m = PerformanceTheme.metrics(for: horizontalSizeClass)
         Image(systemName: "triangle.fill")
-            .font(.system(size: PerformanceTheme.activeIndicatorSize))
+            .font(.system(size: m.activeIndicatorSize))
             .foregroundStyle(PerformanceTheme.nextIndicatorColor)
             .rotationEffect(.degrees(90))
             .offset(
-                x: PerformanceTheme.activeIndicatorLeadingOffset,
-                y: PerformanceTheme.activeIndicatorTopPadding
+                x: m.activeIndicatorLeadingOffset,
+                y: m.activeIndicatorTopPadding
                     + (item.kind == .medley ? -4 : 0)
             )
     }
@@ -621,4 +622,61 @@ struct PerformanceView: View {
         }
     }
 
+}
+
+private struct PerformanceSidebarPresentation: ViewModifier {
+    @Binding var isPresented: Bool
+    let title: String
+    let items: [PerformanceItem]
+    let activeIndex: Int
+    let showsActiveHighlight: Bool
+    let onSelect: (Int) -> Void
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    func body(content: Content) -> some View {
+        if horizontalSizeClass == .compact {
+            content
+                .sheet(isPresented: $isPresented) {
+                    NavigationStack {
+                        PerformanceSetlistSidebar(
+                            title: title,
+                            items: items,
+                            activeIndex: activeIndex,
+                            showsActiveHighlight: showsActiveHighlight,
+                            onSelect: onSelect,
+                            onPrevious: onPrevious,
+                            onNext: onNext,
+                            showNavigationButtons: false,
+                            showTitle: false
+                        )
+                        .navigationTitle(title)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") { isPresented = false }
+                            }
+                        }
+                    }
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+                }
+        } else {
+            content
+                .inspector(isPresented: $isPresented) {
+                    PerformanceSetlistSidebar(
+                        title: title,
+                        items: items,
+                        activeIndex: activeIndex,
+                        showsActiveHighlight: showsActiveHighlight,
+                        onSelect: onSelect,
+                        onPrevious: onPrevious,
+                        onNext: onNext
+                    )
+                    .inspectorColumnWidth(min: PerformanceTheme.inspectorColumnWidthMin, ideal: PerformanceTheme.inspectorColumnWidthIdeal, max: PerformanceTheme.inspectorColumnWidthMax)
+                }
+        }
+    }
 }
