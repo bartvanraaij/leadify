@@ -312,26 +312,28 @@ struct PerformanceView: View {
 
     @ViewBuilder
     private func activeIndicator(item: PerformanceItem) -> some View {
+        let m = PerformanceTheme.metrics(for: horizontalSizeClass)
         Image(systemName: "triangle.fill")
-            .font(.system(size: PerformanceTheme.activeIndicatorSize))
+            .font(.system(size: m.activeIndicatorSize))
             .foregroundStyle(PerformanceTheme.activeIndicatorColor)
             .rotationEffect(.degrees(90))
             .offset(
-                x: PerformanceTheme.activeIndicatorLeadingOffset,
-                y: PerformanceTheme.activeIndicatorTopPadding
+                x: m.activeIndicatorLeadingOffset,
+                y: m.activeIndicatorTopPadding
                     + (item.kind == .medley ? -4 : 0)
             )
     }
 
     @ViewBuilder
     private func nextTargetIndicator(item: PerformanceItem) -> some View {
+        let m = PerformanceTheme.metrics(for: horizontalSizeClass)
         Image(systemName: "triangle.fill")
-            .font(.system(size: PerformanceTheme.activeIndicatorSize))
+            .font(.system(size: m.activeIndicatorSize))
             .foregroundStyle(PerformanceTheme.nextIndicatorColor)
             .rotationEffect(.degrees(90))
             .offset(
-                x: PerformanceTheme.activeIndicatorLeadingOffset,
-                y: PerformanceTheme.activeIndicatorTopPadding
+                x: m.activeIndicatorLeadingOffset,
+                y: m.activeIndicatorTopPadding
                     + (item.kind == .medley ? -4 : 0)
             )
     }

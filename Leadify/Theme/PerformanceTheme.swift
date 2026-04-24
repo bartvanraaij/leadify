@@ -22,6 +22,10 @@ struct PerformanceTheme {
         let contentIndent: CGFloat
         let plainTextBottomPadding: CGFloat
 
+        let activeIndicatorSize: CGFloat
+        let activeIndicatorLeadingOffset: CGFloat
+        let activeIndicatorTopPadding: CGFloat
+
         var chordRowHeight: CGFloat { chordTextSize * chordLineSpacing }
 
         static let regular = Metrics(
@@ -36,7 +40,10 @@ struct PerformanceTheme {
             itemHorizontalPadding: 32,
             itemInnerVerticalPadding: 32,
             contentIndent: 16,
-            plainTextBottomPadding: 24
+            plainTextBottomPadding: 24,
+            activeIndicatorSize: 12,
+            activeIndicatorLeadingOffset: 12,
+            activeIndicatorTopPadding: 44
         )
 
         static let compact = Metrics(
@@ -51,7 +58,10 @@ struct PerformanceTheme {
             itemHorizontalPadding: 16,
             itemInnerVerticalPadding: 24,
             contentIndent: 12,
-            plainTextBottomPadding: 16
+            plainTextBottomPadding: 16,
+            activeIndicatorSize: 10,
+            activeIndicatorLeadingOffset: 3,
+            activeIndicatorTopPadding: 34
         )
     }
 
@@ -93,9 +103,6 @@ struct PerformanceTheme {
     static let chevronFadeAnimationDuration: Double = 0.2
 
     // MARK: - Active indicator
-    static let activeIndicatorSize: CGFloat = 12
-    static let activeIndicatorTopPadding: CGFloat = 44
-    static let activeIndicatorLeadingOffset: CGFloat = 12
     static let activeIndicatorColor = Color.purple
     static let nextIndicatorColor = Color.gray
 
