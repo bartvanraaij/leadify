@@ -154,4 +154,4 @@ Cross-domain components (e.g. `SongSetlistRow`) live with the **consumer** (Setl
 
 ## User background
 
-Experienced in C#, PHP, Node, TypeScript, Angular. Zero prior Swift/iOS experience. Frame Swift/SwiftUI concepts using analogues from those worlds (e.g. `@Observable` ≈ MobX store, SwiftData ≈ EF Core, `@Query` ≈ a reactive DB query).
+Experienced in C#, PHP, Node, TypeScript, HTML/CSS. Zero prior Swift/iOS experience. Frame Swift/SwiftUI concepts using analogues from those worlds (e.g. `@Observable` ≈ MobX store, SwiftData ≈ EF Core, `@Query` ≈ a reactive DB query).
